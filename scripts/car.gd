@@ -9,6 +9,7 @@ const MAX_OFFTRACK := 500.0
 
 var physics := CarPhysics.new()
 var track: TrackPath
+var input_enabled := true
 var smoke: CPUParticles2D
 
 
@@ -34,15 +35,22 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	physics.throttle = Input.get_action_strength("gas")
-	physics.brake = Input.get_action_strength("bremse")
-	physics.steer = Input.get_axis("links", "rechts")
-	physics.handbrake = Input.is_action_pressed("handbremse")
+	if input_enabled:
+		physics.throttle = Input.get_action_strength("gas")
+		physics.brake = Input.get_action_strength("bremse")
+		physics.steer = Input.get_axis("links", "rechts")
+		physics.handbrake = Input.is_action_pressed("handbremse")
+	else:
+		physics.throttle = 0.0
+		physics.brake = 0.0
+		physics.steer = 0.0
+		physics.handbrake = false
 	if track:
 		var on_track := track.is_on_track(physics.position)
 		physics.surface = CarPhysics.Surface.ROAD if on_track else CarPhysics.Surface.GRASS
 	physics.step(delta)
-	smoke.emitting = physics.is_drifting()
+	if smoke:
+		smoke.emitting = physics.is_drifting()
 	if track and (Input.is_action_just_pressed("zuruecksetzen")
 			or track.distance_from_center(physics.position) > track.width * 0.5 + MAX_OFFTRACK):
 		respawn()
