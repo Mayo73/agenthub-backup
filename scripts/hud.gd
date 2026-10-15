@@ -47,7 +47,7 @@ func show_laps(timer: LapTimer) -> void:
 	best_label.text = "Beste " + LapTimer.format_time(timer.best_lap_time)
 
 
-func show_race(race: RaceState, points: int) -> void:
+func show_race(race: RaceState, points: int, new_time: bool = false, new_points: bool = false) -> void:
 	countdown_label.text = race.countdown_text()
 	var finished := race.phase == RaceState.Phase.FINISHED
 	if finished and not result_buttons.visible:
@@ -55,4 +55,4 @@ func show_race(race: RaceState, points: int) -> void:
 	result_buttons.visible = finished
 	result_label.visible = finished
 	if finished:
-		result_label.text = race.result_text(points)
+		result_label.text = race.result_text(points, new_time, new_points)
