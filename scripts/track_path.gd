@@ -66,6 +66,23 @@ func progress_at(world: Vector2) -> float:
 	return closest(world)["progress"]
 
 
+## Punkt auf der Mittellinie nach `progress` Pixeln ab Start. Werte über length oder unter 0 laufen im Kreis weiter.
+func point_at(progress: float) -> Vector2:
+	if points.is_empty() or length <= 0.0:
+		return Vector2.ZERO
+	var p := fposmod(progress, length)
+	var n := points.size()
+	for i in n:
+		var a := points[i]
+		var b := points[(i + 1) % n]
+		var seg_len := a.distance_to(b)
+		if p <= _segment_start[i] + seg_len:
+			if seg_len <= 0.0:
+				return a
+			return a.lerp(b, (p - _segment_start[i]) / seg_len)
+	return points[0]
+
+
 ## Fahrtrichtung der Strecke an der nächsten Stelle (Länge 1).
 func direction_at(world: Vector2) -> Vector2:
 	var segment: int = closest(world)["segment"]
