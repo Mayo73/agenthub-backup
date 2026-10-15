@@ -24,3 +24,10 @@ func _draw() -> void:
 	for trail in right.trails:
 		if trail.size() >= 2:
 			draw_polyline(trail, LINE_COLOR, LINE_WIDTH)
+
+
+## Entfernt alle Spuren (neues Rennen).
+func clear() -> void:
+	left.clear()
+	right.clear()
+	queue_redraw()

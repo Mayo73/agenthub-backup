@@ -15,11 +15,16 @@
 | `scripts/car_physics.gd` | `CarPhysics`: Fahrphysik, Drift, Abstimmungswerte |
 | `scripts/track_path.gd` | `TrackPath`: Mittellinie, `is_on_track()`, `progress_at()` für Runden, `length` |
 | `scripts/iso.gd` | `Iso`: Projektion Welt ↔ Bildschirm |
-| `scripts/controls.gd` | `Controls`: Aktionen `gas`, `bremse`, `links`, `rechts`, `handbremse`, `zuruecksetzen` |
-| `scripts/car.gd` | Auto-Node: Eingaben → `CarPhysics` → Position; hat `physics` und `track` |
+| `scripts/controls.gd` | `Controls`: Aktionen `gas`, `bremse`, `links`, `rechts`, `handbremse`, `zuruecksetzen`, `neustart` |
+| `scripts/car.gd` | Auto-Node: Eingaben → `CarPhysics` → Position; hat `physics`, `track`, `input_enabled` (Eingaben sperren) und `smoke` (Reifenrauch) |
 | `scripts/track.gd` | Zeichnet die Strecke, hat `path: TrackPath` |
-| `scripts/hud.gd` | Anzeige; Labels `speed_label`, `angle_label`, `drift_label`, `score_label`, `combo_label`, `lap_label`, `time_label`, `best_label` |
-| `scripts/main.gd` | Verdrahtung: `car`, `track`, `camera`, `hud` |
+| `scripts/hud.gd` | Anzeige; Labels `speed_label`, `angle_label`, `drift_label`, `score_label`, `combo_label`, `lap_label`, `time_label`, `best_label`, `countdown_label`, `result_label`; `show_race(race, points)` |
+| `scripts/main.gd` | Verdrahtung: `car`, `track`, `camera`, `hud`, `scorer`, `lap_timer`, `race`, `skid_marks`; `restart()` |
+| `scripts/drift_scorer.gd` | `DriftScorer`: Drift-Punkte und Kombo (`total`) |
+| `scripts/lap_timer.gd` | `LapTimer`: Runden, Rundenzeit, Bestzeit, Signal `lap_completed`, `format_time()` |
+| `scripts/race_state.gd` | `RaceState`: Countdown, `TOTAL_LAPS` Runden, Ergebnistext, `can_drive()` |
+| `scripts/skid_trail.gd` | `SkidTrail`: Punkte einer Reifenspur |
+| `scripts/skid_marks.gd` | Zeichnet die Reifenspuren (Node `World/SkidMarks`, im Code angelegt) |
 
 Zur Laufzeit in `main.gd` nützlich: `car.physics.speed()`, `car.physics.slip_angle_deg()`, `car.physics.is_drifting()`, `car.physics.position`, `track.path.is_on_track(pos)`, `track.path.progress_at(pos)`, `track.path.length`.
 

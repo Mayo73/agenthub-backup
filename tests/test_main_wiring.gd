@@ -50,3 +50,11 @@ func test_rennanzeige() -> void:
 	main.lap_timer = LapTimer.new(100.0)
 	main.hud.show_laps(main.lap_timer)
 	check_eq(main.hud.lap_label.text, "Runde 1/3", "Rundenanzeige mit Gesamtrundenzahl")
+
+
+func test_neustart_loescht_spuren() -> void:
+	var marks: Node2D = main.get_node("World/SkidMarks")
+	marks.left.update(Vector2.ZERO, true)
+	marks.left.update(Vector2(10, 0), true)
+	main.restart()
+	check_eq(marks.left.point_count(), 0, "Spuren nach restart() gelöscht")

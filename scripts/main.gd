@@ -63,4 +63,5 @@ func restart() -> void:
 	scorer.reset()
 	lap_timer.reset()
 	car.place_at_start()
+	skid_marks.clear()
 	car.input_enabled = race.can_drive()
