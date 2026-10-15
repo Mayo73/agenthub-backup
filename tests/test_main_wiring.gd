@@ -58,3 +58,50 @@ func test_neustart_loescht_spuren() -> void:
 	marks.left.update(Vector2(10, 0), true)
 	main.restart()
 	check_eq(marks.left.point_count(), 0, "Spuren nach restart() gelöscht")
+
+
+func test_geisterauto_ist_verdrahtet() -> void:
+	check(main.get_node("World/Ghost") != null, "Ghost-Node existiert")
+	check(main.ghost_best == null, "ghost_best ist zu Beginn null")
+
+	main.ghost_recording.record(0.0, Vector2.ZERO, 0.0)
+	main._on_lap_completed(1, 30.0, true)
+	check(main.ghost_best != null, "ghost_best ist nach schneller Runde gesetzt")
+	check(main.ghost_recording.is_empty(), "ghost_recording ist leer nach _on_lap_completed")
+
+	var first: GhostLap = main.ghost_best
+	main.restart()
+	check(main.ghost_best == first, "ghost_best bleibt nach restart() erhalten")
+
+
+func test_pausemenue_ist_verdrahtet() -> void:
+	check(main.get_node("PauseMenu") != null, "PauseMenu-Node existiert in main")
+
+	check(main.pause_menu.restart_requested.is_connected(main.restart),
+	      "pause_menu.restart_requested ist mit main.restart verbunden")
+
+	main.race.phase = RaceState.Phase.FINISHED
+	main.pause_menu._on_restart()
+
+	check(main.race.phase == RaceState.Phase.COUNTDOWN,
+	      "main.race.phase ist COUNTDOWN nach _on_restart()")
+	check(not main.get_tree().paused, "get_tree().paused ist falsch nach _on_restart()")
+
+
+func test_ergebnis_knoepfe() -> void:
+	check(not main.hud.result_buttons.visible, "result_buttons.visible ist false zu Beginn")
+
+	main.race.phase = RaceState.Phase.FINISHED
+	main.hud.show_race(main.race, 42)
+	check(main.hud.result_buttons.visible, "result_buttons.visible ist true nach FINISHED")
+
+	check(main.hud.again_pressed.is_connected(main.restart),
+	      "again_pressed ist mit restart verbunden")
+	check(main.hud.menu_pressed.is_connected(main.go_to_menu),
+	      "menu_pressed ist mit go_to_menu verbunden")
+
+	main.hud.again_button.pressed.emit()
+	check(main.race.phase == RaceState.Phase.COUNTDOWN,
+	      "phase ist COUNTDOWN nach Again-Knopf")
+
+	check(ResourceLoader.exists(main.MENU_SCENE), "MENU_SCENE existiert")
