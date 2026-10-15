@@ -1,9 +1,9 @@
 extends "res://tests/base_test.gd"
 
-var main: Node
+var main: Node2D
 
 func setup() -> void:
-	main = load("res://scenes/main.tscn").instantiate()
+	main = preload("res://scenes/main.tscn").instantiate()
 	(Engine.get_main_loop() as SceneTree).root.add_child(main)
 
 
@@ -174,3 +174,13 @@ func test_ki_gegner() -> void:
 	main.restart()
 	check(main.ai_cars[0].physics.position.distance_to(main.track.path.start_position()) < 200.0,
 		"AI ist nach restart() wieder am Start")
+
+
+func test_zusammenstoesse() -> void:
+	main.car.physics.position = Vector2(0, 0)
+	main.ai_cars[0].physics.position = Vector2(10, 0)
+	main.ai_cars[1].physics.position = Vector2(5000, 0)
+	main.ai_cars[2].physics.position = Vector2(-5000, 0)
+	main.resolve_collisions()
+	check(main.car.physics.position.distance_to(main.ai_cars[0].physics.position) >= 2.0 * main.CAR_RADIUS - 0.01,
+		"Abstand nach Kollisionsauflösung mindestens 2*CAR_RADIUS - 0.01")
