@@ -6,13 +6,22 @@ extends SceneTree
 ## Exit-Code 0 = alles grün, 1 = mindestens ein Fehler.
 
 const SKIP_DIRS := [".godot", ".git", "addons"]
+## Bricht ein Fehler den Ablauf ab, beendet der Watchdog Godot trotzdem.
+const WATCHDOG_SECONDS := 120.0
 
 var _passed := 0
 var _failed := 0
 
 
 func _initialize() -> void:
+	create_timer(WATCHDOG_SECONDS).timeout.connect(_on_watchdog)
 	_run.call_deferred()
+
+
+func _on_watchdog() -> void:
+	print("  FEHLER  Testlauf nach %d s abgebrochen (Absturz oder Endlosschleife)" % WATCHDOG_SECONDS)
+	print("ERGEBNIS: %d ok, %d fehlgeschlagen" % [_passed, _failed + 1])
+	quit(2)
 
 
 func _run() -> void:
@@ -48,9 +57,12 @@ func _run() -> void:
 		if not path.get_file().begins_with("test_"):
 			continue
 		var script := load(path) as Script
-		if script == null:
+		if script == null or not script.can_instantiate():
 			continue  # oben schon als Fehler gezählt
 		var suite: Object = script.new()
+		if suite == null:
+			_fail(path, "Testklasse lässt sich nicht erzeugen")
+			continue
 		for method in script.get_script_method_list():
 			var method_name: String = method["name"]
 			if not method_name.begins_with("test_"):
