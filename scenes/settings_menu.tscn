@@ -28,9 +28,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -200.0
-offset_top = -150.0
+offset_top = -330.0
 offset_right = 200.0
-offset_bottom = 150.0
+offset_bottom = 330.0
 theme_override_constants/separation = 18
 
 [node name="Title" type="Label" parent="Items"]
