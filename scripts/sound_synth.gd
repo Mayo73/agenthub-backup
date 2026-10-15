@@ -40,3 +40,40 @@ static func make_stream(samples: PackedFloat32Array, loop: bool) -> AudioStreamW
 		stream.loop_begin = 0
 		stream.loop_end = samples.size()
 	return stream
+
+
+## Ton mit fester Frequenz. Mit `fade` wird er je 5 ms ein- und ausgeblendet (gegen Knacken).
+static func tone(freq: float, duration: float, wave: int = Wave.SINE, volume: float = 0.5, fade: bool = true) -> PackedFloat32Array:
+	var n := int(duration * MIX_RATE)
+	var out := PackedFloat32Array()
+	out.resize(n)
+	var fade_len := int(0.005 * MIX_RATE)
+	for i in n:
+		var env := 1.0
+		if fade and fade_len > 0:
+			env = minf(1.0, minf(float(i) / fade_len, float(n - 1 - i) / fade_len))
+		out[i] = wave_value(wave, freq * i / MIX_RATE) * volume * env
+	return out
+
+
+## Weißes Rauschen; derselbe `seed_value` ergibt immer dasselbe Rauschen.
+static func noise(duration: float, volume: float = 0.5, seed_value: int = 1) -> PackedFloat32Array:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_value
+	var n := int(duration * MIX_RATE)
+	var out := PackedFloat32Array()
+	out.resize(n)
+	for i in n:
+		out[i] = rng.randf_range(-1.0, 1.0) * volume
+	return out
+
+
+## Addiert zwei Klänge. Das Ergebnis ist so lang wie der längere; fehlende Werte zählen als 0.
+static func mix(a: PackedFloat32Array, b: PackedFloat32Array) -> PackedFloat32Array:
+	var out := PackedFloat32Array()
+	out.resize(maxi(a.size(), b.size()))
+	for i in out.size():
+		var va := a[i] if i < a.size() else 0.0
+		var vb := b[i] if i < b.size() else 0.0
+		out[i] = va + vb
+	return out

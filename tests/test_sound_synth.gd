@@ -40,3 +40,38 @@ func test_stream_mit_schleife() -> void:
 	var s := SoundSynth.make_stream(samples, true)
 	check(s.loop_mode == AudioStreamWAV.LOOP_FORWARD, "Stream mit Loop sollte LOOP_FORWARD haben")
 	check(s.loop_end == 100, "Stream loop_end sollte 100 sein (Samplesize)")
+
+
+func test_ton_laenge() -> void:
+	var t := SoundSynth.tone(441.0, 0.1)
+	check(t.size() == 2205, "Tongröße bei 0.1s sollte 2205 Samples sein (0.1 * 22050)")
+
+
+func test_ton_lautstaerke() -> void:
+	var t := SoundSynth.tone(441.0, 0.1, SoundSynth.Wave.SQUARE, 0.3)
+	var m := 0.0
+	for v in t:
+		m = maxf(m, absf(v))
+	check(m <= 0.3001 and m >= 0.29, "Maximale Lautstärke sollte bei 0.3 liegen (hat $m$)")
+	check(t[0] == 0.0, "Erster Sample bei eingeblendetem Ton sollte 0.0 sein")
+
+
+func test_ton_ohne_blende() -> void:
+	var t := SoundSynth.tone(441.0, 0.1, SoundSynth.Wave.SQUARE, 0.3, false)
+	check(absf(t[0] - 0.3) < 0.0001, "Bei fade=false sollte t[0] == 0.3 sein (hat absf(t[0]) = $m$)")
+
+
+func test_rauschen() -> void:
+	var a := SoundSynth.noise(0.05, 0.5, 3)
+	var b := SoundSynth.noise(0.05, 0.5, 3)
+	var c := SoundSynth.noise(0.05, 0.5, 4)
+	check(a == b, "Gleicher seed_value muss gleiches Rauschen ergeben")
+	check(a != c, "Unterschiedlicher seed_value muss unterschiedliches Rauschen ergeben")
+	check(a.size() == int(0.05 * SoundSynth.MIX_RATE), "Rauschen Länge sollte 1102 Samples sein (0.05 * 22050)")
+
+
+func test_mischen() -> void:
+	var m := SoundSynth.mix(PackedFloat32Array([0.1, 0.2, 0.3]), PackedFloat32Array([0.5]))
+	check(m.size() == 3, "Mixed sollte 3 Samples haben (max(3,1))")
+	check(absf(m[0] - 0.6) < 0.0001, "m[0] sollte 0.1+0.5=0.6 sein (hat $m$)")
+	check(absf(m[2] - 0.3) < 0.0001, "m[2] sollte 0.3+0=0.3 sein (hat $m$)")
