@@ -2,6 +2,7 @@ class_name GameSettings
 extends RefCounted
 
 static var track_id: String = TrackCatalog.DEFAULT_ID
+static var car_id: String = CarCatalog.DEFAULT_ID
 
 
 ## Nächster (dir = 1) oder vorheriger (dir = -1) Eintrag, im Kreis. Unbekannt → erster Eintrag.
@@ -20,3 +21,11 @@ static func next_track() -> void:
 
 static func previous_track() -> void:
 	track_id = step_id(TrackCatalog.ids(), track_id, -1)
+
+
+static func next_car() -> void:
+	car_id = step_id(CarCatalog.ids(), car_id, 1)
+
+
+static func previous_car() -> void:
+	car_id = step_id(CarCatalog.ids(), car_id, -1)
