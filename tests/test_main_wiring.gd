@@ -114,3 +114,22 @@ func test_gewaehlte_strecke_wird_geladen() -> void:
 		"main.track.track_id ist GameSettings.track_id")
 	check(main.car.track == main.track.path,
 		"main.car.track == main.track.path")
+
+
+func test_ergebnis_wird_gespeichert() -> void:
+	var path := "user://test_main_bestenliste.json"
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+
+	main.highscore_path = path
+	main.race.race_time = 90.0
+	main.record_result()
+	check(main.last_record["new_time"], "last_record['new_time'] ist wahr")
+
+	var table := HighscoreTable.load_from(path)
+	check_eq(table.best_time(main.track.track_id), 90.0, "best_time(track_id) ist 90.0")
+
+	main.restart()
+	check(main.last_record.is_empty(), "last_record.is_empty() ist wahr nach restart()")
+
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
