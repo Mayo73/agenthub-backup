@@ -59,3 +59,12 @@ func test_clear() -> void:
 	skid_trail.clear()
 
 	check_eq(skid_trail.point_count(), 0, "point_count sollte nach clear() 0 sein")
+
+
+func test_clear_waehrend_spur() -> void:
+	skid_trail.update(Vector2(0, 0), true)
+	skid_trail.clear()
+	skid_trail.update(Vector2(50, 0), true)
+
+	check_eq(skid_trail.trails.size(), 1, "nach clear() sollte eine neue Spur beginnen")
+	check_eq(skid_trail.trails[0][0], Vector2(50, 0), "erster Punkt der neuen Spur sollte (50,0) sein")

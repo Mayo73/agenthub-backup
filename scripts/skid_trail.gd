@@ -66,3 +66,4 @@ func point_count() -> int:
 
 func clear() -> void:
 	trails.clear()
+	is_trailing_active = false
