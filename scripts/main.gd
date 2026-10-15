@@ -15,6 +15,10 @@ var scorer := DriftScorer.new()
 var lap_timer: LapTimer
 var skid_marks: Node2D
 var race := RaceState.new()
+var pause_menu: CanvasLayer
+var ghost: Node2D
+var ghost_best: GhostLap = null
+var ghost_recording := GhostLap.new()
 
 
 func _ready() -> void:
@@ -33,6 +37,15 @@ func _ready() -> void:
 	world.add_child(skid_marks)
 	world.move_child(skid_marks, car.get_index())
 
+	ghost = preload("res://scripts/ghost_car.gd").new()
+	ghost.name = "Ghost"
+	world.add_child(ghost)
+	world.move_child(ghost, car.get_index())
+
+	pause_menu = preload("res://scenes/pause_menu.tscn").instantiate()
+	add_child(pause_menu)
+	pause_menu.restart_requested.connect(restart)
+
 
 func _physics_process(delta: float) -> void:
 	race.update(delta)
@@ -44,6 +57,8 @@ func _physics_process(delta: float) -> void:
 	if race.phase == RaceState.Phase.RACING:
 		scorer.update(delta, car.physics.slip_angle_deg(), car.physics.speed(), track.path.is_on_track(pos))
 		lap_timer.update(delta, track.path.progress_at(pos))
+		ghost_recording.record(lap_timer.current_time, car.physics.position, car.physics.heading)
+	ghost.show_at(ghost_best, lap_timer.current_time)
 	hud.show_score(scorer)
 	hud.show_laps(lap_timer)
 	hud.show_race(race, scorer.total)
@@ -55,6 +70,9 @@ func _physics_process(delta: float) -> void:
 
 
 func _on_lap_completed(_lap_number: int, time: float, _is_best: bool) -> void:
+	if ghost_best == null or time < ghost_best.duration():
+		ghost_best = ghost_recording
+	ghost_recording = GhostLap.new()
 	race.on_lap(time)
 
 
@@ -65,3 +83,4 @@ func restart() -> void:
 	car.place_at_start()
 	skid_marks.clear()
 	car.input_enabled = race.can_drive()
+	ghost_recording = GhostLap.new()

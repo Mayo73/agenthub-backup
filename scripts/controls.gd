@@ -3,7 +3,7 @@ extends RefCounted
 ## Tastatur- und Gamepad-Belegung. Wird beim Start einmal angelegt (statt in project.godot),
 ## damit sie im Code lesbar bleibt. Tasten zählen nach ihrer Lage, passen also auch auf QWERTZ.
 
-const ACTIONS := ["gas", "bremse", "links", "rechts", "handbremse", "zuruecksetzen", "neustart"]
+const ACTIONS := ["gas", "bremse", "links", "rechts", "handbremse", "zuruecksetzen", "neustart", "pause"]
 
 
 static func setup() -> void:
@@ -14,6 +14,7 @@ static func setup() -> void:
 	_add("handbremse", [KEY_SPACE], [JOY_BUTTON_A, JOY_BUTTON_RIGHT_SHOULDER], [])
 	_add("zuruecksetzen", [KEY_R], [JOY_BUTTON_Y], [])
 	_add("neustart", [KEY_ENTER, KEY_KP_ENTER], [JOY_BUTTON_START], [])
+	_add("pause", [KEY_ESCAPE], [JOY_BUTTON_BACK], [])
 
 
 static func _add(action: String, keys: Array, buttons: Array, axes: Array) -> void:

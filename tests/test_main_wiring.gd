@@ -58,3 +58,31 @@ func test_neustart_loescht_spuren() -> void:
 	marks.left.update(Vector2(10, 0), true)
 	main.restart()
 	check_eq(marks.left.point_count(), 0, "Spuren nach restart() gelöscht")
+
+
+func test_geisterauto_ist_verdrahtet() -> void:
+	check(main.get_node("World/Ghost") != null, "Ghost-Node existiert")
+	check(main.ghost_best == null, "ghost_best ist zu Beginn null")
+
+	main.ghost_recording.record(0.0, Vector2.ZERO, 0.0)
+	main._on_lap_completed(1, 30.0, true)
+	check(main.ghost_best != null, "ghost_best ist nach schneller Runde gesetzt")
+	check(main.ghost_recording.is_empty(), "ghost_recording ist leer nach _on_lap_completed")
+
+	var first: GhostLap = main.ghost_best
+	main.restart()
+	check(main.ghost_best == first, "ghost_best bleibt nach restart() erhalten")
+
+
+func test_pausemenue_ist_verdrahtet() -> void:
+	check(main.get_node("PauseMenu") != null, "PauseMenu-Node existiert in main")
+
+	check(main.pause_menu.restart_requested.is_connected(main.restart),
+	      "pause_menu.restart_requested ist mit main.restart verbunden")
+
+	main.race.phase = RaceState.Phase.FINISHED
+	main.pause_menu._on_restart()
+
+	check(main.race.phase == RaceState.Phase.COUNTDOWN,
+	      "main.race.phase ist COUNTDOWN nach _on_restart()")
+	check(not main.get_tree().paused, "get_tree().paused ist falsch nach _on_restart()")
