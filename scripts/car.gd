@@ -11,6 +11,7 @@ var physics := CarPhysics.new()
 var track: TrackPath
 var input_enabled := true
 var smoke: CPUParticles2D
+var car_id := CarCatalog.DEFAULT_ID
 
 
 func _ready() -> void:
@@ -78,3 +79,21 @@ func _place(world_position: Vector2, heading: float) -> void:
 	position = world_position
 	rotation = heading
 	reset_physics_interpolation()
+
+
+## Übernimmt Abstimmung und Farbe eines Autos aus dem CarCatalog. Unbekannte IDs werden ignoriert.
+func apply_car(id: String) -> void:
+	if not CarCatalog.has_car(id):
+		return
+	car_id = id
+	var fresh := CarPhysics.new()
+	fresh.position = physics.position
+	fresh.heading = physics.heading
+	physics = fresh
+	CarCatalog.apply(id, physics)
+	var body := get_node_or_null("Body") as Polygon2D
+	if body:
+		body.color = CarCatalog.color_of(id)
+	var roof := get_node_or_null("Roof") as Polygon2D
+	if roof:
+		roof.color = CarCatalog.color_of(id).darkened(0.3)

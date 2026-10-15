@@ -22,10 +22,20 @@ var ghost: Node2D
 var ghost_best: GhostLap = null
 var ghost_recording := GhostLap.new()
 
+## KI-Gegner: Farben und Tempo-Faktoren, ein Eintrag je Auto.
+const AI_COLORS := [Color(0.55, 0.3, 0.8), Color(0.2, 0.75, 0.75), Color(0.95, 0.5, 0.15)]
+const AI_SKILLS := [0.84, 0.88, 0.92]
+
+var highscore_path := HighscoreTable.DEFAULT_PATH
+var last_record := {}
+
+var ai_cars: Array[Node2D] = []
+
 
 func _ready() -> void:
 	Controls.setup()
 	track.load_track(GameSettings.track_id)
+	car.apply_car(GameSettings.car_id)
 	world.transform = Iso.TRANSFORM
 	car.track = track.path
 	car.place_at_start()
@@ -51,10 +61,22 @@ func _ready() -> void:
 	hud.again_pressed.connect(restart)
 	hud.menu_pressed.connect(go_to_menu)
 
+	for i in AI_COLORS.size():
+		var ai: Node2D = preload("res://scripts/ai_car.gd").new()
+		ai.name = "Ai%d" % (i + 1)
+		ai.color = AI_COLORS[i]
+		ai.driver.skill = AI_SKILLS[i]
+		ai.track = track.path
+		world.add_child(ai)
+		ai_cars.append(ai)
+	place_ai_cars()
+
 
 func _physics_process(delta: float) -> void:
 	race.update(delta)
 	car.input_enabled = race.can_drive()
+	for ai in ai_cars:
+		ai.driving_enabled = race.can_drive()
 	camera.position = Iso.to_screen(car.physics.position + car.physics.velocity * LOOK_AHEAD)
 	hud.show_car(car.physics)
 
@@ -66,7 +88,7 @@ func _physics_process(delta: float) -> void:
 	ghost.show_at(ghost_best, lap_timer.current_time)
 	hud.show_score(scorer)
 	hud.show_laps(lap_timer)
-	hud.show_race(race, scorer.total)
+	hud.show_race(race, scorer.total, last_record.get("new_time", false), last_record.get("new_points", false))
 
 	skid_marks.track_car(car.physics)
 
@@ -79,6 +101,15 @@ func _on_lap_completed(_lap_number: int, time: float, _is_best: bool) -> void:
 		ghost_best = ghost_recording
 	ghost_recording = GhostLap.new()
 	race.on_lap(time)
+	if race.phase == RaceState.Phase.FINISHED:
+		record_result()
+
+
+## Trägt das fertige Rennen in die Bestenliste ein und merkt sich, was neu ist.
+func record_result() -> void:
+	var table := HighscoreTable.load_from(highscore_path)
+	last_record = table.submit(track.track_id, race.race_time, scorer.total)
+	table.save(highscore_path)
 
 
 func restart() -> void:
@@ -89,6 +120,19 @@ func restart() -> void:
 	skid_marks.clear()
 	car.input_enabled = race.can_drive()
 	ghost_recording = GhostLap.new()
+	last_record = {}
+	place_ai_cars()
+
+
+## Startaufstellung: KI-Autos versetzt hinter dem Spieler.
+func place_ai_cars() -> void:
+	var start: Vector2 = track.path.start_position()
+	var heading: float = track.path.start_heading()
+	var forward := Vector2.from_angle(heading)
+	var right := Vector2.from_angle(heading + PI / 2.0)
+	for i in ai_cars.size():
+		var side := 70.0 if i % 2 == 0 else -70.0
+		ai_cars[i].place_at(start - forward * 90.0 * (i + 1) + right * side, heading)
 
 
 func go_to_menu() -> void:

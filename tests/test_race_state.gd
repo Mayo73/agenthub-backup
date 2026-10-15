@@ -96,3 +96,17 @@ func test_reset() -> void:
 	check_eq(race.race_time, 0.0, "race_time ist 0.0 nach reset")
 	check_eq(race.lap_times.size(), 0, "lap_times.size() ist 0 nach reset")
 	check_eq(race.best_lap(), -1.0, "best_lap() ist -1.0 nach reset")
+
+
+func test_ergebnistext_mit_rekord() -> void:
+	race.update(3.0)
+	race.update(87.5)
+	race.on_lap(30.0)
+	race.on_lap(28.5)
+	race.on_lap(29.0)
+
+	var expected := "Ziel!\nGesamtzeit 1:27.50\nBeste Runde 0:28.50\nPunkte 1234\nNeue Bestzeit!\nNeuer Punkterekord!\nEnter: neues Rennen"
+	check_eq(race.result_text(1234, true, true), expected, "result_text mit beiden Rekorde")
+
+	expected = "Ziel!\nGesamtzeit 1:27.50\nBeste Runde 0:28.50\nPunkte 1234\nNeuer Punkterekord!\nEnter: neues Rennen"
+	check_eq(race.result_text(1234, false, true), expected, "result_text nur mit Punkterekord")
