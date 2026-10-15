@@ -184,3 +184,13 @@ func test_zusammenstoesse() -> void:
 	main.resolve_collisions()
 	check(main.car.physics.position.distance_to(main.ai_cars[0].physics.position) >= 2.0 * main.CAR_RADIUS - 0.01,
 		"Abstand nach Kollisionsauflösung mindestens 2*CAR_RADIUS - 0.01")
+
+
+func test_platz_im_hud() -> void:
+	check(main.place == 1, "main.place ist 1")
+	check(main.ai_distances().size() == 3, "main.ai_distances().size() ist 3")
+	main.hud.show_place(2, 4)
+	check_eq(main.hud.place_label.text, "Platz 2/4", "place_label zeigt 'Platz 2/4'")
+	main.place = 3
+	main.restart()
+	check(main.place == 1, "main.place ist 1 nach restart()")

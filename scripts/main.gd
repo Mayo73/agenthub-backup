@@ -33,6 +33,7 @@ var highscore_path := HighscoreTable.DEFAULT_PATH
 var last_record := {}
 
 var ai_cars: Array[Node2D] = []
+var place := 1
 
 
 func _ready() -> void:
@@ -89,9 +90,11 @@ func _physics_process(delta: float) -> void:
 		scorer.update(delta, car.physics.slip_angle_deg(), car.physics.speed(), track.path.is_on_track(pos))
 		lap_timer.update(delta, track.path.progress_at(pos))
 		ghost_recording.record(lap_timer.current_time, car.physics.position, car.physics.heading)
+	place = RaceRanking.place(lap_timer.distance(), ai_distances())
 	ghost.show_at(ghost_best, lap_timer.current_time)
 	hud.show_score(scorer)
 	hud.show_laps(lap_timer)
+	hud.show_place(place, ai_cars.size() + 1)
 	hud.show_race(race, scorer.total, last_record.get("new_time", false), last_record.get("new_points", false))
 
 	skid_marks.track_car(car.physics)
@@ -126,6 +129,14 @@ func restart() -> void:
 	ghost_recording = GhostLap.new()
 	last_record = {}
 	place_ai_cars()
+	place = 1
+
+
+func ai_distances() -> Array:
+	var result := []
+	for ai in ai_cars:
+		result.append(ai.race_distance())
+	return result
 
 
 ## Alle Autos paarweise auf Zusammenstöße prüfen.

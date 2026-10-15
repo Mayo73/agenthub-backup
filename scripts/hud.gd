@@ -21,6 +21,7 @@ signal menu_pressed
 @onready var result_buttons: HBoxContainer = $ResultButtons
 @onready var again_button: Button = $ResultButtons/Again
 @onready var menu_button: Button = $ResultButtons/Menu
+@onready var place_label: Label = $Place
 
 func _ready() -> void:
 	again_button.pressed.connect(again_pressed.emit)
@@ -56,3 +57,8 @@ func show_race(race: RaceState, points: int, new_time: bool = false, new_points:
 	result_label.visible = finished
 	if finished:
 		result_label.text = race.result_text(points, new_time, new_points)
+
+
+func show_place(place: int, total: int) -> void:
+	place_label.text = "Platz %d/%d" % [place, total]
+
