@@ -21,7 +21,9 @@ class ErrorCatcher extends Logger:
 	var _messages: Array[String] = []
 
 	func _log_error(_function: String, file: String, line: int, code: String, rationale: String,
-			_editor_notify: bool, _error_type: int, _script_backtraces: Array[ScriptBacktrace]) -> void:
+			_editor_notify: bool, error_type: int, _script_backtraces: Array[ScriptBacktrace]) -> void:
+		if error_type == ERROR_TYPE_WARNING:
+			return  # Warnungen sind Hinweise, keine Fehler
 		var text := rationale if not rationale.is_empty() else code
 		_mutex.lock()
 		_messages.append("%s (%s:%d)" % [text, file, line])
