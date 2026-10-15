@@ -13,6 +13,7 @@ const LOOK_AHEAD := 0.35
 
 var scorer := DriftScorer.new()
 var lap_timer: LapTimer
+var race := RaceState.new()
 
 
 func _ready() -> void:
@@ -23,14 +24,34 @@ func _ready() -> void:
 	camera.position = Iso.to_screen(car.physics.position)
 	camera.reset_smoothing()
 	lap_timer = LapTimer.new(track.path.length)
+	lap_timer.lap_completed.connect(_on_lap_completed)
+	car.input_enabled = race.can_drive()
 
 
 func _physics_process(delta: float) -> void:
+	race.update(delta)
+	car.input_enabled = race.can_drive()
 	camera.position = Iso.to_screen(car.physics.position + car.physics.velocity * LOOK_AHEAD)
 	hud.show_car(car.physics)
 
 	var pos: Vector2 = car.physics.position
-	scorer.update(delta, car.physics.slip_angle_deg(), car.physics.speed(), track.path.is_on_track(pos))
-	lap_timer.update(delta, track.path.progress_at(pos))
+	if race.phase == RaceState.Phase.RACING:
+		scorer.update(delta, car.physics.slip_angle_deg(), car.physics.speed(), track.path.is_on_track(pos))
+		lap_timer.update(delta, track.path.progress_at(pos))
 	hud.show_score(scorer)
 	hud.show_laps(lap_timer)
+
+	if race.phase == RaceState.Phase.FINISHED and Input.is_action_just_pressed("neustart"):
+		restart()
+
+
+func _on_lap_completed(_lap_number: int, time: float, _is_best: bool) -> void:
+	race.on_lap(time)
+
+
+func restart() -> void:
+	race.reset()
+	scorer.reset()
+	lap_timer.reset()
+	car.place_at_start()
+	car.input_enabled = race.can_drive()
