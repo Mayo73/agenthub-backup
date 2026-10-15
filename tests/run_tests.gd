@@ -11,9 +11,40 @@ const WATCHDOG_SECONDS := 120.0
 
 var _passed := 0
 var _failed := 0
+var _errors := ErrorCatcher.new()
+
+
+## Sammelt Godot-Fehlermeldungen (z. B. Aufruf auf null), damit ein Test,
+## der mit einem Laufzeitfehler abbricht, als FEHLER zählt statt als OK.
+class ErrorCatcher extends Logger:
+	var _mutex := Mutex.new()
+	var _messages: Array[String] = []
+
+	func _log_error(_function: String, file: String, line: int, code: String, rationale: String,
+			_editor_notify: bool, _error_type: int, _script_backtraces: Array[ScriptBacktrace]) -> void:
+		var text := rationale if not rationale.is_empty() else code
+		_mutex.lock()
+		_messages.append("%s (%s:%d)" % [text, file, line])
+		_mutex.unlock()
+
+	func _log_message(_message: String, _error: bool) -> void:
+		pass
+
+	func count() -> int:
+		_mutex.lock()
+		var n := _messages.size()
+		_mutex.unlock()
+		return n
+
+	func since(start: int) -> Array[String]:
+		_mutex.lock()
+		var result := _messages.slice(start)
+		_mutex.unlock()
+		return result
 
 
 func _initialize() -> void:
+	OS.add_logger(_errors)
 	create_timer(WATCHDOG_SECONDS).timeout.connect(_on_watchdog)
 	_run.call_deferred()
 
@@ -41,6 +72,7 @@ func _run() -> void:
 		if packed == null:
 			_fail(path, "Szene lässt sich nicht laden")
 			continue
+		var errors_before := _errors.count()
 		var instance := packed.instantiate()
 		if instance == null:
 			_fail(path, "Szene lässt sich nicht instanziieren")
@@ -50,7 +82,11 @@ func _run() -> void:
 			await process_frame
 		instance.queue_free()
 		await process_frame
-		_ok(path)
+		var scene_errors := _errors.since(errors_before)
+		if scene_errors.is_empty():
+			_ok(path)
+		else:
+			_fail(path, "Laufzeitfehler: " + "; ".join(scene_errors))
 
 	print("== Tests ==")
 	for path in _find_files("res://tests", ".gd"):
@@ -68,12 +104,17 @@ func _run() -> void:
 			if not method_name.begins_with("test_"):
 				continue
 			suite.failures.clear()
+			var errors_before := _errors.count()
 			suite.call(method_name)
 			var label := "%s::%s" % [path.get_file(), method_name]
-			if suite.failures.is_empty():
+			var problems: Array[String] = []
+			problems.append_array(suite.failures)
+			for error in _errors.since(errors_before):
+				problems.append("Laufzeitfehler: " + error)
+			if problems.is_empty():
 				_ok(label)
 			else:
-				_fail(label, "; ".join(suite.failures))
+				_fail(label, "; ".join(problems))
 
 	print("ERGEBNIS: %d ok, %d fehlgeschlagen" % [_passed, _failed])
 	quit(1 if _failed > 0 else 0)
