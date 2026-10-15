@@ -51,6 +51,15 @@ func reset() -> void:
 	_half_passed = false
 
 
+## Gefahrene Strecke seit dem Start über alle Runden (für die Platzierung).
+## Steht man vor der ersten Rennhälfte noch hinter der Ziellinie, zählt das negativ.
+func distance() -> float:
+	var p := maxf(_prev_progress, 0.0)
+	if not _half_passed and p > track_length * 0.5:
+		p -= track_length
+	return lap * track_length + p
+
+
 static func format_time(seconds: float) -> String:
 	if seconds < 0.0:
 		return "–"

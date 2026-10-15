@@ -33,3 +33,17 @@ func test_faehrt_mit_freigabe() -> void:
 		ai._physics_process(1.0 / 60.0)
 	check(ai.physics.speed() > 50.0, "speed sollte > 50 sein")
 	check(ai.track.is_on_track(ai.physics.position), "sollte auf der Strecke bleiben")
+
+
+func test_zaehlt_strecke() -> void:
+	ai.place_at(ai.track.start_position(), ai.track.start_heading())
+	check(ai.lap_timer != null, "lap_timer sollte nicht null sein")
+	check_eq(ai.race_distance(), 0.0, "race_distance sollte 0.0 sein nach place_at")
+
+	ai.driving_enabled = true
+	for i in range(120):
+		ai._physics_process(1.0 / 60.0)
+	check(ai.race_distance() > 100.0, "race_distance sollte > 100.0 sein nach 120 Schritten")
+
+	ai.place_at(ai.track.start_position(), ai.track.start_heading())
+	check_eq(ai.race_distance(), 0.0, "race_distance sollte wieder 0.0 sein nach place_at")

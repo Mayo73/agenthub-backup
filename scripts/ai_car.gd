@@ -7,6 +7,7 @@ const BODY := [Vector2(-25, -12), Vector2(21, -12), Vector2(26, -7), Vector2(26,
 var physics := CarPhysics.new()
 var driver := AiDriver.new()
 var track: TrackPath
+var lap_timer: LapTimer
 var color := Color(0.55, 0.3, 0.8)
 var driving_enabled := false
 
@@ -23,6 +24,7 @@ func place_at(world_position: Vector2, heading: float) -> void:
 	physics.sliding = false
 	position = world_position
 	rotation = heading
+	lap_timer = LapTimer.new(track.length) if track else null
 
 
 func _physics_process(delta: float) -> void:
@@ -39,6 +41,13 @@ func _physics_process(delta: float) -> void:
 	physics.step(delta)
 	position = physics.position
 	rotation = physics.heading
+	if driving_enabled and lap_timer:
+		lap_timer.update(delta, track.progress_at(physics.position))
+
+
+## Insgesamt gefahrene Strecke (für die Platzierung).
+func race_distance() -> float:
+	return lap_timer.distance() if lap_timer else 0.0
 
 
 func _draw() -> void:
