@@ -39,3 +39,21 @@ func test_streckenwahl() -> void:
 	menu.track_prev.pressed.emit()
 	check_eq(GameSettings.track_id, "kurvenring", "Nach zweimal Prev ist track_id kurvenring")
 	check_eq(menu.track_name.text, "Kurvenring", "Nach zweimal Prev zeigt TrackName Kurvenring")
+
+
+func test_bestwerte_anzeigen() -> void:
+	var path := "user://test_menu_bestenliste.json"
+	var table := HighscoreTable.new()
+	table.submit("hafen", 95.5, 800)
+	table.save(path)
+
+	GameSettings.track_id = "hafen"
+	menu.highscore_path = path
+	menu.update_track_label()
+	check_eq(menu.track_best.text, "Bestzeit 1:35.50  ·  Rekord 800 Punkte", "Bestwerte für Hafenring")
+
+	GameSettings.track_id = "altstadt"
+	menu.update_track_label()
+	check_eq(menu.track_best.text, "Bestzeit –  ·  Rekord 0 Punkte", "Bestwerte für Altstadtkurs (keine Einträge)")
+
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
