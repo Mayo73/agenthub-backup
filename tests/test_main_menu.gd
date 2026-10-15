@@ -7,6 +7,7 @@ func setup() -> void:
 	(Engine.get_main_loop() as SceneTree).root.add_child(menu)
 
 func teardown() -> void:
+	GameSettings.car_id = CarCatalog.DEFAULT_ID
 	GameSettings.track_id = TrackCatalog.DEFAULT_ID
 	menu.free()
 	menu = null
@@ -39,6 +40,18 @@ func test_streckenwahl() -> void:
 	menu.track_prev.pressed.emit()
 	check_eq(GameSettings.track_id, "kurvenring", "Nach zweimal Prev ist track_id kurvenring")
 	check_eq(menu.track_name.text, "Kurvenring", "Nach zweimal Prev zeigt TrackName Kurvenring")
+
+func test_autowahl() -> void:
+	GameSettings.car_id = CarCatalog.DEFAULT_ID
+	menu.update_car_label()
+	check_eq(menu.car_name.text, "Allrounder", "CarName zeigt Allrounder nach Default")
+	menu.car_next.pressed.emit()
+	check_eq(GameSettings.car_id, "grip", "Nach Next ist car_id grip")
+	check_eq(menu.car_name.text, "Grip-Coupé", "Nach Next zeigt CarName Grip-Coupé")
+	menu.car_prev.pressed.emit()
+	menu.car_prev.pressed.emit()
+	check_eq(GameSettings.car_id, "drifter", "Nach zweimal Prev ist car_id drifter")
+	check_eq(menu.car_name.text, "Drift-Kombi", "Nach zweimal Prev zeigt CarName Drift-Kombi")
 
 
 func test_bestwerte_anzeigen() -> void:
