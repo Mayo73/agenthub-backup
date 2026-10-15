@@ -13,6 +13,8 @@ const PX_PER_KMH := 4.0
 @onready var lap_label: Label = $Lap
 @onready var time_label: Label = $Time
 @onready var best_label: Label = $Best
+@onready var countdown_label: Label = $Countdown
+@onready var result_label: Label = $Result
 
 
 func show_car(car: CarPhysics) -> void:
@@ -30,6 +32,13 @@ func show_score(scorer: DriftScorer) -> void:
 
 
 func show_laps(timer: LapTimer) -> void:
-	lap_label.text = "Runde %d" % (timer.lap + 1)
+	lap_label.text = "Runde %d/%d" % [mini(timer.lap + 1, RaceState.TOTAL_LAPS), RaceState.TOTAL_LAPS]
 	time_label.text = "Zeit " + LapTimer.format_time(timer.current_time)
 	best_label.text = "Beste " + LapTimer.format_time(timer.best_lap_time)
+
+
+func show_race(race: RaceState, points: int) -> void:
+	countdown_label.text = race.countdown_text()
+	result_label.visible = race.phase == RaceState.Phase.FINISHED
+	if result_label.visible:
+		result_label.text = race.result_text(points)

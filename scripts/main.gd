@@ -46,6 +46,7 @@ func _physics_process(delta: float) -> void:
 		lap_timer.update(delta, track.path.progress_at(pos))
 	hud.show_score(scorer)
 	hud.show_laps(lap_timer)
+	hud.show_race(race, scorer.total)
 
 	skid_marks.track_car(car.physics)
 
