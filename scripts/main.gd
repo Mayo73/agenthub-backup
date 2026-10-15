@@ -15,6 +15,7 @@ var scorer := DriftScorer.new()
 var lap_timer: LapTimer
 var skid_marks: Node2D
 var race := RaceState.new()
+var pause_menu: CanvasLayer
 var ghost: Node2D
 var ghost_best: GhostLap = null
 var ghost_recording := GhostLap.new()
@@ -40,6 +41,10 @@ func _ready() -> void:
 	ghost.name = "Ghost"
 	world.add_child(ghost)
 	world.move_child(ghost, car.get_index())
+
+	pause_menu = preload("res://scenes/pause_menu.tscn").instantiate()
+	add_child(pause_menu)
+	pause_menu.restart_requested.connect(restart)
 
 
 func _physics_process(delta: float) -> void:
