@@ -12,6 +12,7 @@ var track: TrackPath
 var input_enabled := true
 var smoke: CPUParticles2D
 var car_id := CarCatalog.DEFAULT_ID
+var engine_player: AudioStreamPlayer2D
 
 
 func _ready() -> void:
@@ -33,6 +34,14 @@ func _ready() -> void:
 	smoke.color = Color(0.85, 0.85, 0.85, 0.35)
 	add_child(smoke)
 	move_child(smoke, 0)
+
+	engine_player = AudioStreamPlayer2D.new()
+	engine_player.name = "Engine"
+	engine_player.stream = SoundBank.engine_loop()
+	engine_player.volume_db = EngineAudio.engine_db(0.0)
+	engine_player.pitch_scale = EngineAudio.pitch_for(0.0, physics.max_speed)
+	add_child(engine_player)
+	engine_player.play()
 
 
 func _physics_process(delta: float) -> void:
@@ -57,6 +66,7 @@ func _physics_process(delta: float) -> void:
 		respawn()
 	position = physics.position
 	rotation = physics.heading
+	update_sound()
 
 
 ## Setzt das Auto an die Startlinie.
@@ -97,3 +107,10 @@ func apply_car(id: String) -> void:
 	var roof := get_node_or_null("Roof") as Polygon2D
 	if roof:
 		roof.color = CarCatalog.color_of(id).darkened(0.3)
+
+## Passt die Motorklänge an den Fahrzustand an.
+func update_sound() -> void:
+	if engine_player == null:
+		return
+	engine_player.pitch_scale = EngineAudio.pitch_for(physics.speed(), physics.max_speed)
+	engine_player.volume_db = EngineAudio.engine_db(physics.throttle)
