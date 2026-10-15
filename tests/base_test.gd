@@ -2,9 +2,20 @@ extends RefCounted
 ## Basisklasse für Tests. Eine Testdatei heißt res://tests/test_<thema>.gd,
 ## beginnt mit
 ##     extends "res://tests/base_test.gd"
-## und enthält Methoden, deren Name mit test_ beginnt.
+## und enthält Methoden, deren Name mit test_ beginnt. Jeder Test bekommt eine
+## frische Instanz; optionale Methoden setup() und teardown() laufen davor/danach.
 
 var failures: Array[String] = []
+
+
+## Optional überschreiben: läuft vor jedem Test.
+func setup() -> void:
+	pass
+
+
+## Optional überschreiben: läuft nach jedem Test.
+func teardown() -> void:
+	pass
 
 
 func check(condition: bool, message: String = "Bedingung nicht erfüllt") -> void:

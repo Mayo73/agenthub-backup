@@ -19,10 +19,18 @@ Godot 4.7 mit GDScript. 2D-Plattformer: Der Spieler läuft, springt und sammelt 
   ```gdscript
   extends "res://tests/base_test.gd"
 
+  var state: GameState
+
+  func setup() -> void:          # optional, läuft vor jedem Test
+  	state = GameState.new()
+
   func test_beschreibung() -> void:
   	check_eq(ist_wert, soll_wert, "was geprüft wird")
   	check(bedingung, "was schiefging")
   ```
+
+  Jeder Test bekommt eine frische Instanz der Testklasse; `setup()` und `teardown()` sind optional.
+- Kommentare in GDScript beginnen mit `#` oder `##`. Es gibt keine Block-Kommentare mit `"""`.
 
 - `project.godot` nur ändern, wenn das Ticket es ausdrücklich verlangt.
 - `.tscn`-Dateien vorsichtig bearbeiten: Jede `ext_resource`-/`sub_resource`-ID muss eindeutig sein und zu ihren Verweisen passen.

@@ -95,29 +95,39 @@ func _run() -> void:
 		var script := load(path) as Script
 		if script == null or not script.can_instantiate():
 			continue  # oben schon als Fehler gezählt
-		var suite: Object = script.new()
-		if suite == null:
-			_fail(path, "Testklasse lässt sich nicht erzeugen")
-			continue
 		for method in script.get_script_method_list():
 			var method_name: String = method["name"]
-			if not method_name.begins_with("test_"):
-				continue
-			suite.failures.clear()
-			var errors_before := _errors.count()
-			suite.call(method_name)
-			var label := "%s::%s" % [path.get_file(), method_name]
-			var problems: Array[String] = []
-			problems.append_array(suite.failures)
-			for error in _errors.since(errors_before):
-				problems.append("Laufzeitfehler: " + error)
-			if problems.is_empty():
-				_ok(label)
-			else:
-				_fail(label, "; ".join(problems))
+			if method_name.begins_with("test_"):
+				_run_test(script, path.get_file(), method_name)
 
 	print("ERGEBNIS: %d ok, %d fehlgeschlagen" % [_passed, _failed])
 	quit(1 if _failed > 0 else 0)
+
+
+## Jeder Test bekommt eine frische Instanz. setup()/teardown() (oder
+## before_each()/after_each()) laufen davor und danach, falls vorhanden.
+func _run_test(script: Script, file: String, method_name: String) -> void:
+	var label := "%s::%s" % [file, method_name]
+	var errors_before := _errors.count()
+	var suite: Object = script.new()
+	if suite == null:
+		_fail(label, "Testklasse lässt sich nicht erzeugen")
+		return
+	for hook in ["setup", "before_each"]:
+		if suite.has_method(hook):
+			suite.call(hook)
+	suite.call(method_name)
+	for hook in ["teardown", "after_each"]:
+		if suite.has_method(hook):
+			suite.call(hook)
+	var problems: Array[String] = []
+	problems.append_array(suite.failures)
+	for error in _errors.since(errors_before):
+		problems.append("Laufzeitfehler: " + error)
+	if problems.is_empty():
+		_ok(label)
+	else:
+		_fail(label, "; ".join(problems))
 
 
 func _ok(what: String) -> void:
