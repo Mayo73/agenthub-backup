@@ -1,0 +1,135 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/track.gd" id="2_track"]
+[ext_resource type="PackedScene" path="res://scenes/car.tscn" id="3_car"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="4_hud"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="Track" type="Node2D" parent="World"]
+script = ExtResource("2_track")
+
+[node name="Car" parent="World" instance=ExtResource("3_car")]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+process_callback = 0
+zoom = Vector2(1.05, 1.05)
+position_smoothing_enabled = true
+position_smoothing_speed = 6.0
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("4_hud")
+
+[node name="Speed" type="Label" parent="HUD"]
+offset_left = 24.0
+offset_top = 16.0
+offset_right = 324.0
+offset_bottom = 62.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 34
+text = "0 km/h"
+
+[node name="Angle" type="Label" parent="HUD"]
+offset_left = 24.0
+offset_top = 60.0
+offset_right = 324.0
+offset_bottom = 90.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 20
+text = "Winkel 0°"
+
+[node name="Drift" type="Label" parent="HUD"]
+visible = false
+offset_left = 24.0
+offset_top = 92.0
+offset_right = 324.0
+offset_bottom = 132.0
+theme_override_colors/font_color = Color(1, 0.84, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 30
+text = "DRIFT!"
+
+[node name="Score" type="Label" parent="HUD"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -240.0
+offset_top = 14.0
+offset_right = 240.0
+offset_bottom = 60.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 34
+text = "Punkte –"
+horizontal_alignment = 1
+
+[node name="Combo" type="Label" parent="HUD"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -240.0
+offset_top = 58.0
+offset_right = 240.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(1, 0.84, 0.2, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+
+[node name="Lap" type="Label" parent="HUD"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -324.0
+offset_top = 16.0
+offset_right = -24.0
+offset_bottom = 54.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 28
+text = "Runde –"
+horizontal_alignment = 2
+
+[node name="Time" type="Label" parent="HUD"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -324.0
+offset_top = 54.0
+offset_right = -24.0
+offset_bottom = 84.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 22
+text = "Zeit –"
+horizontal_alignment = 2
+
+[node name="Best" type="Label" parent="HUD"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -324.0
+offset_top = 84.0
+offset_right = -24.0
+offset_bottom = 112.0
+theme_override_colors/font_color = Color(0.75, 0.9, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 20
+text = "Beste –"
+horizontal_alignment = 2
+
+[node name="Hint" type="Label" parent="HUD"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -44.0
+offset_right = 1240.0
+offset_bottom = -16.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 16
+text = "W/↑ Gas  ·  S/↓ Bremse/rückwärts  ·  A/D Lenken  ·  Leertaste Handbremse  ·  R zurück auf die Strecke"
