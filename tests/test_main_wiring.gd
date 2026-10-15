@@ -72,3 +72,17 @@ func test_geisterauto_ist_verdrahtet() -> void:
 	var first: GhostLap = main.ghost_best
 	main.restart()
 	check(main.ghost_best == first, "ghost_best bleibt nach restart() erhalten")
+
+
+func test_pausemenue_ist_verdrahtet() -> void:
+	check(main.get_node("PauseMenu") != null, "PauseMenu-Node existiert in main")
+
+	check(main.pause_menu.restart_requested.is_connected(main.restart),
+	      "pause_menu.restart_requested ist mit main.restart verbunden")
+
+	main.race.phase = RaceState.Phase.FINISHED
+	main.pause_menu._on_restart()
+
+	check(main.race.phase == RaceState.Phase.COUNTDOWN,
+	      "main.race.phase ist COUNTDOWN nach _on_restart()")
+	check(not main.get_tree().paused, "get_tree().paused ist falsch nach _on_restart()")
