@@ -23,3 +23,9 @@ func reset() -> void:
 	score = 0
 	coins_collected = 0
 	score_changed.emit(score)
+
+
+func average_coin_value() -> float:
+	if coins_collected == 0:
+		return 0.0
+	return float(score) / coins_collected

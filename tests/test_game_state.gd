@@ -54,3 +54,15 @@ func test_highscore_signal_nur_bei_neuem_rekord() -> void:
 	state.reset()
 	state.add_coin(2)
 	check_eq(received, [4], "Signal nur bei neuem Rekord")
+
+
+func test_durchschnitt_ohne_muenzen() -> void:
+	var state := GameState.new()
+	check_eq(state.average_coin_value(), 0.0, "Durchschnitt ohne Münzen")
+
+
+func test_durchschnitt() -> void:
+	var state := GameState.new()
+	state.add_coin(1)
+	state.add_coin(3)
+	check_eq(state.average_coin_value(), 2.0, "Durchschnitt nach zwei Münzen")
