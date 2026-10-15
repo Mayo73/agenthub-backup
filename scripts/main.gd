@@ -22,8 +22,14 @@ var ghost: Node2D
 var ghost_best: GhostLap = null
 var ghost_recording := GhostLap.new()
 
+## KI-Gegner: Farben und Tempo-Faktoren, ein Eintrag je Auto.
+const AI_COLORS := [Color(0.55, 0.3, 0.8), Color(0.2, 0.75, 0.75), Color(0.95, 0.5, 0.15)]
+const AI_SKILLS := [0.84, 0.88, 0.92]
+
 var highscore_path := HighscoreTable.DEFAULT_PATH
 var last_record := {}
+
+var ai_cars: Array[Node2D] = []
 
 
 func _ready() -> void:
@@ -55,10 +61,22 @@ func _ready() -> void:
 	hud.again_pressed.connect(restart)
 	hud.menu_pressed.connect(go_to_menu)
 
+	for i in AI_COLORS.size():
+		var ai: Node2D = preload("res://scripts/ai_car.gd").new()
+		ai.name = "Ai%d" % (i + 1)
+		ai.color = AI_COLORS[i]
+		ai.driver.skill = AI_SKILLS[i]
+		ai.track = track.path
+		world.add_child(ai)
+		ai_cars.append(ai)
+	place_ai_cars()
+
 
 func _physics_process(delta: float) -> void:
 	race.update(delta)
 	car.input_enabled = race.can_drive()
+	for ai in ai_cars:
+		ai.driving_enabled = race.can_drive()
 	camera.position = Iso.to_screen(car.physics.position + car.physics.velocity * LOOK_AHEAD)
 	hud.show_car(car.physics)
 
@@ -103,6 +121,18 @@ func restart() -> void:
 	car.input_enabled = race.can_drive()
 	ghost_recording = GhostLap.new()
 	last_record = {}
+	place_ai_cars()
+
+
+## Startaufstellung: KI-Autos versetzt hinter dem Spieler.
+func place_ai_cars() -> void:
+	var start: Vector2 = track.path.start_position()
+	var heading: float = track.path.start_heading()
+	var forward := Vector2.from_angle(heading)
+	var right := Vector2.from_angle(heading + PI / 2.0)
+	for i in ai_cars.size():
+		var side := 70.0 if i % 2 == 0 else -70.0
+		ai_cars[i].place_at(start - forward * 90.0 * (i + 1) + right * side, heading)
 
 
 func go_to_menu() -> void:
