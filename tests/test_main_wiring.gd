@@ -33,3 +33,20 @@ func test_rennablauf_ist_verdrahtet() -> void:
 	check(main.race.phase == RaceState.Phase.COUNTDOWN,
 	      "main.race.phase ist COUNTDOWN nach restart()")
 	check(main.scorer.total == 0, "main.scorer.total ist 0 nach restart()")
+
+
+func test_rennanzeige() -> void:
+	check(main.hud.has_method("show_race"), "HUD hat show_race")
+
+	main.hud.show_race(main.race, 0)
+	check_eq(main.hud.countdown_label.text, "3", "Countdown beginnt mit '3'")
+	check(not main.hud.result_label.visible, "Result-Label ist unsichtbar während Countdown")
+
+	main.race.phase = RaceState.Phase.FINISHED
+	main.hud.show_race(main.race, 42)
+	check(main.hud.result_label.visible, "Result-Label ist sichtbar nach FINISHED")
+	check(main.hud.result_label.text.contains("Punkte 42"), "Ergebnis enthält Punktezahl 42")
+
+	main.lap_timer = LapTimer.new(100.0)
+	main.hud.show_laps(main.lap_timer)
+	check_eq(main.hud.lap_label.text, "Runde 1/3", "Rundenanzeige mit Gesamtrundenzahl")

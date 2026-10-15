@@ -40,6 +40,7 @@ func _physics_process(delta: float) -> void:
 		lap_timer.update(delta, track.path.progress_at(pos))
 	hud.show_score(scorer)
 	hud.show_laps(lap_timer)
+	hud.show_race(race, scorer.total)
 
 	if race.phase == RaceState.Phase.FINISHED and Input.is_action_just_pressed("neustart"):
 		restart()
