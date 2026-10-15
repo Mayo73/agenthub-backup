@@ -15,16 +15,22 @@
 | `scripts/car_physics.gd` | `CarPhysics`: Fahrphysik, Drift, Abstimmungswerte |
 | `scripts/track_path.gd` | `TrackPath`: Mittellinie, `is_on_track()`, `progress_at()` für Runden, `length` |
 | `scripts/iso.gd` | `Iso`: Projektion Welt ↔ Bildschirm |
-| `scripts/controls.gd` | `Controls`: Aktionen `gas`, `bremse`, `links`, `rechts`, `handbremse`, `zuruecksetzen`, `neustart` |
+| `scripts/controls.gd` | `Controls`: Aktionen `gas`, `bremse`, `links`, `rechts`, `handbremse`, `zuruecksetzen`, `neustart`, `pause` |
 | `scripts/car.gd` | Auto-Node: Eingaben → `CarPhysics` → Position; hat `physics`, `track`, `input_enabled` (Eingaben sperren) und `smoke` (Reifenrauch) |
-| `scripts/track.gd` | Zeichnet die Strecke, hat `path: TrackPath` |
-| `scripts/hud.gd` | Anzeige; Labels `speed_label`, `angle_label`, `drift_label`, `score_label`, `combo_label`, `lap_label`, `time_label`, `best_label`, `countdown_label`, `result_label`; `show_race(race, points)` |
-| `scripts/main.gd` | Verdrahtung: `car`, `track`, `camera`, `hud`, `scorer`, `lap_timer`, `race`, `skid_marks`; `restart()` |
+| `scripts/track.gd` | Zeichnet die Strecke, hat `path: TrackPath`, `track_id`, `load_track(id)` |
+| `scripts/hud.gd` | Anzeige; Signale `again_pressed`, `menu_pressed` (Ergebnis-Knöpfe `result_buttons`); Labels `speed_label`, `angle_label`, `drift_label`, `score_label`, `combo_label`, `lap_label`, `time_label`, `best_label`, `countdown_label`, `result_label`; `show_race(race, points)` |
+| `scripts/main.gd` | Verdrahtung: `car`, `track`, `camera`, `hud`, `scorer`, `lap_timer`, `race`, `skid_marks`, `ghost`, `ghost_best`, `ghost_recording`, `pause_menu`; `restart()`, `go_to_menu()` |
 | `scripts/drift_scorer.gd` | `DriftScorer`: Drift-Punkte und Kombo (`total`) |
 | `scripts/lap_timer.gd` | `LapTimer`: Runden, Rundenzeit, Bestzeit, Signal `lap_completed`, `format_time()` |
 | `scripts/race_state.gd` | `RaceState`: Countdown, `TOTAL_LAPS` Runden, Ergebnistext, `can_drive()` |
 | `scripts/skid_trail.gd` | `SkidTrail`: Punkte einer Reifenspur |
 | `scripts/skid_marks.gd` | Zeichnet die Reifenspuren (Node `World/SkidMarks`, im Code angelegt) |
+| `scripts/ghost_lap.gd` | `GhostLap`: Aufnahme einer Runde (`record()`, `position_at()`, `heading_at()`, `duration()`) |
+| `scripts/ghost_car.gd` | Geisterauto-Node (`World/Ghost`), `show_at(lap, time)` |
+| `scripts/track_catalog.gd` | `TrackCatalog`: alle Strecken (`ids()`, `name_of()`, `width_of()`, `points_of()`, `DEFAULT_ID`) |
+| `scripts/game_settings.gd` | `GameSettings`: statische Werte über Szenenwechsel hinweg (`track_id`) |
+| `scripts/main_menu.gd` | Hauptmenü (`scenes/main_menu.tscn`, Startszene): `start_button`, `settings_button`, `quit_button` |
+| `scripts/pause_menu.gd` | Pausemenü (`scenes/pause_menu.tscn`, Esc): `open()`, `close()`, `toggle()`, Signal `restart_requested` |
 
 Zur Laufzeit in `main.gd` nützlich: `car.physics.speed()`, `car.physics.slip_angle_deg()`, `car.physics.is_drifting()`, `car.physics.position`, `track.path.is_on_track(pos)`, `track.path.progress_at(pos)`, `track.path.length`.
 

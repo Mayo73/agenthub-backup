@@ -24,14 +24,14 @@ func test_rennablauf_ist_verdrahtet() -> void:
 	check(main.race is RaceState, "main.race ist ein RaceState")
 	check(not main.car.input_enabled, "main.car.input_enabled ist falsch (Countdown läuft)")
 	check(main.lap_timer.lap_completed.is_connected(main._on_lap_completed),
-	      "lap_completed ist mit _on_lap_completed verbunden")
+		"lap_completed ist mit _on_lap_completed verbunden")
 
 	main.race.phase = RaceState.Phase.FINISHED
 	main.scorer.total = 500
 	main.restart()
 
 	check(main.race.phase == RaceState.Phase.COUNTDOWN,
-	      "main.race.phase ist COUNTDOWN nach restart()")
+		"main.race.phase ist COUNTDOWN nach restart()")
 	check(main.scorer.total == 0, "main.scorer.total ist 0 nach restart()")
 
 
@@ -78,13 +78,13 @@ func test_pausemenue_ist_verdrahtet() -> void:
 	check(main.get_node("PauseMenu") != null, "PauseMenu-Node existiert in main")
 
 	check(main.pause_menu.restart_requested.is_connected(main.restart),
-	      "pause_menu.restart_requested ist mit main.restart verbunden")
+		"pause_menu.restart_requested ist mit main.restart verbunden")
 
 	main.race.phase = RaceState.Phase.FINISHED
 	main.pause_menu._on_restart()
 
 	check(main.race.phase == RaceState.Phase.COUNTDOWN,
-	      "main.race.phase ist COUNTDOWN nach _on_restart()")
+		"main.race.phase ist COUNTDOWN nach _on_restart()")
 	check(not main.get_tree().paused, "get_tree().paused ist falsch nach _on_restart()")
 
 
@@ -96,21 +96,21 @@ func test_ergebnis_knoepfe() -> void:
 	check(main.hud.result_buttons.visible, "result_buttons.visible ist true nach FINISHED")
 
 	check(main.hud.again_pressed.is_connected(main.restart),
-	      "again_pressed ist mit restart verbunden")
+		"again_pressed ist mit restart verbunden")
 	check(main.hud.menu_pressed.is_connected(main.go_to_menu),
-	      "menu_pressed ist mit go_to_menu verbunden")
+		"menu_pressed ist mit go_to_menu verbunden")
 
 	main.hud.again_button.pressed.emit()
 	check(main.race.phase == RaceState.Phase.COUNTDOWN,
-	      "phase ist COUNTDOWN nach Again-Knopf")
+		"phase ist COUNTDOWN nach Again-Knopf")
 
 	check(ResourceLoader.exists(main.MENU_SCENE), "MENU_SCENE existiert")
 
 
 func test_gewaehlte_strecke_wird_geladen() -> void:
 	check(GameSettings.track_id == TrackCatalog.DEFAULT_ID,
-	      "GameSettings.track_id ist TrackCatalog.DEFAULT_ID")
+		"GameSettings.track_id ist TrackCatalog.DEFAULT_ID")
 	check(main.track.track_id == GameSettings.track_id,
-	      "main.track.track_id ist GameSettings.track_id")
+		"main.track.track_id ist GameSettings.track_id")
 	check(main.car.track == main.track.path,
-	      "main.car.track == main.track.path")
+		"main.car.track == main.track.path")
