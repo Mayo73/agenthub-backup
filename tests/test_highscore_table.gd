@@ -1,10 +1,17 @@
 extends "res://tests/base_test.gd"
 
+const TEST_PATH := "user://test_bestenliste.json"
+
 var table: HighscoreTable
 
 
 func setup() -> void:
 	table = HighscoreTable.new()
+
+
+func teardown() -> void:
+	if FileAccess.file_exists(TEST_PATH):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(TEST_PATH))
 
 
 func test_leer() -> void:
@@ -41,3 +48,25 @@ func test_nur_punkte_besser() -> void:
 func test_strecken_getrennt() -> void:
 	table.submit("hafen", 95.5, 800)
 	check_eq(table.best_time("altstadt"), -1.0, "andere Strecke ist noch leer (-1.0)")
+
+
+func test_speichern_und_laden() -> void:
+	table.submit("hafen", 95.5, 800)
+	table.submit("altstadt", 120.25, 1500)
+	check(table.save(TEST_PATH), "speichern klappt")
+	var loaded := HighscoreTable.load_from(TEST_PATH)
+	check_eq(loaded.best_time("hafen"), 95.5, "best_time(hafen) nach laden ist 95.5")
+	check_eq(loaded.best_points("hafen"), 800, "best_points(hafen) nach laden ist 800")
+	check_eq(loaded.best_time("altstadt"), 120.25, "best_time(altstadt) nach laden ist 120.25")
+	check_eq(loaded.best_points("altstadt"), 1500, "best_points(altstadt) nach laden ist 1500")
+
+
+func test_fehlende_datei() -> void:
+	check_eq(HighscoreTable.load_from("user://gibt_es_nicht.json").best_time("hafen"), -1.0, "leere Tabelle bei fehlender Datei")
+
+
+func test_kaputte_datei() -> void:
+	var f := FileAccess.open(TEST_PATH, FileAccess.WRITE)
+	f.store_string("kein json")
+	f.close()
+	check_eq(HighscoreTable.load_from(TEST_PATH).best_points("hafen"), 0, "leere Tabelle bei kaputter JSON-Datei")
