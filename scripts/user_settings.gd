@@ -1,0 +1,43 @@
+class_name UserSettings
+extends RefCounted
+
+const DEFAULT_PATH := "user://einstellungen.json"
+
+var volume: float = 0.8
+var fullscreen: bool = false
+
+static func volume_db(v: float) -> float:
+	if v <= 0.001:
+		return -80.0
+	return linear_to_db(v)
+
+func save(path: String = DEFAULT_PATH) -> bool:
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		return false
+	file.store_string(JSON.stringify({"volume": volume, "fullscreen": fullscreen}))
+	file.close()
+	return true
+
+static func load_from(path: String = DEFAULT_PATH) -> UserSettings:
+	var settings := UserSettings.new()
+	if not FileAccess.file_exists(path):
+		return settings
+	var content := FileAccess.get_file_as_string(path)
+	if content == null:
+		return settings
+	var parsed := JSON.parse_string(content) as Dictionary
+	if parsed == null or not (parsed is Dictionary):
+		return settings
+	var d := parsed as Dictionary
+	settings.volume = clampf(float(d.get("volume", 0.8)), 0.0, 1.0)
+	settings.fullscreen = bool(d.get("fullscreen", false))
+	return settings
+
+func apply() -> void:
+	AudioServer.set_bus_volume_db(0, volume_db(volume))
+	if DisplayServer.get_name() != "headless":
+		if fullscreen:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		else:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
