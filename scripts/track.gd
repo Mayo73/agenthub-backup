@@ -20,11 +20,22 @@ const START_CELL := 20.0
 @export var curb_colors: Array[Color] = [Color(0.85, 0.16, 0.14), Color(0.95, 0.95, 0.95)]
 
 var path: TrackPath
+var track_id := ""
+
+
+## Lädt eine Strecke aus dem TrackCatalog. Unbekannte IDs werden ignoriert.
+func load_track(id: String) -> void:
+	if not TrackCatalog.has_track(id):
+		return
+	track_id = id
+	control_points = TrackCatalog.points_of(id)
+	width = TrackCatalog.width_of(id)
+	path = TrackPath.new(TrackPath.smooth_closed(control_points, SMOOTH_STEPS), width)
+	queue_redraw()
 
 
 func _ready() -> void:
-	path = TrackPath.new(TrackPath.smooth_closed(control_points, SMOOTH_STEPS), width)
-	queue_redraw()
+	load_track(TrackCatalog.DEFAULT_ID)
 
 
 func _draw() -> void:
