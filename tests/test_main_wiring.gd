@@ -105,3 +105,12 @@ func test_ergebnis_knoepfe() -> void:
 	      "phase ist COUNTDOWN nach Again-Knopf")
 
 	check(ResourceLoader.exists(main.MENU_SCENE), "MENU_SCENE existiert")
+
+
+func test_gewaehlte_strecke_wird_geladen() -> void:
+	check(GameSettings.track_id == TrackCatalog.DEFAULT_ID,
+	      "GameSettings.track_id ist TrackCatalog.DEFAULT_ID")
+	check(main.track.track_id == GameSettings.track_id,
+	      "main.track.track_id ist GameSettings.track_id")
+	check(main.car.track == main.track.path,
+	      "main.car.track == main.track.path")
