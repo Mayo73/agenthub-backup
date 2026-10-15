@@ -13,6 +13,7 @@ var input_enabled := true
 var smoke: CPUParticles2D
 var car_id := CarCatalog.DEFAULT_ID
 var engine_player: AudioStreamPlayer2D
+var squeal_player: AudioStreamPlayer2D
 
 
 func _ready() -> void:
@@ -42,6 +43,13 @@ func _ready() -> void:
 	engine_player.pitch_scale = EngineAudio.pitch_for(0.0, physics.max_speed)
 	add_child(engine_player)
 	engine_player.play()
+
+	squeal_player = AudioStreamPlayer2D.new()
+	squeal_player.name = "Squeal"
+	squeal_player.stream = SoundBank.squeal_loop()
+	squeal_player.volume_db = EngineAudio.SILENT_DB
+	add_child(squeal_player)
+	squeal_player.play()
 
 
 func _physics_process(delta: float) -> void:
@@ -114,3 +122,5 @@ func update_sound() -> void:
 		return
 	engine_player.pitch_scale = EngineAudio.pitch_for(physics.speed(), physics.max_speed)
 	engine_player.volume_db = EngineAudio.engine_db(physics.throttle)
+	if squeal_player:
+		squeal_player.volume_db = EngineAudio.squeal_db(physics.is_drifting(), physics.slip_angle_deg())
