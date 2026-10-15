@@ -19,3 +19,17 @@ func show_car(car: CarPhysics) -> void:
 	speed_label.text = "%d km/h" % roundi(car.speed() / PX_PER_KMH)
 	angle_label.text = "Winkel %d°" % roundi(absf(car.slip_angle_deg()))
 	drift_label.visible = car.is_drifting()
+
+
+func show_score(scorer: DriftScorer) -> void:
+	score_label.text = "Punkte %d" % scorer.total
+	if scorer.current > 0.0:
+		combo_label.text = "+%d  x%d" % [roundi(scorer.current), scorer.combo]
+	else:
+		combo_label.text = ""
+
+
+func show_laps(timer: LapTimer) -> void:
+	lap_label.text = "Runde %d" % (timer.lap + 1)
+	time_label.text = "Zeit " + LapTimer.format_time(timer.current_time)
+	best_label.text = "Beste " + LapTimer.format_time(timer.best_lap_time)
