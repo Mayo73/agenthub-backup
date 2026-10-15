@@ -155,3 +155,22 @@ func test_gewaehlte_auto_wird_geladen() -> void:
 	main.car.apply_car("gibtsnicht")
 	check(main.car.car_id == "allround",
 		"main.car.car_id bleibt 'allround' bei unbekannter ID")
+
+
+func test_ki_gegner() -> void:
+	check(main.ai_cars.size() == 3, "ai_cars.size() ist 3")
+	check(main.get_node("World/Ai1") != null, "World/Ai1 existiert")
+
+	for ai in main.ai_cars:
+		check(ai.track == main.track.path, "ai.track == main.track.path")
+		check(not ai.driving_enabled, "ai.driving_enabled ist falsch zu Beginn")
+		check(ai.physics.position.distance_to(main.car.physics.position) > 50.0,
+			"Abstand zwischen AI und Spieler > 50.0")
+
+	check(main.ai_cars[0].physics.position.distance_to(main.ai_cars[1].physics.position) > 50.0,
+		"Abstand zwischen Ai1 und Ai2 > 50.0")
+
+	main.ai_cars[0].place_at(Vector2(5000, 5000), 0.0)
+	main.restart()
+	check(main.ai_cars[0].physics.position.distance_to(main.track.path.start_position()) < 200.0,
+		"AI ist nach restart() wieder am Start")
