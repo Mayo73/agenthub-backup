@@ -26,6 +26,9 @@ var ghost_recording := GhostLap.new()
 const AI_COLORS := [Color(0.55, 0.3, 0.8), Color(0.2, 0.75, 0.75), Color(0.95, 0.5, 0.15)]
 const AI_SKILLS := [0.84, 0.88, 0.92]
 
+## Radius der Autos bei Kollisionsberechnungen.
+const CAR_RADIUS := 24.0
+
 var highscore_path := HighscoreTable.DEFAULT_PATH
 var last_record := {}
 
@@ -77,6 +80,7 @@ func _physics_process(delta: float) -> void:
 	car.input_enabled = race.can_drive()
 	for ai in ai_cars:
 		ai.driving_enabled = race.can_drive()
+	resolve_collisions()
 	camera.position = Iso.to_screen(car.physics.position + car.physics.velocity * LOOK_AHEAD)
 	hud.show_car(car.physics)
 
@@ -123,6 +127,15 @@ func restart() -> void:
 	last_record = {}
 	place_ai_cars()
 
+
+## Alle Autos paarweise auf Zusammenstöße prüfen.
+func resolve_collisions() -> void:
+	var all: Array[CarPhysics] = [car.physics]
+	for ai in ai_cars:
+		all.append(ai.physics)
+	for i in all.size():
+		for j in range(i + 1, all.size()):
+			CarCollision.resolve(all[i], all[j], CAR_RADIUS)
 
 ## Startaufstellung: KI-Autos versetzt hinter dem Spieler.
 func place_ai_cars() -> void:
