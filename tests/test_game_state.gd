@@ -29,3 +29,28 @@ func test_signal_bei_punkten() -> void:
 	state.score_changed.connect(func(s: int) -> void: received.append(s))
 	state.add_coin(2)
 	check_eq(received, [2], "Werte aus score_changed")
+
+
+func test_highscore_steigt_mit_punkten() -> void:
+	var state := GameState.new()
+	state.add_coin(2)
+	state.add_coin(3)
+	check_eq(state.high_score, 5, "Highscore nach Münzen")
+
+
+func test_highscore_bleibt_nach_reset() -> void:
+	var state := GameState.new()
+	state.add_coin(4)
+	state.reset()
+	check_eq(state.score, 0, "Punkte nach Reset")
+	check_eq(state.high_score, 4, "Highscore bleibt erhalten")
+
+
+func test_highscore_signal_nur_bei_neuem_rekord() -> void:
+	var state := GameState.new()
+	var received := []
+	state.high_score_changed.connect(func(s: int) -> void: received.append(s))
+	state.add_coin(4)
+	state.reset()
+	state.add_coin(2)
+	check_eq(received, [4], "Signal nur bei neuem Rekord")
