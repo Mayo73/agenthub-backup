@@ -5,6 +5,9 @@ extends CanvasLayer
 ## Umrechnung Pixel pro Sekunde -> angezeigte km/h (nur für die Anzeige).
 const PX_PER_KMH := 4.0
 
+signal again_pressed
+signal menu_pressed
+
 @onready var speed_label: Label = $Speed
 @onready var angle_label: Label = $Angle
 @onready var drift_label: Label = $Drift
@@ -15,6 +18,13 @@ const PX_PER_KMH := 4.0
 @onready var best_label: Label = $Best
 @onready var countdown_label: Label = $Countdown
 @onready var result_label: Label = $Result
+@onready var result_buttons: HBoxContainer = $ResultButtons
+@onready var again_button: Button = $ResultButtons/Again
+@onready var menu_button: Button = $ResultButtons/Menu
+
+func _ready() -> void:
+	again_button.pressed.connect(again_pressed.emit)
+	menu_button.pressed.connect(menu_pressed.emit)
 
 
 func show_car(car: CarPhysics) -> void:
@@ -39,6 +49,10 @@ func show_laps(timer: LapTimer) -> void:
 
 func show_race(race: RaceState, points: int) -> void:
 	countdown_label.text = race.countdown_text()
-	result_label.visible = race.phase == RaceState.Phase.FINISHED
-	if result_label.visible:
+	var finished := race.phase == RaceState.Phase.FINISHED
+	if finished and not result_buttons.visible:
+		again_button.grab_focus()
+	result_buttons.visible = finished
+	result_label.visible = finished
+	if finished:
 		result_label.text = race.result_text(points)

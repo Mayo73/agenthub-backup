@@ -2,6 +2,8 @@ extends Node2D
 ## Hauptszene: Steuerung anlegen, isometrische Ansicht einrichten, Auto an den Start setzen,
 ## Kamera, HUD, Drift-Wertung und Rundenzeit nachführen.
 
+const MENU_SCENE := "res://scenes/main_menu.tscn"
+
 ## Die Kamera schaut in Fahrtrichtung voraus (Sekunden).
 const LOOK_AHEAD := 0.35
 
@@ -45,6 +47,8 @@ func _ready() -> void:
 	pause_menu = preload("res://scenes/pause_menu.tscn").instantiate()
 	add_child(pause_menu)
 	pause_menu.restart_requested.connect(restart)
+	hud.again_pressed.connect(restart)
+	hud.menu_pressed.connect(go_to_menu)
 
 
 func _physics_process(delta: float) -> void:
@@ -84,3 +88,7 @@ func restart() -> void:
 	skid_marks.clear()
 	car.input_enabled = race.can_drive()
 	ghost_recording = GhostLap.new()
+
+
+func go_to_menu() -> void:
+	get_tree().change_scene_to_file(MENU_SCENE)
