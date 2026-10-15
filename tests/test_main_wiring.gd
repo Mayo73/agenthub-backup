@@ -86,3 +86,22 @@ func test_pausemenue_ist_verdrahtet() -> void:
 	check(main.race.phase == RaceState.Phase.COUNTDOWN,
 	      "main.race.phase ist COUNTDOWN nach _on_restart()")
 	check(not main.get_tree().paused, "get_tree().paused ist falsch nach _on_restart()")
+
+
+func test_ergebnis_knoepfe() -> void:
+	check(not main.hud.result_buttons.visible, "result_buttons.visible ist false zu Beginn")
+
+	main.race.phase = RaceState.Phase.FINISHED
+	main.hud.show_race(main.race, 42)
+	check(main.hud.result_buttons.visible, "result_buttons.visible ist true nach FINISHED")
+
+	check(main.hud.again_pressed.is_connected(main.restart),
+	      "again_pressed ist mit restart verbunden")
+	check(main.hud.menu_pressed.is_connected(main.go_to_menu),
+	      "menu_pressed ist mit go_to_menu verbunden")
+
+	main.hud.again_button.pressed.emit()
+	check(main.race.phase == RaceState.Phase.COUNTDOWN,
+	      "phase ist COUNTDOWN nach Again-Knopf")
+
+	check(ResourceLoader.exists(main.MENU_SCENE), "MENU_SCENE existiert")

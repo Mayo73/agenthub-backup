@@ -166,3 +166,27 @@ theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 32
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="ResultButtons" type="HBoxContainer" parent="HUD"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = 130.0
+offset_right = 200.0
+offset_bottom = 180.0
+alignment = 1
+theme_override_constants/separation = 24
+
+[node name="Again" type="Button" parent="HUD/ResultButtons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Nochmal"
+
+[node name="Menu" type="Button" parent="HUD/ResultButtons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Zum Menü"
