@@ -13,6 +13,7 @@ const LOOK_AHEAD := 0.35
 
 var scorer := DriftScorer.new()
 var lap_timer: LapTimer
+var skid_marks: Node2D
 
 
 func _ready() -> void:
@@ -24,6 +25,11 @@ func _ready() -> void:
 	camera.reset_smoothing()
 	lap_timer = LapTimer.new(track.path.length)
 
+	skid_marks = preload("res://scripts/skid_marks.gd").new()
+	skid_marks.name = "SkidMarks"
+	world.add_child(skid_marks)
+	world.move_child(skid_marks, car.get_index())
+
 
 func _physics_process(delta: float) -> void:
 	camera.position = Iso.to_screen(car.physics.position + car.physics.velocity * LOOK_AHEAD)
@@ -34,3 +40,5 @@ func _physics_process(delta: float) -> void:
 	lap_timer.update(delta, track.path.progress_at(pos))
 	hud.show_score(scorer)
 	hud.show_laps(lap_timer)
+
+	skid_marks.track_car(car.physics)
