@@ -22,6 +22,9 @@ var ghost: Node2D
 var ghost_best: GhostLap = null
 var ghost_recording := GhostLap.new()
 
+var highscore_path := HighscoreTable.DEFAULT_PATH
+var last_record := {}
+
 
 func _ready() -> void:
 	Controls.setup()
@@ -79,6 +82,15 @@ func _on_lap_completed(_lap_number: int, time: float, _is_best: bool) -> void:
 		ghost_best = ghost_recording
 	ghost_recording = GhostLap.new()
 	race.on_lap(time)
+	if race.phase == RaceState.Phase.FINISHED:
+		record_result()
+
+
+## Trägt das fertige Rennen in die Bestenliste ein und merkt sich, was neu ist.
+func record_result() -> void:
+	var table := HighscoreTable.load_from(highscore_path)
+	last_record = table.submit(track.track_id, race.race_time, scorer.total)
+	table.save(highscore_path)
 
 
 func restart() -> void:
@@ -89,6 +101,7 @@ func restart() -> void:
 	skid_marks.clear()
 	car.input_enabled = race.can_drive()
 	ghost_recording = GhostLap.new()
+	last_record = {}
 
 
 func go_to_menu() -> void:
