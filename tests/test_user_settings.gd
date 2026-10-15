@@ -12,6 +12,7 @@ func teardown() -> void:
 	if FileAccess.file_exists(abs_path):
 		DirAccess.remove_absolute(abs_path)
 	AudioServer.set_bus_volume_db(0, 0.0)
+	Controls.reset_defaults()
 
 func test_standardwerte() -> void:
 	check_eq(settings.volume, 0.8, "volume default ist 0.8")
@@ -38,3 +39,20 @@ func test_anwenden() -> void:
 	settings.volume = 0.5
 	settings.apply()
 	check(absf(AudioServer.get_bus_volume_db(0) - linear_to_db(0.5)) < 0.01, "apply setzt Lautstärke korrekt")
+
+func test_tasten_speichern() -> void:
+	var s := UserSettings.new()
+	s.keys = {"gas": KEY_I}
+	s.save(TEST_PATH)
+	var l := UserSettings.load_from(TEST_PATH)
+	check(l.keys.has("gas"), "keys hat Eintrag für 'gas'")
+	check_eq(l.keys["gas"], KEY_I, "geladener key für gas ist KEY_I")
+
+func test_tasten_anwenden() -> void:
+	var s := UserSettings.new()
+	s.keys = {"gas": KEY_I}
+	s.apply()
+	check_eq(Controls.key_for("gas"), KEY_I, "key_for(gas) ist KEY_I nach apply()")
+
+func test_ohne_tasten() -> void:
+	check(UserSettings.new().keys.is_empty(), "neue Settings haben leeres keys-Dictionary")
