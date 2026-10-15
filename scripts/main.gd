@@ -25,6 +25,7 @@ var ghost_recording := GhostLap.new()
 
 func _ready() -> void:
 	Controls.setup()
+	track.load_track(GameSettings.track_id)
 	world.transform = Iso.TRANSFORM
 	car.track = track.path
 	car.place_at_start()
