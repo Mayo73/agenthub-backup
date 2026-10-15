@@ -67,9 +67,15 @@ func best_lap() -> float:
 
 
 ## Erstellt den Ergebnistext mit Punkten
-func result_text(points: int) -> String:
-	return "Ziel!\nGesamtzeit %s\nBeste Runde %s\nPunkte %d\nEnter: neues Rennen" \
+func result_text(points: int, new_time: bool = false, new_points: bool = false) -> String:
+	var text := "Ziel!\nGesamtzeit %s\nBeste Runde %s\nPunkte %d" \
 		% [LapTimer.format_time(race_time), LapTimer.format_time(best_lap()), points]
+	if new_time:
+		text += "\nNeue Bestzeit!"
+	if new_points:
+		text += "\nNeuer Punkterekord!"
+	text += "\nEnter: neues Rennen"
+	return text
 
 
 ## Setzt alle Variablen auf ihre Startwerte zurück

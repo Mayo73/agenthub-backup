@@ -114,3 +114,44 @@ func test_gewaehlte_strecke_wird_geladen() -> void:
 		"main.track.track_id ist GameSettings.track_id")
 	check(main.car.track == main.track.path,
 		"main.car.track == main.track.path")
+
+
+func test_ergebnis_wird_gespeichert() -> void:
+	var path := "user://test_main_bestenliste.json"
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+
+	main.highscore_path = path
+	main.race.race_time = 90.0
+	main.record_result()
+	check(main.last_record["new_time"], "last_record['new_time'] ist wahr")
+
+	var table := HighscoreTable.load_from(path)
+	check_eq(table.best_time(main.track.track_id), 90.0, "best_time(track_id) ist 90.0")
+
+	main.restart()
+	check(main.last_record.is_empty(), "last_record.is_empty() ist wahr nach restart()")
+
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+
+
+func test_gewaehlte_auto_wird_geladen() -> void:
+	check(main.car.car_id == GameSettings.car_id,
+		"main.car.car_id ist GameSettings.car_id")
+
+	main.car.apply_car("grip")
+	check(main.car.car_id == "grip",
+		"main.car.car_id ist 'grip' nach apply_car('grip')")
+	check(main.car.physics.grip == 34.0,
+		"main.car.physics.grip ist 34.0")
+	var body_color := (main.car.get_node("Body") as Polygon2D).color
+	check(body_color == CarCatalog.color_of("grip"),
+		"main.car.Body.color ist CarCatalog.color_of('grip')")
+
+	main.car.apply_car("allround")
+	check(main.car.physics.grip == 30.0,
+		"main.car.physics.grip ist 30.0 nach apply_car('allround') (alte Werte bleiben nicht hängen)")
+
+	main.car.apply_car("gibtsnicht")
+	check(main.car.car_id == "allround",
+		"main.car.car_id bleibt 'allround' bei unbekannter ID")
