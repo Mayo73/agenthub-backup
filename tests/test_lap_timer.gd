@@ -79,3 +79,11 @@ func test_zeitformat() -> void:
 	check_eq(LapTimer.format_time(75.25), "1:15.25", "Format für 75.25s")
 	check_eq(LapTimer.format_time(5.0), "0:05.00", "Format für 5.0s")
 	check_eq(LapTimer.format_time(-1.0), "–", "Format für negativen Wert")
+
+
+func test_reset_vergisst_haelfte() -> void:
+	lap_timer.update(1.0, 500.0)
+	lap_timer.reset()
+	lap_timer.update(1.0, 900.0)
+	lap_timer.update(1.0, 50.0)
+	check_eq(lap_timer.lap, 0, "nach reset() muss die Hälfte erneut passiert werden")

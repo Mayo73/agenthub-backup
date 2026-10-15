@@ -67,3 +67,15 @@ func test_abflug_loescht_drift() -> void:
 	check_eq(scorer.current, 0.0, "current sollte 0 sein nach Abflug")
 	check_eq(scorer.combo, 1, "combo sollte auf 1 resetten")
 	check_eq(scorer.total, 0, "total sollte 0 bleiben (Drift verloren)")
+
+
+func test_signal_meldet_gesicherte_punkte() -> void:
+	var banked := []
+	scorer.drift_banked.connect(func(points: int) -> void: banked.append(points))
+	for round_number in 2:
+		for i in range(10):
+			scorer.update(0.1, 30.0, 400.0, true)
+		for i in range(20):
+			scorer.update(0.1, 0.0, 400.0, true)
+	check_eq(banked, [120, 120], "jedes Signal meldet nur die gerade gesicherten Punkte")
+	check_eq(scorer.total, 240)

@@ -3,7 +3,7 @@ extends RefCounted
 
 ## Mindestwinkel für einen Drift (Grad)
 const MIN_ANGLE := 12.0
-## Mindestdrehzahl für Punkte (Einheit)
+## Mindesttempo für einen Drift (px/s)
 const MIN_SPEED := 150.0
 ## Zeitfenster für Ketten-Drifts (Sekunden)
 const CHAIN_TIME := 1.5
@@ -56,8 +56,9 @@ func update(delta: float, slip_angle_deg: float, speed: float, on_track: bool) -
 		# Pause während current > 0, zähle Zeit seit Drift-Ende
 		_pause_seconds += delta
 		if _pause_seconds >= CHAIN_TIME:
-			total += roundi(current * combo)
-			drift_banked.emit(total)
+			var banked := roundi(current * combo)
+			total += banked
+			drift_banked.emit(banked)
 			current = 0.0
 			combo = 1
 			_pause_seconds = 0.0

@@ -7,15 +7,15 @@ var lap := 0
 var current_time := 0.0
 var last_lap_time := -1.0
 var best_lap_time := -1.0
+var _prev_progress := -1.0
+var _half_passed := false
 
 signal lap_completed(lap_number: int, time: float, is_best: bool)
+
 
 func _init(length: float = 1000.0) -> void:
 	track_length = length
 
-
-var _prev_progress := -1.0
-var _half_passed := false
 
 func update(delta: float, progress: float) -> void:
 	current_time += delta
@@ -48,6 +48,7 @@ func reset() -> void:
 	last_lap_time = -1.0
 	best_lap_time = -1.0
 	_prev_progress = -1.0
+	_half_passed = false
 
 
 static func format_time(seconds: float) -> String:
