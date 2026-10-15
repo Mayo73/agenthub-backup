@@ -49,3 +49,12 @@ func test_glaetten_laeuft_durch_kontrollpunkte() -> void:
 	check_eq(smooth.size(), 16, "4 Punkte pro Abschnitt")
 	check_eq(smooth[0], control[0])
 	check_eq(smooth[4], control[1])
+
+
+func test_punkt_nach_strecke() -> void:
+	var square := TrackPath.new(PackedVector2Array([Vector2(0, 0), Vector2(2000, 0), Vector2(2000, 2000), Vector2(0, 2000)]), 280.0)
+	check(square.point_at(0.0).distance_to(Vector2(0, 0)) < 0.01, "point_at(0.0)")
+	check(square.point_at(500.0).distance_to(Vector2(500, 0)) < 0.01, "point_at(500.0)")
+	check(square.point_at(2500.0).distance_to(Vector2(2000, 500)) < 0.01, "point_at(2500.0)")
+	check(square.point_at(8500.0).distance_to(Vector2(500, 0)) < 0.01, "point_at(8500.0)")
+	check(square.point_at(-500.0).distance_to(Vector2(0, 500)) < 0.01, "point_at(-500.0)")
