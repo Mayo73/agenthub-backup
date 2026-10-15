@@ -9,10 +9,28 @@ const MAX_OFFTRACK := 500.0
 
 var physics := CarPhysics.new()
 var track: TrackPath
+var smoke: CPUParticles2D
 
 
 func _ready() -> void:
 	Controls.setup()
+	smoke = CPUParticles2D.new()
+	smoke.name = "Smoke"
+	smoke.position = Vector2(-20, 0)
+	smoke.emitting = false
+	smoke.amount = 40
+	smoke.lifetime = 0.9
+	smoke.local_coords = false
+	smoke.direction = Vector2(-1, 0)
+	smoke.spread = 35.0
+	smoke.initial_velocity_min = 20.0
+	smoke.initial_velocity_max = 60.0
+	smoke.gravity = Vector2.ZERO
+	smoke.scale_amount_min = 6.0
+	smoke.scale_amount_max = 12.0
+	smoke.color = Color(0.85, 0.85, 0.85, 0.35)
+	add_child(smoke)
+	move_child(smoke, 0)
 
 
 func _physics_process(delta: float) -> void:
@@ -24,6 +42,7 @@ func _physics_process(delta: float) -> void:
 		var on_track := track.is_on_track(physics.position)
 		physics.surface = CarPhysics.Surface.ROAD if on_track else CarPhysics.Surface.GRASS
 	physics.step(delta)
+	smoke.emitting = physics.is_drifting()
 	if track and (Input.is_action_just_pressed("zuruecksetzen")
 			or track.distance_from_center(physics.position) > track.width * 0.5 + MAX_OFFTRACK):
 		respawn()
