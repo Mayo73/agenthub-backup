@@ -22,3 +22,7 @@ func test_knoepfe_verbunden() -> void:
 
 func test_rennszene_existiert() -> void:
 	check(ResourceLoader.exists(menu.GAME_SCENE), "Rennszene existiert")
+
+func test_startszene_ist_menue() -> void:
+	var main_scene: String = ProjectSettings.get_setting("application/run/main_scene")
+	check_eq(main_scene, "res://scenes/main_menu.tscn", "Startszene ist das Hauptmenü")
