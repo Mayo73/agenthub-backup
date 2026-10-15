@@ -50,8 +50,6 @@ static func load_from(path: String = DEFAULT_PATH) -> HighscoreTable:
 	if not FileAccess.file_exists(path):
 		return table
 	var text := FileAccess.get_file_as_string(path)
-	if text == null:
-		return table
 	var json := JSON.new()
 	var error := json.parse(text)
 	if error != OK:
@@ -60,7 +58,7 @@ static func load_from(path: String = DEFAULT_PATH) -> HighscoreTable:
 	if not typeof(result) == TYPE_DICTIONARY:
 		return table
 	for key in result.keys():
-		var e: Dictionary = result[key]
-		if typeof(e) == TYPE_DICTIONARY:
+		var e: Variant = result[key]
+		if e is Dictionary:
 			table.entries[key] = {"time": float(e.get("time", -1.0)), "points": int(e.get("points", 0))}
 	return table
