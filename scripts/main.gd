@@ -1,9 +1,8 @@
 extends Node2D
 ## Hauptszene: Steuerung anlegen, isometrische Ansicht einrichten, Auto an den Start setzen,
-## Kamera und HUD nachführen.
-## Die Kamera schaut in Fahrtrichtung voraus (Sekunden).
+## Kamera, HUD, Drift-Wertung und Rundenzeit nachführen.
 
-## Rundenzeit-Messung für Drift-Spiel
+## Die Kamera schaut in Fahrtrichtung voraus (Sekunden).
 const LOOK_AHEAD := 0.35
 
 @onready var world: Node2D = $World
