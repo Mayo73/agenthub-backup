@@ -5,6 +5,7 @@ const DEFAULT_PATH := "user://einstellungen.json"
 
 var volume: float = 0.8
 var fullscreen: bool = false
+var keys := {}  # Aktion → physical_keycode, nur geänderte Tasten
 
 static func volume_db(v: float) -> float:
 	if v <= 0.001:
@@ -15,7 +16,7 @@ func save(path: String = DEFAULT_PATH) -> bool:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
 		return false
-	file.store_string(JSON.stringify({"volume": volume, "fullscreen": fullscreen}))
+	file.store_string(JSON.stringify({"volume": volume, "fullscreen": fullscreen, "keys": keys}))
 	file.close()
 	return true
 
@@ -32,6 +33,10 @@ static func load_from(path: String = DEFAULT_PATH) -> UserSettings:
 	var d := parsed as Dictionary
 	settings.volume = clampf(float(d.get("volume", 0.8)), 0.0, 1.0)
 	settings.fullscreen = bool(d.get("fullscreen", false))
+	var k: Variant = d.get("keys", {})
+	if k is Dictionary:
+		for action in k:
+			settings.keys[str(action)] = int(k[action])
 	return settings
 
 func apply() -> void:
@@ -41,3 +46,5 @@ func apply() -> void:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 		else:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	Controls.setup()
+	Controls.apply_bindings(keys)
