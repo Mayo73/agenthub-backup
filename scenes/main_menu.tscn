@@ -98,7 +98,6 @@ text = "Rennen starten"
 [node name="Settings" type="Button" parent="Buttons"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-disabled = true
 text = "Einstellungen"
 
 [node name="Quit" type="Button" parent="Buttons"]
