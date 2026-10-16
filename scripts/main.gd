@@ -12,6 +12,9 @@ var progress := CellProgress.new()
 var food := FoodField.new(7)
 var food_view: FoodView
 var hud: Hud
+var spawner := EcoSpawner.new(11)
+var ai_cells: Array[AiCell] = []
+var player_health := CellHealth.new()
 
 
 func _ready() -> void:
@@ -32,9 +35,15 @@ func _ready() -> void:
 	hud.show_progress(progress)
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
+	player_health.tick(delta)
 	feed_player()
 	refill_food()
+	spawn_ai()
+	despawn_far_ai()
+	think_ai()
+	feed_ai()
+	resolve_combat()
 
 
 ## Frisst alles, was das Maul der Spielerzelle berührt und zur Ernährung passt.
@@ -56,3 +65,57 @@ func _process(delta: float) -> void:
 	var zoom := CameraZoom.smooth(camera.zoom.x, CameraZoom.target_for_radius(player.radius), delta)
 	camera.zoom = Vector2(zoom, zoom)
 	hud.show_progress(progress)
+
+
+## Füllt die KI-Zellen auf EcoSpawner.TARGET_COUNT auf.
+func spawn_ai() -> void:
+	var spread := EcoSpawner.view_scale(player.radius)
+	for i in EcoSpawner.missing(ai_cells.size()):
+		var cell := AiCell.new()
+		cell.setup(spawner.pick_species(progress.stage), spawner.spawn_position(player.position, spread))
+		world.add_child(cell)
+		ai_cells.append(cell)
+
+
+func remove_ai(cell: AiCell) -> void:
+	ai_cells.erase(cell)
+	world.remove_child(cell)
+	cell.queue_free()
+
+
+func despawn_far_ai() -> void:
+	var spread := EcoSpawner.view_scale(player.radius)
+	for cell in ai_cells.duplicate():
+		if EcoSpawner.is_too_far(player.position, cell.position, spread):
+			remove_ai(cell)
+
+
+## Jede KI-Zelle entscheidet anhand aller Zellen (Spieler eingeschlossen) und der nächsten Nahrung.
+func think_ai() -> void:
+	var infos: Array = [{"position": player.position, "radius": player.radius, "diet": player.diet}]
+	for cell in ai_cells:
+		infos.append(cell.info())
+	for cell in ai_cells:
+		var kind := Diet.FLEISCH if cell.diet == Diet.FLEISCHFRESSER else Diet.PFLANZE
+		var item := food.nearest(cell.position, kind, cell.brain.sight)
+		cell.think(infos, item.position if item != null else null)
+
+
+func feed_ai() -> void:
+	for cell in ai_cells:
+		food.take_at(cell.mouth_point(), MOUTH_REACH, cell.diet)
+
+
+## Bisse zwischen Spieler und KI-Zellen; besiegte KI-Zellen werden zu Fleisch.
+func resolve_combat() -> void:
+	for cell in ai_cells.duplicate():
+		if CombatRules.can_bite(player.diet) and CombatRules.bite_hits(player.motion.position, player.motion.heading, player.radius, cell.motion.position, cell.radius):
+			if cell.health.damage(CombatRules.bite_damage(CombatRules.PLAYER_BITE, player.radius, cell.radius)):
+				cell.motion.knockback(cell.motion.position - player.motion.position, 120.0)
+		if cell.damage > 0.0 and CombatRules.can_bite(cell.diet) and CombatRules.bite_hits(cell.motion.position, cell.motion.heading, cell.radius, player.motion.position, player.radius):
+			if player_health.damage(CombatRules.bite_damage(cell.damage, cell.radius, player.radius)):
+				player.motion.knockback(player.motion.position - cell.motion.position, 160.0)
+		if cell.health.is_dead():
+			for pos in CombatRules.meat_positions(cell.motion.position, cell.radius):
+				food.add_item(Diet.FLEISCH, pos)
+			remove_ai(cell)
