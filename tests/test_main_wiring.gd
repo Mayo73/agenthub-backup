@@ -246,3 +246,21 @@ func test_elektro() -> void:
 	main.resolve_weapons(0.016)
 	check_eq(cell.health.hp, 22.0, "cell.health.hp ist 22.0")
 	check(not main.electric.is_ready(), "main.electric.is_ready() falsch")
+
+
+func test_teil_erbeuten() -> void:
+	main.player.diet = Diet.FLEISCHFRESSER
+	_add_ai("blasenling", Vector2(20, 0), 0.0)
+	main.resolve_combat()
+	check_eq(main.ai_cells.size(), 0, "main.ai_cells.size() ist 0")
+	check(main.unlocks.is_unlocked("stielauge"), "main.unlocks.is_unlocked(\"stielauge\") ist wahr")
+	check(main.hud.message_label.text == "Teil erbeutet: Stielauge", "main.hud.message_label.text stimmt")
+
+
+func test_teil_schon_frei() -> void:
+	main.unlocks.unlock("stielauge")
+	main.player.diet = Diet.FLEISCHFRESSER
+	_add_ai("blasenling", Vector2(20, 0), 0.0)
+	main.resolve_combat()
+	check_eq(main.unlocks.unlocked.size(), 4, "main.unlocks.unlocked.size() ist 4")
+	check(main.hud.message_label.text == "", "main.hud.message_label.text ist leer")
