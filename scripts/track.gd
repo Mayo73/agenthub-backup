@@ -6,6 +6,10 @@ const SMOOTH_STEPS := 10
 const CURB_WIDTH := 14.0
 const CURB_DASH := 40.0
 const START_CELL := 20.0
+const TREE_TEXTURE := preload("res://assets/decor/tree.png")
+const TIRES_TEXTURE := preload("res://assets/decor/tires.png")
+const TREE_SIZE := Vector2(92, 96)
+const TIRES_SIZE := Vector2(70, 29)
 
 ## Kontrollpunkte der Mittellinie (geschlossen). Werden zu einer runden Linie geglättet.
 @export var control_points := PackedVector2Array([
@@ -98,10 +102,7 @@ func _draw_decor() -> void:
 	for item in decor:
 		var p: Vector2 = item["position"]
 		if item["kind"] == TrackDecor.Kind.TIRES:
-			for k in 3:
-				var c := p + Vector2(k * 22.0 - 22.0, 0.0)
-				draw_circle(c, 12.0, Color(0.08, 0.08, 0.09))
-				draw_circle(c, 5.0, Color(0.3, 0.3, 0.32))
+			draw_texture_rect(TIRES_TEXTURE, Rect2(p - TIRES_SIZE * 0.5, TIRES_SIZE), false)
 		else:
-			draw_circle(p, 46.0, Color(0.1, 0.28, 0.12))
-			draw_circle(p + Vector2(-8, -8), 30.0, Color(0.16, 0.42, 0.18))
+			draw_circle(p + Vector2(8, 8), 40.0, Color(0, 0, 0, 0.25))
+			draw_texture_rect(TREE_TEXTURE, Rect2(p - TREE_SIZE * 0.5, TREE_SIZE), false)

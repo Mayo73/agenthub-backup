@@ -60,3 +60,11 @@ func test_tribuene_geladen() -> void:
 		check(not track.path.is_on_track(e), "Ecke der Tribüne sollte nicht auf der Strecke sein")
 
 	track.free()
+
+
+func test_deko_bilder() -> void:
+	var track: Node2D = preload("res://scripts/track.gd").new()
+	check(track.TREE_TEXTURE.get_width() > 0, "TREE_TEXTURE width sollte größer als 0 sein")
+	check(track.TIRES_TEXTURE.get_width() > 0, "TIRES_TEXTURE width sollte größer als 0 sein")
+	check_eq(track.TREE_SIZE, Vector2(92, 96), "TREE_SIZE sollte Vector2(92, 96) sein")
+	track.free()
