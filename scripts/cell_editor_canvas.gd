@@ -17,6 +17,8 @@ var place_id := ""
 var selected := -1
 var symmetry := true
 var dragging := false
+## Aussehen des Körpers; ohne look wird ein Kreis gezeichnet.
+var look: CellLook
 
 
 func setup(p_session: EditorSession, p_history: EditorHistory) -> void:
@@ -94,7 +96,13 @@ func remove_selected() -> void:
 func _draw() -> void:
 	if session == null:
 		return
-	draw_circle(CENTER, SCALE, BODY_COLOR)
+	if look != null:
+		var outline := PackedVector2Array()
+		for p in look.outline(SCALE):
+			outline.append(CENTER + p)
+		draw_colored_polygon(outline, look.color)
+	else:
+		draw_circle(CENTER, SCALE, BODY_COLOR)
 	for i in session.working.parts.size():
 		var part: Dictionary = session.working.parts[i]
 		var points := PackedVector2Array()
