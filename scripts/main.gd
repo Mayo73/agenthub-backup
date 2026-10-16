@@ -37,6 +37,8 @@ var settings_path := UserSettings.DEFAULT_PATH
 var settings_menu: SettingsMenu
 var audio: GameAudio
 var stats := RunStats.new()
+var end_screen: EndScreen
+var finished := false
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
 
@@ -93,6 +95,13 @@ func _ready() -> void:
 	audio.name = "Audio"
 	add_child(audio)
 	apply_settings()
+	end_screen = EndScreen.new()
+	end_screen.name = "EndScreen"
+	add_child(end_screen)
+	end_screen.to_main_menu.connect(_on_end_to_menu)
+	end_screen.quit_game.connect(quit)
+	hud.finish_pressed.connect(finish_phase)
+	add_click_sounds(end_screen)
 	show_menu(true)
 	add_click_sounds(main_menu)
 	add_click_sounds(pause_menu)
@@ -144,6 +153,7 @@ func _process(delta: float) -> void:
 	camera.zoom = Vector2(zoom, zoom)
 	hud.show_progress(progress)
 	hud.show_health(player_health)
+	hud.show_can_finish(PhaseEnd.can_finish(progress) and not finished)
 
 
 ## Füllt die KI-Zellen auf EcoSpawner.TARGET_COUNT auf.
@@ -311,6 +321,7 @@ func close_editor(build: CellBuild) -> void:
 
 ## Neue Partie mit Startaufbau passend zur Ernährung (Pflanzen- oder Fleischfresser).
 func start_new(diet: String) -> void:
+	finished = false
 	stats = RunStats.new()
 	progress = CellProgress.new()
 	player_health.reset()
@@ -438,4 +449,22 @@ func add_click_sounds(node: Node) -> void:
 		if child is BaseButton:
 			(child as BaseButton).pressed.connect(func() -> void: audio.play("klick"))
 		add_click_sounds(child)
+
+
+## Beendet die Zellenphase und zeigt den Rückblick. Der Spielstand wird vorher gespeichert.
+func finish_phase() -> void:
+	if finished or not PhaseEnd.can_finish(progress):
+		return
+	finished = true
+	autosave_now()
+	set_physics_process(false)
+	world.process_mode = Node.PROCESS_MODE_DISABLED
+	hud.show_can_finish(false)
+	end_screen.show_stats(stats)
+
+
+func _on_end_to_menu() -> void:
+	end_screen.visible = false
+	finished = false
+	back_to_menu()
 
