@@ -17,7 +17,9 @@ Evolutionsspiel in Godot 4.7 mit GDScript, Draufsicht auf eine Wasserwelt, nach 
 | `scripts/main.gd` | Verdrahtung der Hauptszene: `world`, `camera` |
 | `scripts/controls.gd` | `Controls`: Aktionen `hoch`, `runter`, `links`, `rechts`, `schwimmen` (linke Maustaste), `pause`; `Controls.key_vector()` |
 
-Geplante Klassen (entstehen durch Tickets, Namen genau so verwenden): `CellMotion`, `PlayerInput`, `PlayerCell`, `CameraZoom`, `Diet`, `CellProgress`, `FoodItem`, `FoodField`, `MouthContact`, `FoodView`, `Hud`, `CellHealth`, `SpeciesCatalog`, `AiBrain`, `AiCell`, `EcoSpawner`, `CombatRules`, `ParallaxDots`, `WaterBackdrop`, `PartCatalog`, `CellBuild`, `CellStats`, `PartUnlocks`, `PartPickups`, `PickupView`, `PartGeometry`, `WeaponRules`, `PoisonClouds`, `ElectricOrgan`, `PartShapes`, `PartDrops`, `EditorSession`, `EditorSymmetry`, `CellLook`, `MateCall`, `SaveGame`.
+Geplante Klassen (entstehen durch Tickets, Namen genau so verwenden): `CellMotion`, `PlayerInput`, `PlayerCell`, `CameraZoom`, `Diet`, `CellProgress`, `FoodItem`, `FoodField`, `MouthContact`, `FoodView`, `Hud`, `CellHealth`, `SpeciesCatalog`, `AiBrain`, `AiCell`, `EcoSpawner`, `CombatRules`, `ParallaxDots`, `WaterBackdrop`, `PartCatalog`, `CellBuild`, `CellStats`, `PartUnlocks`, `PartPickups`, `PickupView`, `PartGeometry`, `WeaponRules`, `PoisonClouds`, `ElectricOrgan`, `PartShapes`, `PartDrops`, `EditorSession`, `EditorSymmetry`, `CellLook`, `MateCall`, `SaveGame`, `EditorPreview`, `EditorHistory`, `EditorPlacement`, `CellEditorPanel`, `CellEditorCanvas`, `CellEditor`, `PartnerView`, `UserSettings`, `RunStats`, `MainMenu`, `PauseMenu`, `SettingsMenu`.
+
+Menüs und Editor sind `CanvasLayer` bzw. `Node`, die ihre Bedienelemente im Code anlegen und Klicks per Signal melden; `main.gd` entscheidet, was passiert. Tests lösen Knöpfe mit `button.pressed.emit()` aus.
 
 Teil-Lagen (`CellBuild`) sind in Zellradien relativ zur Zellmitte angegeben, Blickrichtung +x; `PartGeometry.world_point()` rechnet sie in Weltkoordinaten um.
 
