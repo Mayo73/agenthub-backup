@@ -24,6 +24,7 @@ var pickup_view: PickupView
 var mate := MateCall.new()
 var partner_view: PartnerView
 var editor_open := false
+var editor: CellEditor
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
 
@@ -223,8 +224,31 @@ func call_mate() -> bool:
 	return false
 
 
-## Öffnet den Zelleditor. Bis der Editor eingebaut ist, hält die Spielerzelle nur an.
+## Öffnet den Zelleditor; die Welt ist so lange verborgen und angehalten.
 func open_editor() -> void:
 	editor_open = true
 	player.input_enabled = false
 	mate.finish()
+	world.visible = false
+	hud.visible = false
+	editor = CellEditor.new()
+	editor.name = "Editor"
+	add_child(editor)
+	editor.open(player.build, unlocks, progress, progress.stage)
+	editor.set_look(player.look)
+	editor.finished.connect(close_editor)
+
+
+## Übernimmt das Ergebnis des Editors und kehrt ins Spiel zurück.
+func close_editor(build: CellBuild) -> void:
+	player.set_build(build)
+	if editor.confirmed:
+		player.set_look(editor.look)
+	remove_child(editor)
+	editor.queue_free()
+	editor = null
+	world.visible = true
+	hud.visible = true
+	editor_open = false
+	player.input_enabled = true
+	hud.show_progress(progress)

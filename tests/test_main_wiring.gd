@@ -301,3 +301,47 @@ func test_editor_haelt_spiel_an() -> void:
 
 func test_ruftaste() -> void:
 	check(InputMap.has_action("rufen"), "InputMap.has_action(\"rufen\") wahr")
+
+
+func test_editor_oeffnen() -> void:
+	main.open_editor()
+	check(main.editor is CellEditor, "main.editor is CellEditor")
+	check(main.editor.get_parent() == main, "main.editor.get_parent() == main")
+	check(not main.world.visible, "main.world.visible falsch")
+	check(not main.hud.visible, "main.hud.visible falsch")
+
+
+func test_editor_abbrechen() -> void:
+	main.open_editor()
+	main.editor.cancel()
+	check(not main.editor_open, "main.editor_open falsch")
+	check(main.editor == null, "main.editor == null")
+	check(main.world.visible, "main.world.visible wahr")
+	check(main.player.input_enabled, "main.player.input_enabled wahr")
+	check_eq(main.player.build.parts.size(), 2, "main.player.build.parts.size() ist 2")
+
+
+func test_editor_umbau() -> void:
+	main.progress.dna = 30
+	main.unlocks.unlock("geissel")
+	main.open_editor()
+	main.editor.panel.select("geissel")
+	main.editor.canvas.click(Vector2(752, 696))
+	main.editor.confirm()
+	check_eq(main.player.build.parts.size(), 4, "main.player.build.parts.size() ist 4")
+	check_eq(main.progress.dna, 0, "main.progress.dna ist 0")
+	check_eq(main.player.motion.max_speed, 310.0, "main.player.motion.max_speed ist 310.0 (220 + 60 für die erste Geißel + 30 für die zweite)")
+
+
+func test_aussehen_uebernommen() -> void:
+	main.open_editor()
+	main.editor.set_color(Color.RED)
+	main.editor.confirm()
+	check(main.player.look.color.is_equal_approx(Color.RED), "main.player.look.color.is_equal_approx(Color.RED) wahr")
+
+
+func test_aussehen_abbrechen() -> void:
+	main.open_editor()
+	main.editor.set_color(Color.RED)
+	main.editor.cancel()
+	check(main.player.look.color.is_equal_approx(CellLook.DEFAULT_COLOR), "main.player.look.color.is_equal_approx(CellLook.DEFAULT_COLOR) wahr")
