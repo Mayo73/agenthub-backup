@@ -59,3 +59,20 @@ Zur Laufzeit in `main.gd` nützlich: `car.physics.speed()`, `car.physics.slip_an
 - `project.godot` nur ändern, wenn das Ticket es ausdrücklich verlangt.
 - `.tscn`-Dateien vorsichtig bearbeiten: Jede `ext_resource`-/`sub_resource`-ID muss eindeutig sein und zu ihren Verweisen passen.
 - Niemals Tests löschen oder abschwächen, nur damit die Prüfung grün wird.
+
+## Stil (Grafik)
+
+Festgelegt am 16.10.2026 mit den ersten Higgsfield-Grafiken (A-0001 bis A-0006). Neue Grafiken passen sich daran an.
+
+- Klare, stilisierte Spielgrafik mit flachen Farben und weichen Verläufen, keine Fotografie, keine Schrift, keine Marken oder Logos.
+- Sprites im Spiel (Autos, Deko) sind **genau von oben** gezeichnet; die isometrische Wirkung entsteht durch `Iso.TRANSFORM` am Knoten `World`. Licht von links oben, kein eingebauter Schatten.
+- Autos zeigen nach **rechts** (+x, Fahrtrichtung bei `heading = 0`), Bilder in doppelter Auflösung (etwa 104x48 für 52x24 Pixel im Spiel), Hintergrund transparent.
+- Menü-Bilder (z. B. `assets/menu/title_background.png`, 1280x720) dürfen isometrisch von schräg oben gezeigt sein, mit Abendlicht.
+- Farben: Wiese etwa `#295C33`, Asphalt dunkelgrau, Randsteine rot-weiß. Autos: Allrounder rot, Grip-Coupé blau, Drift-Kombi gelb.
+
+| Datei | Inhalt |
+|---|---|
+| `assets/menu/title_background.png` | Hintergrund des Hauptmenüs, 1280x720 |
+| `assets/cars/car_allround.png`, `car_grip.png`, `car_drifter.png` | Autos von oben, Front nach rechts, 104x46 bis 104x48 |
+| `assets/decor/tree.png` | Baumkrone von oben, 123x128 |
+| `assets/decor/tires.png` | drei Reifenstapel in einer Reihe, 125x52 |
