@@ -35,6 +35,7 @@ var paused := false
 var settings := UserSettings.new()
 var settings_path := UserSettings.DEFAULT_PATH
 var settings_menu: SettingsMenu
+var audio: GameAudio
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
 
@@ -86,6 +87,9 @@ func _ready() -> void:
 	main_menu.open_settings.connect(open_settings)
 	pause_menu.open_settings.connect(open_settings)
 	settings_menu.closed.connect(close_settings)
+	audio = GameAudio.new()
+	audio.name = "Audio"
+	add_child(audio)
 	apply_settings()
 	show_menu(true)
 
@@ -110,11 +114,13 @@ func _physics_process(delta: float) -> void:
 ## Frisst alles, was das Maul der Spielerzelle berührt und zur Ernährung passt.
 func feed_player() -> void:
 	for item in food.take_at(player.mouth_point(), MOUTH_REACH, player.diet):
+		audio.play("fressen_pflanze" if item.kind == Diet.PFLANZE else "fressen_fleisch")
 		if progress.eat(item.value):
 			player.set_stage(progress.stage)
 			mate.add_charge()
 			hud.show_message("Neuer Ruf bereit: Taste C oder rechte Maustaste")
 			autosave_now()
+			audio.play("wachsen")
 
 
 ## Entfernt weit entfernte Nahrung und streut neue um den Spieler, wenn sie knapp wird.
@@ -177,9 +183,11 @@ func resolve_combat() -> void:
 		if CombatRules.can_bite(player.diet) and CombatRules.bite_hits(player.motion.position, player.motion.heading, player.radius, cell.motion.position, cell.radius):
 			if cell.health.damage(CombatRules.bite_damage(CombatRules.PLAYER_BITE, player.radius, cell.radius)):
 				cell.motion.knockback(cell.motion.position - player.motion.position, 120.0)
+				audio.play("treffer")
 		if cell.damage > 0.0 and CombatRules.can_bite(cell.diet) and CombatRules.bite_hits(cell.motion.position, cell.motion.heading, cell.radius, player.motion.position, player.radius):
 			if player_health.damage(CombatRules.bite_damage(cell.damage, cell.radius, player.radius)):
 				player.motion.knockback(player.motion.position - cell.motion.position, 160.0)
+				audio.play("treffer")
 		if cell.health.is_dead():
 			var part := PartDrops.drop_for(cell.species_id, unlocks)
 			if part != "" and unlocks.unlock(part):
@@ -194,6 +202,7 @@ func check_death() -> void:
 	if not player_health.is_dead():
 		return
 	deaths += 1
+	audio.play("tod")
 	player_health.reset(RESPAWN_INVULNERABLE)
 	player.motion.velocity = Vector2.ZERO
 	var clear_dist := 400.0 * EcoSpawner.view_scale(player.radius)
