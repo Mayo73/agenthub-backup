@@ -21,6 +21,8 @@ var backdrop: WaterBackdrop
 var unlocks: PartUnlocks = PartUnlocks.new()
 var pickups: PartPickups = PartPickups.new(13)
 var pickup_view: PickupView
+var poison := PoisonClouds.new()
+var electric := ElectricOrgan.new()
 
 
 func _ready() -> void:
@@ -59,6 +61,7 @@ func _physics_process(delta: float) -> void:
 	despawn_far_ai()
 	think_ai()
 	feed_ai()
+	resolve_weapons(delta)
 	resolve_combat()
 	check_death()
 
@@ -165,3 +168,26 @@ func collect_pickups() -> void:
 		var id = unlocks.next_locked()
 		if unlocks.unlock(id):
 			hud.show_message("Neues Teil gefunden: %s" % PartCatalog.name_of(id))
+
+
+## Stacheln, Gift und Elektroorgan der Spielerzelle gegen KI-Zellen.
+func resolve_weapons(delta: float) -> void:
+	var pos := player.motion.position
+	var heading := player.motion.heading
+	var tips := WeaponRules.spike_tips(pos, heading, player.radius, player.build)
+	poison.tick(delta)
+	electric.tick(delta)
+	if player.build.count("gift") > 0 and player.motion.speed() > 20.0:
+		poison.emit(PartGeometry.world_point(pos, heading, player.radius, Vector2(-1.2, 0)))
+	var zap := player.build.count("elektro") > 0 and electric.is_ready()
+	var zapped := false
+	for cell in ai_cells:
+		if WeaponRules.spike_hits(tips, cell.motion.position, cell.radius) > 0:
+			if cell.health.damage(WeaponRules.SPIKE_DAMAGE):
+				cell.motion.knockback(cell.motion.position - pos, 100.0)
+		cell.health.drain(poison.damage_at(cell.motion.position, cell.radius, delta))
+		if zap and ElectricOrgan.in_range(pos, player.radius, cell.motion.position, cell.radius):
+			cell.health.damage(ElectricOrgan.DAMAGE)
+			zapped = true
+	if zapped:
+		electric.fire()
