@@ -49,6 +49,15 @@ func test_zaehlt_strecke() -> void:
 	check_eq(ai.race_distance(), 0.0, "race_distance sollte wieder 0.0 sein nach place_at")
 
 
+func test_auto_waehlen() -> void:
+	check(ai.texture == null, "texture sollte am Anfang null sein")
+	ai.set_car("drifter")
+	check_eq(ai.car_id, "drifter", "car_id sollte drifter sein")
+	check(ai.texture.resource_path == "res://assets/cars/car_drifter.png", "texture path sollte stimmen")
+	ai.set_car("gibtsnicht")
+	check_eq(ai.car_id, "drifter", "car_id bleibt drifter bei unbekannter ID")
+
+
 func test_motorgeraeusch() -> void:
 	(Engine.get_main_loop() as SceneTree).root.add_child(ai)
 	check(ai.engine_player != null, "engine_player sollte nicht null sein")

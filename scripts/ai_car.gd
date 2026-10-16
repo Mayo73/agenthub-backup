@@ -9,6 +9,8 @@ var driver := AiDriver.new()
 var track: TrackPath
 var lap_timer: LapTimer
 var color := Color(0.55, 0.3, 0.8)
+var car_id := ""
+var texture: Texture2D
 var driving_enabled := false
 var engine_player: AudioStreamPlayer2D
 
@@ -38,6 +40,15 @@ func place_at(world_position: Vector2, heading: float) -> void:
 	lap_timer = LapTimer.new(track.length) if track else null
 
 
+## Wählt das Auto (Bild) aus dem CarCatalog. Unbekannte IDs werden ignoriert.
+func set_car(id: String) -> void:
+	if not CarCatalog.has_car(id):
+		return
+	car_id = id
+	texture = load(CarCatalog.sprite_of(id)) as Texture2D
+	queue_redraw()
+
+
 func _physics_process(delta: float) -> void:
 	if track == null:
 		return
@@ -64,4 +75,11 @@ func race_distance() -> float:
 
 
 func _draw() -> void:
-	draw_colored_polygon(PackedVector2Array(BODY), color)
+	var shadow := PackedVector2Array()
+	for p in BODY:
+		shadow.append(p + Vector2(5, 5))
+	draw_colored_polygon(shadow, Color(0, 0, 0, 0.35))
+	if texture:
+		draw_texture_rect(texture, Rect2(-26, -12, 52, 24), false)
+	else:
+		draw_colored_polygon(PackedVector2Array(BODY), color)
