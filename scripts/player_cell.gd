@@ -5,6 +5,7 @@ extends Node2D
 const COLOR := Color(0.5, 0.88, 0.82)
 const MOUTH_COLOR := Color(0.1, 0.3, 0.3)
 const CHEW_TIME := 0.3
+const PULSE_TIME := 0.6
 
 var motion := CellMotion.new()
 var radius := 12.0
@@ -16,6 +17,8 @@ var look := CellLook.new()
 var time := 0.0 ## Laufzeit für Animationen in Sekunden.
 ## Restzeit der Kaubewegung in Sekunden.
 var chew_left := 0.0
+## Restzeit des Wachstumspulses in Sekunden.
+var pulse_left := 0.0
 var flash := HitFlash.new()
 
 
@@ -36,6 +39,8 @@ func drive(delta: float, wish: Vector2) -> void:
 	position = motion.position
 	rotation = motion.heading
 	queue_redraw()
+	pulse_left = maxf(0.0, pulse_left - delta)
+	scale = Vector2.ONE * pulse_scale()
 
 
 func mouth_point() -> Vector2:
@@ -154,3 +159,13 @@ func mouth_points(part: Dictionary) -> PackedVector2Array:
 	for p in PartLooks.shape(part["id"]):
 		pts.append(Vector2(p.x, p.y * open))
 	return PartLooks.place(pts, part, radius)
+
+
+## Startet den Wachstumspuls.
+func pulse() -> void:
+	pulse_left = PULSE_TIME
+
+
+## Größenfaktor der Darstellung: steigt während des Pulses bis 1,25 und fällt zurück auf 1.
+func pulse_scale() -> float:
+	return 1.0 + 0.25 * sin(PI * pulse_left / PULSE_TIME)
