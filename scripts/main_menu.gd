@@ -4,6 +4,7 @@ const GAME_SCENE := "res://scenes/main.tscn"
 const SETTINGS_SCENE := "res://scenes/settings_menu.tscn"
 var highscore_path := HighscoreTable.DEFAULT_PATH
 var settings_path := UserSettings.DEFAULT_PATH
+var click_player: AudioStreamPlayer
 
 @onready var start_button: Button = $Buttons/Start
 @onready var settings_button: Button = $Buttons/Settings
@@ -17,14 +18,22 @@ var settings_path := UserSettings.DEFAULT_PATH
 @onready var car_next: Button = $Buttons/CarRow/CarNext
 
 func _ready() -> void:
+	click_player = AudioStreamPlayer.new()
+	click_player.name = "Click"
+	click_player.stream = SoundBank.click()
+	add_child(click_player)
 	UserSettings.load_from(settings_path).apply()
 	start_button.pressed.connect(start_game)
 	quit_button.pressed.connect(quit_game)
 	settings_button.pressed.connect(open_settings)
 	track_prev.pressed.connect(_on_track_prev)
+	track_prev.pressed.connect(play_click)
 	track_next.pressed.connect(_on_track_next)
+	track_next.pressed.connect(play_click)
 	car_prev.pressed.connect(_on_car_prev)
+	car_prev.pressed.connect(play_click)
 	car_next.pressed.connect(_on_car_next)
+	car_next.pressed.connect(play_click)
 	update_car_label()
 	update_track_label()
 	start_button.grab_focus()
@@ -66,3 +75,8 @@ func update_best_label() -> void:
 	var table := HighscoreTable.load_from(highscore_path)
 	var id := GameSettings.track_id
 	track_best.text = "Bestzeit %s  ·  Rekord %d Punkte" % [LapTimer.format_time(table.best_time(id)), table.best_points(id)]
+
+
+func play_click() -> void:
+	if click_player and click_player.is_inside_tree():
+		click_player.play()
