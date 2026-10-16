@@ -76,9 +76,9 @@ func _draw() -> void:
 	for part in build.parts:
 		if PartCatalog.category_of(part["id"]) == "antrieb":
 			if part["id"] == "geissel":
-				draw_polyline(flagellum_points(part), PartShapes.color_of(part["id"]), maxf(1.5, radius * 0.1))
+				draw_polyline(flagellum_points(part), PartLooks.color(part["id"]), maxf(1.5, radius * 0.1))
 			else:
-				draw_colored_polygon(PartShapes.placed(part, radius), PartShapes.color_of(part["id"]))
+				draw_colored_polygon(PartLooks.placed(part, radius), PartLooks.color(part["id"]))
 	CellPainter.draw_cell(self, Vector2.ZERO, look, radius, time)
 	if flash.is_active():
 		draw_circle(Vector2.ZERO, radius * 1.05, flash.overlay_color())
@@ -87,7 +87,7 @@ func _draw() -> void:
 		if category == "auge":
 			draw_eye(part)
 		elif category != "antrieb":
-			draw_colored_polygon(PartShapes.placed(part, radius), PartShapes.color_of(part["id"]))
+			draw_colored_polygon(PartLooks.placed(part, radius), PartLooks.color(part["id"]))
 
 
 ## Auge mit Pupille in Schwimmrichtung (+x), blinzelt ab und zu; das Stielauge mit Stiel.
