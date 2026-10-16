@@ -40,7 +40,8 @@ func _physics_process(_delta: float) -> void:
 ## Frisst alles, was das Maul der Spielerzelle berührt und zur Ernährung passt.
 func feed_player() -> void:
 	for item in food.take_at(player.mouth_point(), MOUTH_REACH, player.diet):
-		progress.eat(item.value)
+		if progress.eat(item.value):
+			player.set_stage(progress.stage)
 
 
 ## Entfernt weit entfernte Nahrung und streut neue um den Spieler, wenn sie knapp wird.
