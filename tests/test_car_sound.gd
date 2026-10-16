@@ -24,3 +24,24 @@ func test_motor_folgt_tempo() -> void:
 	car.update_sound()
 	check(absf(car.engine_player.pitch_scale - 1.3) < 0.001, "pitch_scale bei halbem Tempo")
 	check(absf(car.engine_player.volume_db - (-6.0)) < 0.001, "volume_db bei Vollgas")
+
+
+func test_quietschen_vorhanden() -> void:
+	check(car.get_node("Squeal") is AudioStreamPlayer2D, "Squeal exists as AudioStreamPlayer2D")
+	check(absf(car.squeal_player.volume_db - (-80.0)) < 0.001, "squeal_player.volume_db initial -80.0")
+
+
+func test_quietschen_im_drift() -> void:
+	car.physics.heading = 0.0
+	car.physics.velocity = Vector2(300.0, 300.0)
+	car.physics.sliding = true
+	car.update_sound()
+	check(absf(car.squeal_player.volume_db - (-6.0)) < 0.01, "squeal volume im Drift bei hohem Slip-Winkel")
+
+
+func test_kein_quietschen_ohne_drift() -> void:
+	car.physics.heading = 0.0
+	car.physics.velocity = Vector2(300.0, 0.0)
+	car.physics.sliding = false
+	car.update_sound()
+	check(absf(car.squeal_player.volume_db - (-80.0)) < 0.001, "squeal ist stumm ohne Drift")
