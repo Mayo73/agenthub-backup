@@ -32,6 +32,9 @@ var main_menu: MainMenu
 var pause_menu: PauseMenu
 var in_menu := false
 var paused := false
+var settings := UserSettings.new()
+var settings_path := UserSettings.DEFAULT_PATH
+var settings_menu: SettingsMenu
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
 
@@ -76,6 +79,14 @@ func _ready() -> void:
 	pause_menu.resume.connect(toggle_pause)
 	pause_menu.to_main_menu.connect(back_to_menu)
 	pause_menu.quit_game.connect(quit)
+	settings.load_from(settings_path)
+	settings_menu = SettingsMenu.new()
+	settings_menu.name = "SettingsMenu"
+	add_child(settings_menu)
+	main_menu.open_settings.connect(open_settings)
+	pause_menu.open_settings.connect(open_settings)
+	settings_menu.closed.connect(close_settings)
+	apply_settings()
 	show_menu(true)
 
 
@@ -367,4 +378,30 @@ func quit() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause"):
 		toggle_pause()
+
+
+func open_settings() -> void:
+	settings_menu.show_settings(settings)
+
+
+func close_settings() -> void:
+	settings.save(settings_path)
+	apply_settings()
+
+
+## Wendet Lautstärken (Audiobusse "Musik" und "Effekte", falls vorhanden), Vollbild und Auflösung an.
+func apply_settings() -> void:
+	var music := AudioServer.get_bus_index("Musik")
+	if music >= 0:
+		AudioServer.set_bus_volume_db(music, UserSettings.to_db(settings.music_volume))
+	var sfx := AudioServer.get_bus_index("Effekte")
+	if sfx >= 0:
+		AudioServer.set_bus_volume_db(sfx, UserSettings.to_db(settings.sfx_volume))
+	if DisplayServer.get_name() == "headless":
+		return
+	if settings.fullscreen:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+	else:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		DisplayServer.window_set_size(settings.resolution())
 
