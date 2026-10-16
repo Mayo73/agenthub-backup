@@ -15,6 +15,7 @@ var look := CellLook.new()
 var behavior := ""
 ## Laufzeit für Animationen in Sekunden.
 var time := 0.0
+var flash := HitFlash.new()
 
 
 ## Übernimmt die Werte der Art und setzt die Zelle an pos.
@@ -40,6 +41,7 @@ func think(others: Array, food_pos: Variant) -> void:
 
 func drive(delta: float) -> void:
 	time += delta
+	flash.tick(delta)
 	motion.step(delta, wish)
 	health.tick(delta)
 	position = motion.position
@@ -65,6 +67,8 @@ func _draw() -> void:
 		for spike in spike_shapes():
 			draw_colored_polygon(spike, color.darkened(0.3))
 	CellPainter.draw_cell(self, Vector2.ZERO, look, radius, time)
+	if flash.is_active():
+		draw_circle(Vector2.ZERO, radius * 1.05, flash.overlay_color())
 	draw_circle(Vector2(radius * 0.8 * look.stretch, 0), radius * 0.22, color.darkened(0.5))
 
 
