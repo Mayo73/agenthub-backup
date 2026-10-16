@@ -55,3 +55,11 @@ func reset(p_invulnerable: float = 0.0) -> void:
 	hp = max_hp
 	invulnerable = p_invulnerable
 	_since_hit = 999.0
+
+
+## Schaden ohne Unverwundbarkeit, z. B. durch Gift. Unterbricht die Heilung.
+func drain(amount: float) -> void:
+	if amount <= 0.0 or is_dead():
+		return
+	hp = maxf(0.0, hp - amount)
+	_since_hit = 0.0

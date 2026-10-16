@@ -46,3 +46,14 @@ func test_zuruecksetzen() -> void:
 
 func test_eigene_lebenspunkte() -> void:
 	check_eq(CellHealth.new(40.0).hp, 40.0, "eigene max_hp werden gesetzt")
+
+
+func test_gift_entzug() -> void:
+	h.damage(10.0)
+	h.drain(5.0)
+	check_eq(h.hp, 85.0, "Schaden durch drain nach Treffer")
+	h.drain(-3.0)
+	check_eq(h.hp, 85.0, "negative drain wirkt nicht")
+	h.drain(200.0)
+	check_eq(h.hp, 0.0, "drain tötet Zelle")
+	check(h.is_dead(), "Zelle ist tot nach drain")
