@@ -67,3 +67,12 @@ func test_hud() -> void:
 	main.progress.eat(3)
 	main._process(0.016)
 	check_eq(main.hud.dna_label.text, "DNA: 3", "hud zeigt DNA nach Fressen")
+
+
+func test_wachsen_beim_fressen() -> void:
+	main.food.items.clear()
+	main.progress.eat(9)
+	main.food.add_item(Diet.PFLANZE, main.player.mouth_point())
+	main.feed_player()
+	check_eq(main.progress.stage, 1, "main.progress.stage ist 1")
+	check_eq(main.player.radius, 18.0, "main.player.radius ist 18.0")

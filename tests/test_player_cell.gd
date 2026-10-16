@@ -20,3 +20,9 @@ func test_schwimmen() -> void:
 func test_drehen() -> void:
 	cell.drive(0.1, Vector2.UP)
 	check_eq(cell.rotation, -0.6, "rotation nach Bewegung nach oben")
+
+
+func test_wachsen() -> void:
+	cell.set_stage(2)
+	check_eq(cell.radius, 27.0, "cell.radius ist 27.0 nach set_stage(2)")
+	check_eq(cell.motion.max_speed, 280.0, "cell.motion.max_speed ist 280.0 nach set_stage(2)")

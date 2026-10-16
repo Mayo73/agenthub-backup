@@ -30,6 +30,12 @@ func drive(delta: float, wish: Vector2) -> void:
 func mouth_point() -> Vector2:
 	return MouthContact.mouth_point(motion.position, motion.heading, radius)
 
+## Passt Größe und Tempo an den Größenabschnitt an (0 bis 4).
+func set_stage(stage: int) -> void:
+	radius = CellProgress.radius_for_stage(stage)
+	motion.max_speed = 220.0 + 30.0 * stage
+	queue_redraw()
+
 
 func _draw() -> void:
 	draw_circle(Vector2.ZERO, radius, COLOR)
