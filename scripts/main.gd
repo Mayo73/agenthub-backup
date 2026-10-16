@@ -36,6 +36,7 @@ var settings := UserSettings.new()
 var settings_path := UserSettings.DEFAULT_PATH
 var settings_menu: SettingsMenu
 var audio: GameAudio
+var stats := RunStats.new()
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
 
@@ -101,6 +102,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if editor_open:
 		return
+	stats.tick(delta)
 	player_health.tick(delta)
 	feed_player()
 	refill_food()
@@ -119,12 +121,14 @@ func _physics_process(delta: float) -> void:
 func feed_player() -> void:
 	for item in food.take_at(player.mouth_point(), MOUTH_REACH, player.diet):
 		audio.play("fressen_pflanze" if item.kind == Diet.PFLANZE else "fressen_fleisch")
+		stats.food_eaten += 1
 		if progress.eat(item.value):
 			player.set_stage(progress.stage)
 			mate.add_charge()
 			hud.show_message("Neuer Ruf bereit: Taste C oder rechte Maustaste")
 			autosave_now()
 			audio.play("wachsen")
+			stats.record_stage(player.diet)
 
 
 ## Entfernt weit entfernte Nahrung und streut neue um den Spieler, wenn sie knapp wird.
@@ -193,6 +197,7 @@ func resolve_combat() -> void:
 				player.motion.knockback(player.motion.position - cell.motion.position, 160.0)
 				audio.play("treffer")
 		if cell.health.is_dead():
+			stats.cells_defeated += 1
 			var part := PartDrops.drop_for(cell.species_id, unlocks)
 			if part != "" and unlocks.unlock(part):
 				hud.show_message("Teil erbeutet: %s" % PartCatalog.name_of(part))
@@ -206,6 +211,7 @@ func check_death() -> void:
 	if not player_health.is_dead():
 		return
 	deaths += 1
+	stats.deaths += 1
 	audio.play("tod")
 	player_health.reset(RESPAWN_INVULNERABLE)
 	player.motion.velocity = Vector2.ZERO
@@ -288,6 +294,7 @@ func open_editor() -> void:
 
 ## Übernimmt das Ergebnis des Editors und kehrt ins Spiel zurück.
 func close_editor(build: CellBuild) -> void:
+	stats.editor_visits += 1
 	player.set_build(build)
 	if editor.confirmed:
 		player.set_look(editor.look)
@@ -304,6 +311,7 @@ func close_editor(build: CellBuild) -> void:
 
 ## Neue Partie mit Startaufbau passend zur Ernährung (Pflanzen- oder Fleischfresser).
 func start_new(diet: String) -> void:
+	stats = RunStats.new()
 	progress = CellProgress.new()
 	player_health.reset()
 	unlocks = PartUnlocks.new()
@@ -320,6 +328,7 @@ func save_now() -> bool:
 	var data := SaveGame.to_dict(progress, player_health, player.build, unlocks)
 	data["look"] = player.look.to_dict()
 	data["diet"] = player.diet
+	data["stats"] = stats.to_dict()
 	return SaveGame.write_file(save_path, data)
 
 
@@ -339,6 +348,8 @@ func load_saved() -> bool:
 	var look_data: Variant = data.get("look")
 	if look_data is Dictionary:
 		player.set_look(CellLook.from_dict(look_data))
+	var stats_data: Variant = data.get("stats")
+	stats = RunStats.from_dict(stats_data) if stats_data is Dictionary else RunStats.new()
 	hud.show_progress(progress)
 	autosave = true
 	return true
