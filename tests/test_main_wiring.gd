@@ -204,3 +204,14 @@ func test_musik_und_countdown() -> void:
 	check_eq(main.race_sounds.beeps, 1, "race_sounds.beeps ist 1 nach update()")
 	main.restart()
 	check_eq(main.race_sounds.last_text, "", "last_text ist leer nach restart()")
+
+
+func test_gegner_autos() -> void:
+	check(main.ai_cars.size() == 3, "ai_cars.size() ist 3")
+
+	var expected_opponents := CarCatalog.opponents(GameSettings.car_id, 3)
+	for i in 3:
+		check(main.ai_cars[i].car_id == expected_opponents[i],
+			"ai_cars[%d].car_id ist %s (erwartet %s)" % [i, main.ai_cars[i].car_id, expected_opponents[i]])
+
+	check(main.ai_cars[0].texture != null, "ai_cars[0].texture != null")

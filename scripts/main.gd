@@ -68,10 +68,12 @@ func _ready() -> void:
 	hud.again_pressed.connect(restart)
 	hud.menu_pressed.connect(go_to_menu)
 
+	var opponent_ids := CarCatalog.opponents(GameSettings.car_id, AI_COLORS.size())
 	for i in AI_COLORS.size():
 		var ai: Node2D = preload("res://scripts/ai_car.gd").new()
 		ai.name = "Ai%d" % (i + 1)
 		ai.color = AI_COLORS[i]
+		ai.set_car(opponent_ids[i])
 		ai.driver.skill = AI_SKILLS[i]
 		ai.track = track.path
 		world.add_child(ai)
