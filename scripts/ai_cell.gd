@@ -67,18 +67,26 @@ func pupil_dir() -> Vector2:
 	return wish.rotated(-motion.heading)
 
 
+## Sichtbare Teile der Art, an die Streckung des Körpers angepasst.
+func visible_parts() -> Array:
+	return SpeciesParts.placed_parts(species_id, look.stretch)
+
+
 func _draw() -> void:
 	if behavior == "stachel":
 		for spike in spike_shapes():
 			draw_colored_polygon(spike, color.darkened(0.3))
+	for part in visible_parts():
+		if part["id"] == "geissel":
+			draw_polyline(PartAnimation.place_points(PartAnimation.flagellum(time), part, radius), PartLooks.color("geissel"), maxf(1.5, radius * 0.1))
+		elif PartCatalog.category_of(part["id"]) == "antrieb":
+			draw_colored_polygon(PartLooks.placed(part, radius), PartLooks.color(part["id"]))
 	CellPainter.draw_cell(self, Vector2.ZERO, look, radius, time)
 	if flash.is_active():
 		draw_circle(Vector2.ZERO, radius * 1.05, flash.overlay_color())
-	draw_circle(Vector2(radius * 0.8 * look.stretch, 0), radius * 0.22, color.darkened(0.5))
-	var eye_pos := Vector2(radius * 0.35 * look.stretch, -radius * 0.35)
-	var eye_r := radius * 0.16
-	draw_circle(eye_pos, eye_r, Color.WHITE)
-	draw_circle(eye_pos + EyeLook.pupil_offset(pupil_dir(), eye_r), eye_r * 0.5, Color(0.05, 0.05, 0.1))
+	for part in visible_parts():
+		if PartCatalog.category_of(part["id"]) != "antrieb":
+			draw_colored_polygon(PartLooks.placed(part, radius), PartLooks.color(part["id"]))
 
 
 ## Acht Stacheln rundum (Dreiecke), Spitzen bei 1,5 Radien.

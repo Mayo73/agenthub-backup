@@ -89,3 +89,24 @@ func test_kein_ziel() -> void:
 	c.setup("blasenling", Vector2.ZERO)
 	check(c.pupil_dir() == Vector2.ZERO, "kein ziel")
 	c.free()
+
+
+func test_teile_der_art() -> void:
+	var c := AiCell.new()
+	c.setup("schnapper", Vector2.ZERO)
+	check_eq(c.visible_parts().size(), 2, "teil count")
+	check((c.visible_parts()[0]["pos"] as Vector2).is_equal_approx(Vector2(1.3, 0)), "erster teil pos")
+	c.free()
+
+
+func test_giftling_teile() -> void:
+	var c := AiCell.new()
+	c.setup("giftling", Vector2.ZERO)
+	check_eq(c.visible_parts().size(), 3, "teil count")
+	check_eq(c.visible_parts()[1]["id"], "gift", "zweiter teil id")
+	c.free()
+
+
+func test_kein_maulkreis() -> void:
+	var content := FileAccess.get_file_as_string("res://scripts/ai_cell.gd")
+	check(!content.contains("radius * 0.22"), "keine zeile mit radius * 0.22 mehr")
