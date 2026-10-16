@@ -59,7 +59,10 @@ func _init() -> void:
 
 func show_progress(progress: CellProgress) -> void:
 	dna_label.text = "DNA: %d" % progress.dna
-	growth_bar.value = progress.growth_ratio() * 100.0
+	if progress.is_final_stage():
+		growth_bar.value = PhaseEnd.ratio(progress) * 100.0
+	else:
+		growth_bar.value = progress.growth_ratio() * 100.0
 	stage_label.text = "Größe %d/%d" % [progress.stage + 1, CellProgress.STAGE_COUNT]
 
 
