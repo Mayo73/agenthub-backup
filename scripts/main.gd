@@ -17,6 +17,10 @@ var spawner := EcoSpawner.new(11)
 var ai_cells: Array[AiCell] = []
 var player_health := CellHealth.new()
 var deaths := 0
+var backdrop: WaterBackdrop
+var unlocks: PartUnlocks = PartUnlocks.new()
+var pickups: PartPickups = PartPickups.new(13)
+var pickup_view: PickupView
 
 
 func _ready() -> void:
@@ -35,12 +39,21 @@ func _ready() -> void:
 	hud.name = "Hud"
 	add_child(hud)
 	hud.show_progress(progress)
+	backdrop = WaterBackdrop.new()
+	backdrop.name = "Backdrop"
+	backdrop.camera = camera
+	world.add_child(backdrop)
+	pickup_view = PickupView.new()
+	pickup_view.name = "Pickups"
+	pickup_view.pickups = pickups
+	world.add_child(pickup_view)
 
 
 func _physics_process(delta: float) -> void:
 	player_health.tick(delta)
 	feed_player()
 	refill_food()
+	collect_pickups()
 	spawn_ai()
 	despawn_far_ai()
 	think_ai()
@@ -101,7 +114,7 @@ func think_ai() -> void:
 		infos.append(cell.info())
 	for cell in ai_cells:
 		var kind := Diet.FLEISCH if cell.diet == Diet.FLEISCHFRESSER else Diet.PFLANZE
-		var item := food.nearest(cell.position, kind, cell.brain.sight)
+		var item = food.nearest(cell.position, kind, cell.brain.sight)
 		cell.think(infos, item.position if item != null else null)
 
 
@@ -137,3 +150,17 @@ func check_death() -> void:
 		if cell.position.distance_to(player.position) < clear_dist:
 			remove_ai(cell)
 	hud.show_message("Deine Zelle wurde gefressen – eine neue schlüpft.")
+
+
+## Hält einen Teilefund in der Nähe bereit, solange noch Teile gesperrt sind.
+## Berühren schaltet das nächste Teil frei.
+func collect_pickups() -> void:
+	var spread := EcoSpawner.view_scale(player.radius)
+	pickups.remove_far(player.position, 2000.0 * spread)
+	if pickups.positions.is_empty() and not unlocks.all_unlocked():
+		pickups.spawn_around(player.position, 600.0 * spread, 1200.0 * spread)
+	var count := pickups.take_touching(player.position, player.radius)
+	for _i in count:
+		var id = unlocks.next_locked()
+		if unlocks.unlock(id):
+			hud.show_message("Neues Teil gefunden: %s" % PartCatalog.name_of(id))
