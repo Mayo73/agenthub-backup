@@ -17,7 +17,7 @@ Evolutionsspiel in Godot 4.7 mit GDScript, Draufsicht auf eine Wasserwelt, nach 
 | `scripts/main.gd` | Verdrahtung der Hauptszene: `world`, `camera` |
 | `scripts/controls.gd` | `Controls`: Aktionen `hoch`, `runter`, `links`, `rechts`, `schwimmen` (linke Maustaste), `pause`; `Controls.key_vector()` |
 
-Geplante Klassen (entstehen durch Tickets, Namen genau so verwenden): `CellMotion`, `PlayerInput`, `PlayerCell`, `CameraZoom`, `Diet`, `CellProgress`, `FoodItem`, `FoodField`, `MouthContact`, `FoodView`, `Hud`, `CellHealth`, `SpeciesCatalog`, `AiBrain`, `AiCell`, `EcoSpawner`, `CombatRules`, `ParallaxDots`, `WaterBackdrop`, `PartCatalog`, `CellBuild`, `CellStats`, `PartUnlocks`, `PartPickups`, `PickupView`, `PartGeometry`, `WeaponRules`, `PoisonClouds`, `ElectricOrgan`, `PartShapes`, `PartDrops`, `EditorSession`, `EditorSymmetry`, `CellLook`, `MateCall`, `SaveGame`, `EditorPreview`, `EditorHistory`, `EditorPlacement`, `CellEditorPanel`, `CellEditorCanvas`, `CellEditor`, `PartnerView`, `UserSettings`, `RunStats`, `MainMenu`, `PauseMenu`, `SettingsMenu`, `SoundSynth`, `MusicSynth`, `CellSounds`, `CellMusic`, `AudioBuses`, `GameAudio`, `PhaseEnd`, `EndScreen`, `TutorialHints`, `SaveSlots`, `SlotMenu`, `FpsMeter`, `Benchmark`, `CellBody`, `CellPattern`, `CellPainter`, `PartAnimation`, `EyeLook`, `HitFlash`, `DemoScenes`, `BubbleTrail`, `BubbleView`.
+Geplante Klassen (entstehen durch Tickets, Namen genau so verwenden): `CellMotion`, `PlayerInput`, `PlayerCell`, `CameraZoom`, `Diet`, `CellProgress`, `FoodItem`, `FoodField`, `MouthContact`, `FoodView`, `Hud`, `CellHealth`, `SpeciesCatalog`, `AiBrain`, `AiCell`, `EcoSpawner`, `CombatRules`, `ParallaxDots`, `WaterBackdrop`, `PartCatalog`, `CellBuild`, `CellStats`, `PartUnlocks`, `PartPickups`, `PickupView`, `PartGeometry`, `WeaponRules`, `PoisonClouds`, `ElectricOrgan`, `PartShapes`, `PartDrops`, `EditorSession`, `EditorSymmetry`, `CellLook`, `MateCall`, `SaveGame`, `EditorPreview`, `EditorHistory`, `EditorPlacement`, `CellEditorPanel`, `CellEditorCanvas`, `CellEditor`, `PartnerView`, `UserSettings`, `RunStats`, `MainMenu`, `PauseMenu`, `SettingsMenu`, `SoundSynth`, `MusicSynth`, `CellSounds`, `CellMusic`, `AudioBuses`, `GameAudio`, `PhaseEnd`, `EndScreen`, `TutorialHints`, `SaveSlots`, `SlotMenu`, `FpsMeter`, `Benchmark`, `CellBody`, `CellPattern`, `CellPainter`, `PartAnimation`, `EyeLook`, `HitFlash`, `DemoScenes`, `BubbleTrail`, `BubbleView`, `PartLooks`, `CellShading`, `DeathBursts`, `DeathBurstView`, `SpeciesParts`.
 
 Menüs und Editor sind `CanvasLayer` bzw. `Node`, die ihre Bedienelemente im Code anlegen und Klicks per Signal melden; `main.gd` entscheidet, was passiert. Tests lösen Knöpfe mit `button.pressed.emit()` aus.
 
@@ -55,6 +55,8 @@ Bis Medien aus Higgsfield kommen, zeichnen die Nodes mit `_draw()` einfache Plat
 - Weiche, organische Formen, leicht durchscheinend; Wasser tiefblau bis türkis (Hintergrund `#0B2B3D`).
 - Farben: Pflanzennahrung grün (`#6CCB5F`), Fleisch rot (`#D9534F`), Spielerzelle hell (Türkis `#7FE0D0`), Gefahren mit kräftigen Warnfarben (Orange, Violett).
 - Die Spielerzelle muss sich immer klar von anderen Zellen und von Nahrung abheben.
+- Licht kommt immer von oben links auf dem Bildschirm (Schatten nach unten rechts, Glanzlicht oben links, `CellShading`), unabhängig von der Drehung der Zelle.
+- Teile werden mit `PartLooks` gezeichnet (eigene Form und Farbe je Teil); `PartShapes` ist nur noch der alte Platzhalter.
 
 ### Bilder aus Higgsfield
 
