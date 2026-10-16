@@ -10,10 +10,21 @@ var track: TrackPath
 var lap_timer: LapTimer
 var color := Color(0.55, 0.3, 0.8)
 var driving_enabled := false
+var engine_player: AudioStreamPlayer2D
 
 
 func _init() -> void:
 	scale = Vector2(1.3, 1.3)
+
+
+func _ready() -> void:
+	engine_player = AudioStreamPlayer2D.new()
+	engine_player.name = "Engine"
+	engine_player.stream = SoundBank.engine_loop()
+	engine_player.volume_db = -12.0
+	engine_player.max_distance = 1500.0
+	add_child(engine_player)
+	engine_player.play()
 
 
 ## Setzt das Auto still an eine Stelle.
@@ -43,6 +54,8 @@ func _physics_process(delta: float) -> void:
 	rotation = physics.heading
 	if driving_enabled and lap_timer:
 		lap_timer.update(delta, track.progress_at(physics.position))
+	if engine_player:
+		engine_player.pitch_scale = EngineAudio.pitch_for(physics.speed(), physics.max_speed)
 
 
 ## Insgesamt gefahrene Strecke (für die Platzierung).

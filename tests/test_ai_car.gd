@@ -47,3 +47,14 @@ func test_zaehlt_strecke() -> void:
 
 	ai.place_at(ai.track.start_position(), ai.track.start_heading())
 	check_eq(ai.race_distance(), 0.0, "race_distance sollte wieder 0.0 sein nach place_at")
+
+
+func test_motorgeraeusch() -> void:
+	(Engine.get_main_loop() as SceneTree).root.add_child(ai)
+	check(ai.engine_player != null, "engine_player sollte nicht null sein")
+	check(ai.get_node("Engine") is AudioStreamPlayer2D, "Node 'Engine' sollte AudioStreamPlayer2D sein")
+	check(ai.engine_player.stream is AudioStreamWAV, "stream sollte AudioStreamWAV sein")
+	ai.place_at(ai.track.start_position(), ai.track.start_heading())
+	ai.physics.velocity = Vector2.from_angle(ai.physics.heading) * ai.physics.max_speed
+	ai._physics_process(0.0)
+	check(ai.engine_player.pitch_scale > 1.9, "pitch_scale sollte > 1.9 sein")
