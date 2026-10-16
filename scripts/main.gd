@@ -291,8 +291,10 @@ func resolve_weapons(delta: float) -> void:
 func update_mate() -> void:
 	if Input.is_action_just_pressed("rufen"):
 		call_mate()
-	if mate.reached(player.position, player.radius):
+	if mate.reached(player.position, player.radius * 2.0 - MateCall.PARTNER_RADIUS):
 		open_editor()
+	partner_view.look = player.look
+	partner_view.radius = player.radius
 	partner_view.partner_pos = mate.partner_pos
 
 
