@@ -44,6 +44,8 @@ var slot_menu: SlotMenu
 ## Ernährung der gewünschten neuen Partie; "" = Fortsetzen.
 var pending_diet := ""
 var benchmark: Benchmark
+## false in Vorführszenen: keine neuen KI-Zellen und keine neue Nahrung.
+var auto_spawn := true
 var finished := false
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
@@ -122,6 +124,10 @@ func _ready() -> void:
 	if Benchmark.requested(OS.get_cmdline_user_args()):
 		start_benchmark()
 
+	var scene_name := DemoScenes.requested(OS.get_cmdline_user_args())
+	if scene_name != "":
+		start_scene(scene_name)
+
 
 func _physics_process(delta: float) -> void:
 	if editor_open:
@@ -129,9 +135,11 @@ func _physics_process(delta: float) -> void:
 	stats.tick(delta)
 	player_health.tick(delta)
 	feed_player()
-	refill_food()
+	if auto_spawn:
+		refill_food()
 	collect_pickups()
-	spawn_ai()
+	if auto_spawn:
+		spawn_ai()
 	despawn_far_ai()
 	think_ai()
 	feed_ai()
@@ -543,3 +551,32 @@ func start_benchmark() -> void:
 func _on_benchmark_finished(text: String) -> void:
 	print(text)
 	get_tree().quit()
+
+
+## Vorführszene: Partie ohne Speichern, nur die Zellen und die Nahrung der Szene.
+func start_scene(scene_name: String) -> void:
+	var d := DemoScenes.data(scene_name)
+	start_new(str(d["diet"]))
+	autosave = false
+	auto_spawn = false
+	show_menu(false)
+	for cell in ai_cells.duplicate():
+		remove_ai(cell)
+	food.items.clear()
+	player.motion.position = Vector2.ZERO
+	player.motion.velocity = Vector2.ZERO
+	player.motion.heading = 0.0
+	player.position = Vector2.ZERO
+	progress.stage = int(d["stage"])
+	player.set_stage(progress.stage)
+	player.set_build(DemoScenes.build_for(scene_name))
+	for entry: Array in d["ai"]:
+		var cell := AiCell.new()
+		cell.setup(entry[0], entry[1])
+		cell.motion.heading = entry[2]
+		world.add_child(cell)
+		ai_cells.append(cell)
+	for entry: Array in d["food"]:
+		food.add_item(entry[0], entry[1])
+	hud.show_progress(progress)
+	hud.show_message(str(d["text"]), 8.0)
