@@ -137,6 +137,9 @@ func resolve_combat() -> void:
 			if player_health.damage(CombatRules.bite_damage(cell.damage, cell.radius, player.radius)):
 				player.motion.knockback(player.motion.position - cell.motion.position, 160.0)
 		if cell.health.is_dead():
+			var part := PartDrops.drop_for(cell.species_id, unlocks)
+			if part != "" and unlocks.unlock(part):
+				hud.show_message("Teil erbeutet: %s" % PartCatalog.name_of(part))
 			for pos in CombatRules.meat_positions(cell.motion.position, cell.radius):
 				food.add_item(Diet.FLEISCH, pos)
 			remove_ai(cell)
