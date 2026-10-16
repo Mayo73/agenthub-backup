@@ -1,0 +1,53 @@
+# Zellenphase – Regeln für Agents
+
+Evolutionsspiel in Godot 4.7 mit GDScript, Draufsicht auf eine Wasserwelt, nach dem Vorbild der Zellenphase von Spore. Die Spielerzelle schwimmt, frisst Pflanzen oder Fleisch, sammelt DNA, wächst in 5 Größenabschnitten, kämpft mit anderen Zellen und baut sich im Zelleditor um.
+
+## Architektur (wichtig)
+
+- Alles rechnet in **Weltkoordinaten von oben**: x nach rechts, y nach unten, Einheit Pixel. Winkel in Radiant, `0` = nach rechts (wie `Vector2.angle()`).
+- Keine Godot-Physikkörper (`RigidBody2D`, `CharacterBody2D`, `Area2D`). Bewegung steckt in `CellMotion`, Berührungen werden mit Abständen gerechnet.
+- Logik gehört in testbare Klassen (`extends RefCounted`), Nodes nur für Darstellung und Eingabe.
+- Nodes werden **im Code** angelegt (`PlayerCell.new()`, `add_child(...)`), nicht in `.tscn`-Dateien. Die einzige Szene ist `scenes/main.tscn` mit `Main` → `World` (Spielwelt) und `Camera`.
+- Neue Klassen bekommen ein `class_name`.
+
+## Dateien
+
+| Datei | Aufgabe |
+|---|---|
+| `scripts/main.gd` | Verdrahtung der Hauptszene: `world`, `camera` |
+| `scripts/controls.gd` | `Controls`: Aktionen `hoch`, `runter`, `links`, `rechts`, `schwimmen` (linke Maustaste), `pause`; `Controls.key_vector()` |
+
+Geplante Klassen (entstehen durch Tickets, Namen genau so verwenden): `CellMotion`, `PlayerInput`, `PlayerCell`, `CameraZoom`, `Diet`, `CellProgress`, `FoodItem`, `FoodField`, `MouthContact`, `FoodView`, `Hud`, `CellHealth`, `SpeciesCatalog`, `AiBrain`, `AiCell`, `EcoSpawner`, `CombatRules`, `ParallaxDots`, `WaterBackdrop`.
+
+## Regeln
+
+- GDScript 4 mit statischen Typen (`var x: int`, `func f() -> void`).
+- Einrückung **nur mit Tabs**, niemals mit Leerzeichen.
+- Kommentare beginnen mit `#` oder `##`. Es gibt keine Block-Kommentare mit `"""`.
+- Zu jeder neuen Logik gehört ein Test in `tests/test_<thema>.gd`:
+
+  ```gdscript
+  extends "res://tests/base_test.gd"
+
+  var progress: CellProgress
+
+  func setup() -> void:          # optional, läuft vor jedem Test
+  	progress = CellProgress.new()
+
+  func test_beschreibung() -> void:
+  	check_eq(ist_wert, soll_wert, "was geprüft wird")
+  	check(bedingung, "was schiefging")
+  ```
+
+  Jeder Test bekommt eine frische Instanz der Testklasse; `setup()` und `teardown()` sind optional. `check_eq` vergleicht Zahlen mit `is_equal_approx`.
+- Tests für die Hauptszene stehen in `tests/test_main_wiring.gd` (Szene in `setup()` laden, in `teardown()` mit `free()` freigeben).
+- `project.godot` nur ändern, wenn das Ticket es ausdrücklich verlangt.
+- Niemals Tests löschen oder abschwächen, nur damit die Prüfung grün wird.
+
+## Stil (Grafik)
+
+Bis Medien aus Higgsfield kommen, zeichnen die Nodes mit `_draw()` einfache Platzhalter (Kreise, Polygone).
+
+- Weiche, organische Formen, leicht durchscheinend; Wasser tiefblau bis türkis (Hintergrund `#0B2B3D`).
+- Farben: Pflanzennahrung grün (`#6CCB5F`), Fleisch rot (`#D9534F`), Spielerzelle hell (Türkis `#7FE0D0`), Gefahren mit kräftigen Warnfarben (Orange, Violett).
+- Die Spielerzelle muss sich immer klar von anderen Zellen und von Nahrung abheben.
