@@ -38,6 +38,7 @@ var settings_menu: SettingsMenu
 var audio: GameAudio
 var stats := RunStats.new()
 var end_screen: EndScreen
+var hints: TutorialHints
 var finished := false
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
@@ -131,6 +132,7 @@ func feed_player() -> void:
 	for item in food.take_at(player.mouth_point(), MOUTH_REACH, player.diet):
 		audio.play("fressen_pflanze" if item.kind == Diet.PFLANZE else "fressen_fleisch")
 		stats.food_eaten += 1
+		hint("fressen")
 		if progress.eat(item.value):
 			player.set_stage(progress.stage)
 			mate.add_charge()
@@ -138,6 +140,7 @@ func feed_player() -> void:
 			autosave_now()
 			audio.play("wachsen")
 			stats.record_stage(player.diet)
+			hint("partner")
 
 
 ## Entfernt weit entfernte Nahrung und streut neue um den Spieler, wenn sie knapp wird.
@@ -205,6 +208,7 @@ func resolve_combat() -> void:
 		if cell.damage > 0.0 and CombatRules.can_bite(cell.diet) and CombatRules.bite_hits(cell.motion.position, cell.motion.heading, cell.radius, player.motion.position, player.radius):
 			if player_health.damage(CombatRules.bite_damage(cell.damage, cell.radius, player.radius)):
 				player.motion.knockback(player.motion.position - cell.motion.position, 160.0)
+				hint("gefahr")
 				audio.play("treffer")
 		if cell.health.is_dead():
 			stats.cells_defeated += 1
@@ -298,6 +302,7 @@ func open_editor() -> void:
 	editor.open(player.build, unlocks, progress, progress.stage)
 	editor.set_look(player.look)
 	editor.finished.connect(close_editor)
+	hint("editor")
 	editor.canvas.changed.connect(func() -> void: audio.play("teil_setzen"))
 	add_click_sounds(editor)
 
@@ -333,6 +338,8 @@ func start_new(diet: String) -> void:
 	player.set_look(CellLook.new())
 	hud.show_progress(progress)
 	autosave = true
+	hints = TutorialHints.new()
+	hint("bewegen")
 
 
 func save_now() -> bool:
@@ -340,6 +347,7 @@ func save_now() -> bool:
 	data["look"] = player.look.to_dict()
 	data["diet"] = player.diet
 	data["stats"] = stats.to_dict()
+	data["hints"] = hints.to_array()
 	return SaveGame.write_file(save_path, data)
 
 
@@ -361,6 +369,8 @@ func load_saved() -> bool:
 		player.set_look(CellLook.from_dict(look_data))
 	var stats_data: Variant = data.get("stats")
 	stats = RunStats.from_dict(stats_data) if stats_data is Dictionary else RunStats.new()
+	var hint_data: Variant = data.get("hints")
+	hints = TutorialHints.from_array(hint_data if hint_data is Array else [])
 	hud.show_progress(progress)
 	autosave = true
 	return true
@@ -467,4 +477,13 @@ func _on_end_to_menu() -> void:
 	end_screen.visible = false
 	finished = false
 	back_to_menu()
+
+
+## Zeigt einen Einführungshinweis einmal pro Partie (6 Sekunden lang).
+func hint(id: String) -> void:
+	if hints == null:
+		return
+	var text := hints.trigger(id)
+	if text != "":
+		hud.show_message(text, 6.0)
 
