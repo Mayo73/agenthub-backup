@@ -69,3 +69,11 @@ func test_escape_bricht_ab() -> void:
 func test_klick() -> void:
 	check(menu.get_node("Click") is AudioStreamPlayer, "Click Node ist AudioStreamPlayer")
 	check(menu.key_buttons["gas"].pressed.is_connected(menu.play_click), "key_buttons['gas'].pressed ist mit play_click verbunden")
+
+
+func test_hintergrundbild() -> void:
+	var image := menu.get_node("BackgroundImage") as TextureRect
+	check(image != null, "BackgroundImage sollte existieren")
+	check(image.texture != null, "image.texture sollte nicht null sein")
+	check(image.get_index() < menu.get_node("Items").get_index(), "BackgroundImage sollte vor Items kommen")
+	check(menu.get_node("ItemShade") is ColorRect, "ItemShade ist ColorRect")
