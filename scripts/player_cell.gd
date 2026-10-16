@@ -9,6 +9,8 @@ var motion := CellMotion.new()
 var radius := 12.0
 var input_enabled := true
 var diet := Diet.PFLANZENFRESSER
+var build := CellBuild.starter(Diet.PFLANZENFRESSER)
+var stage := 0
 
 
 func _physics_process(delta: float) -> void:
@@ -32,9 +34,25 @@ func mouth_point() -> Vector2:
 
 
 ## Passt Größe und Tempo an den Größenabschnitt an (0 bis 4).
-func set_stage(stage: int) -> void:
+func set_stage(p_stage: int) -> void:
+	stage = p_stage
+	refresh()
+
+
+## Übernimmt einen neuen Aufbau (z. B. nach dem Zelleditor).
+func set_build(p_build: CellBuild) -> void:
+	build = p_build
+	refresh()
+
+
+## Rechnet Größe, Tempo, Wendigkeit und Ernährung aus Größenabschnitt und Aufbau neu aus.
+func refresh() -> void:
 	radius = CellProgress.radius_for_stage(stage)
-	motion.max_speed = 220.0 + 30.0 * stage
+	motion.max_speed = CellStats.max_speed(build, stage)
+	motion.turn_rate = CellStats.turn_rate(build)
+	var d := CellStats.diet(build)
+	if d != "":
+		diet = d
 	queue_redraw()
 
 
