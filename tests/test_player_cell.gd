@@ -79,3 +79,13 @@ func test_aussehen_bleibt_beim_wachsen() -> void:
 	cell.set_look(l)
 	cell.set_stage(2)
 	check(cell.look.color.is_equal_approx(Color.RED), "look.color bleibt RED nach set_stage(2)")
+
+
+func test_zeit_startet_bei_null() -> void:
+	check_eq(cell.time, 0.0, "cell.time ist 0.0")
+
+
+func test_zeit_laeuft() -> void:
+	cell.drive(0.5, Vector2.ZERO)
+	cell.drive(0.25, Vector2.ZERO)
+	check_eq(cell.time, 0.75, "cell.time ist 0.75 nach zwei drive()-Aufrufen")
