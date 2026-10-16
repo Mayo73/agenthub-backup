@@ -154,3 +154,29 @@ func test_ki_von_hinten_harmlos() -> void:
 	_add_ai("schnapper", Vector2(30, 0), 0.0)
 	main.resolve_combat()
 	check_eq(main.player_health.hp, 100.0, "main.player_health.hp ist 100.0")
+
+
+func test_tod() -> void:
+	main.progress.eat(5)
+	main.player_health.hp = 0.0
+	main.check_death()
+	check_eq(main.deaths, 1, "main.deaths ist 1 nach check_death")
+	check_eq(main.player_health.hp, 100.0, "main.player_health.hp ist 100.0 nach Tod")
+	check_eq(main.player_health.invulnerable, 2.0, "main.player_health.invulnerable ist 2.0")
+	check_eq(main.progress.dna, 5, "main.progress.dna ist 5 (bleibt)")
+	check(main.hud.message_label.text != "", "message_label hat Text nach Tod")
+
+
+func test_tod_vertreibt_gegner() -> void:
+	var cell := AiCell.new()
+	cell.setup("schnapper", Vector2(50, 0))
+	main.world.add_child(cell)
+	main.ai_cells.append(cell)
+	main.player_health.hp = 0.0
+	main.check_death()
+	check_eq(main.ai_cells.size(), 0, "main.ai_cells.size() ist 0 nach check_death")
+
+
+func test_lebend_nichts() -> void:
+	main.check_death()
+	check_eq(main.deaths, 0, "main.deaths ist 0 wenn nicht tot")
