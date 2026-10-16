@@ -118,3 +118,57 @@ func test_auge_blinzelt() -> void:
 func test_auge_versetzt() -> void:
 	cell.drive(0.05, Vector2.ZERO)
 	check_eq(cell.eye_openness({"id": "knopfauge", "pos": Vector2(0.5, 1.0), "angle": 0.0}), 1.0, "Auge mit Versetzung ist offen")
+
+
+func test_wimpern_linien() -> void:
+	var part := {"id": "wimpern", "pos": Vector2(-1, 0), "angle": 0.0}
+	var lines := cell.cilia_lines(part)
+	check_eq(lines.size(), 5, "cilia_lines hat 5 Linien")
+	check(lines[0][0].is_equal_approx(Vector2(-cell.radius, -0.25 * cell.radius)), "erste Linie beginnt bei (-radius, -0.25*radius)")
+
+
+func test_duese_pulsiert() -> void:
+	var part := {"id": "duese", "pos": Vector2(-1, 0), "angle": 0.0}
+	var a := cell.jet_points(part)[1]
+	cell.drive(0.1, Vector2.ZERO)
+	var b := cell.jet_points(part)[1]
+	check_eq(cell.jet_points(part).size(), 4, "jet_points hat 4 Punkte")
+	check(not a.is_equal_approx(b), "Düse pulsiert nach drive()")
+
+
+func test_maul_ruhig() -> void:
+	check_eq(cell.mouth_open(), 1.0, "mouth_open() ist 1.0 in Ruhe")
+
+
+func test_maul_kaut() -> void:
+	cell.bite()
+	cell.drive(0.15, Vector2.ZERO)
+	check_eq(cell.mouth_open(), 1.5, "mouth_open() ist 1.5 nach bite() + drive(0.15)")
+	cell.drive(1.0, Vector2.ZERO)
+	check_eq(cell.mouth_open(), 1.0, "mouth_open() ist 1.0 nach Ablauf der Kaubewegung")
+
+
+func test_maul_form() -> void:
+	var part := {"id": "kiefer", "pos": Vector2(1, 0), "angle": 0.0}
+	check(cell.mouth_points(part)[1].is_equal_approx(Vector2(1.35 * cell.radius, 0.16 * cell.radius)), "mouth_points[1] ist (1.35r, 0.16r) in Ruhe")
+	cell.bite()
+	cell.drive(0.15, Vector2.ZERO)
+	check(cell.mouth_points(part)[1].is_equal_approx(Vector2(1.35 * cell.radius, 0.24 * cell.radius)), "mouth_points[1] ist (1.35r, 0.24r) während Kaubewegung")
+
+
+func test_puls_ruhig() -> void:
+	check_eq(cell.pulse_scale(), 1.0, "pulse_scale() ist 1.0 in Ruhe")
+
+
+func test_puls() -> void:
+	cell.pulse()
+	cell.drive(0.3, Vector2.ZERO)
+	check_eq(cell.pulse_scale(), 1.25, "pulse_scale() ist 1.25 nach pulse() + drive(0.3)")
+	check_eq(cell.scale.x, 1.25, "scale.x ist 1.25 nach pulse() + drive(0.3)")
+
+
+func test_puls_vorbei() -> void:
+	cell.pulse()
+	cell.drive(1.0, Vector2.ZERO)
+	check_eq(cell.scale.x, 1.0, "scale.x ist 1.0 nach Ablauf des Pulses")
+	check_eq(cell.radius, 12.0, "radius ist 12.0 nach Ablauf des Pulses")

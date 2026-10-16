@@ -103,9 +103,9 @@ func _draw() -> void:
 	for i in session.working.parts.size():
 		var part: Dictionary = session.working.parts[i]
 		var points := PackedVector2Array()
-		for p in PartShapes.placed(part, SCALE):
+		for p in PartLooks.placed(part, SCALE):
 			points.append(CENTER + p)
-		var color := SELECT_COLOR if i == selected else PartShapes.color_of(part["id"])
+		var color := SELECT_COLOR if i == selected else PartLooks.color(part["id"])
 		draw_colored_polygon(points, color)
 
 

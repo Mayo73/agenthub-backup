@@ -7,6 +7,13 @@ const FLAGELLUM_LENGTH := 0.9
 const FLAGELLUM_AMPLITUDE := 0.12
 const FLAGELLUM_SPEED := 10.0
 
+## Wimpern und Düse animieren
+const CILIA_COUNT := 5
+const CILIA_LENGTH := 0.3
+const CILIA_SPREAD := 0.5
+const CILIA_SPEED := 12.0
+const JET_PULSE := 0.15
+const JET_SPEED := 8.0
 
 ## Linienzug der Geißel zur Zeit time. Der Ansatz bewegt sich nicht, das Ende schwingt am stärksten.
 static func flagellum(time: float) -> PackedVector2Array:
@@ -15,6 +22,22 @@ static func flagellum(time: float) -> PackedVector2Array:
 		var t := float(i) / (FLAGELLUM_POINTS - 1)
 		out.append(Vector2(-FLAGELLUM_LENGTH * t, FLAGELLUM_AMPLITUDE * t * sin(time * FLAGELLUM_SPEED - t * 6.0)))
 	return out
+
+## Wimpern nebeneinander, je ein Linienzug aus Ansatz und Spitze (in Zellradien, nach -x zeigend).
+## Sie schlagen versetzt hin und her.
+static func cilia(time: float) -> Array[PackedVector2Array]:
+	var out: Array[PackedVector2Array] = []
+	for i in CILIA_COUNT:
+		var y := CILIA_SPREAD * (float(i) / (CILIA_COUNT - 1) - 0.5)
+		var swing := 0.6 * sin(time * CILIA_SPEED + i * 1.2)
+		var base := Vector2(0, y)
+		out.append(PackedVector2Array([base, base + Vector2(-CILIA_LENGTH, 0).rotated(swing)]))
+	return out
+
+
+## Größenfaktor der Düse, pulsiert zwischen 1 - JET_PULSE und 1 + JET_PULSE.
+static func jet_scale(time: float) -> float:
+	return 1.0 + JET_PULSE * sin(time * JET_SPEED)
 
 
 ## Setzt Punkte (in Zellradien, nach -x zeigend) an ein eingebautes Antriebsteil, Ergebnis in Pixeln
