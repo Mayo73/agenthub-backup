@@ -3,6 +3,7 @@ extends Node2D
 ## Die Logik steckt in RefCounted-Klassen unter scripts/, hier nur Verdrahtung.
 
 const MOUTH_REACH := 4.0
+const RESPAWN_INVULNERABLE := 2.0
 
 @onready var world: Node2D = $World
 @onready var camera: Camera2D = $Camera
@@ -15,6 +16,7 @@ var hud: Hud
 var spawner := EcoSpawner.new(11)
 var ai_cells: Array[AiCell] = []
 var player_health := CellHealth.new()
+var deaths := 0
 
 
 func _ready() -> void:
@@ -44,6 +46,7 @@ func _physics_process(delta: float) -> void:
 	think_ai()
 	feed_ai()
 	resolve_combat()
+	check_death()
 
 
 ## Frisst alles, was das Maul der Spielerzelle berührt und zur Ernährung passt.
@@ -65,6 +68,7 @@ func _process(delta: float) -> void:
 	var zoom := CameraZoom.smooth(camera.zoom.x, CameraZoom.target_for_radius(player.radius), delta)
 	camera.zoom = Vector2(zoom, zoom)
 	hud.show_progress(progress)
+	hud.show_health(player_health)
 
 
 ## Füllt die KI-Zellen auf EcoSpawner.TARGET_COUNT auf.
@@ -119,3 +123,17 @@ func resolve_combat() -> void:
 			for pos in CombatRules.meat_positions(cell.motion.position, cell.radius):
 				food.add_item(Diet.FLEISCH, pos)
 			remove_ai(cell)
+
+
+## Nach dem Tod schlüpft eine neue Zelle: DNA und Größe bleiben, nahe KI-Zellen verschwinden.
+func check_death() -> void:
+	if not player_health.is_dead():
+		return
+	deaths += 1
+	player_health.reset(RESPAWN_INVULNERABLE)
+	player.motion.velocity = Vector2.ZERO
+	var clear_dist := 400.0 * EcoSpawner.view_scale(player.radius)
+	for cell in ai_cells.duplicate():
+		if cell.position.distance_to(player.position) < clear_dist:
+			remove_ai(cell)
+	hud.show_message("Deine Zelle wurde gefressen – eine neue schlüpft.")

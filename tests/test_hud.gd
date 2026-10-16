@@ -26,3 +26,17 @@ func test_letzte_groesse() -> void:
 	hud.show_progress(p)
 	check_eq(hud.stage_label.text, "Größe 5/5", "stage_label zeigt letzte Größe")
 	check_eq(hud.growth_bar.value, 100.0, "growth_bar value ist 100.0 im letzten Abschnitt")
+
+
+func test_gesundheit() -> void:
+	var h := CellHealth.new()
+	h.damage(50.0)
+	hud.show_health(h)
+	check_eq(hud.health_bar.value, 50.0, "health_bar.value ist 50.0 nach 50 Schaden")
+
+
+func test_meldung_verschwindet() -> void:
+	hud.show_message("Hallo", 1.0)
+	check_eq(hud.message_label.text, "Hallo", "message_label zeigt Text direkt nach show_message")
+	hud._process(1.5)
+	check_eq(hud.message_label.text, "", "message_label ist leer nach _process mit Zeit > seconds")
