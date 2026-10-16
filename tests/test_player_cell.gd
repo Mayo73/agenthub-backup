@@ -154,3 +154,21 @@ func test_maul_form() -> void:
 	cell.bite()
 	cell.drive(0.15, Vector2.ZERO)
 	check(cell.mouth_points(part)[1].is_equal_approx(Vector2(1.35 * cell.radius, 0.24 * cell.radius)), "mouth_points[1] ist (1.35r, 0.24r) während Kaubewegung")
+
+
+func test_puls_ruhig() -> void:
+	check_eq(cell.pulse_scale(), 1.0, "pulse_scale() ist 1.0 in Ruhe")
+
+
+func test_puls() -> void:
+	cell.pulse()
+	cell.drive(0.3, Vector2.ZERO)
+	check_eq(cell.pulse_scale(), 1.25, "pulse_scale() ist 1.25 nach pulse() + drive(0.3)")
+	check_eq(cell.scale.x, 1.25, "scale.x ist 1.25 nach pulse() + drive(0.3)")
+
+
+func test_puls_vorbei() -> void:
+	cell.pulse()
+	cell.drive(1.0, Vector2.ZERO)
+	check_eq(cell.scale.x, 1.0, "scale.x ist 1.0 nach Ablauf des Pulses")
+	check_eq(cell.radius, 12.0, "radius ist 12.0 nach Ablauf des Pulses")
