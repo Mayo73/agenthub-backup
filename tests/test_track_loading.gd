@@ -49,3 +49,14 @@ func test_deko_geladen() -> void:
 
 	check(track.has_method("_draw_decor"), "track sollte Methode _draw_decor haben")
 	track.free()
+
+
+func test_tribuene_geladen() -> void:
+	var track: Node2D = preload("res://scripts/track.gd").new()
+	track.load_track("kurvenring")
+	check_eq(track.stand.size(), 4, "stand sollte 4 Ecken haben")
+
+	for e in track.stand:
+		check(not track.path.is_on_track(e), "Ecke der Tribüne sollte nicht auf der Strecke sein")
+
+	track.free()

@@ -22,6 +22,7 @@ const START_CELL := 20.0
 var path: TrackPath
 var track_id := ""
 var decor: Array[Dictionary] = []
+var stand := PackedVector2Array()
 
 
 ## Lädt eine Strecke aus dem TrackCatalog. Unbekannte IDs werden ignoriert.
@@ -33,6 +34,7 @@ func load_track(id: String) -> void:
 	width = TrackCatalog.width_of(id)
 	path = TrackPath.new(TrackPath.smooth_closed(control_points, SMOOTH_STEPS), width)
 	decor = TrackDecor.build(path)
+	stand = TrackDecor.grandstand(path)
 	queue_redraw()
 
 
@@ -83,6 +85,16 @@ func _draw_start_line() -> void:
 
 ## Reifenstapel (drei dunkle Ringe nebeneinander) und Bäume (grüne Kreise mit hellerer Krone).
 func _draw_decor() -> void:
+	if stand.size() == 4:
+		draw_colored_polygon(stand, Color(0.45, 0.45, 0.48))
+		for row in 3:
+			var t0 := 0.15 + row * 0.28
+			var t1 := t0 + 0.14
+			var a := stand[0].lerp(stand[3], t0)
+			var b := stand[1].lerp(stand[2], t0)
+			var c := stand[1].lerp(stand[2], t1)
+			var d := stand[0].lerp(stand[3], t1)
+			draw_colored_polygon(PackedVector2Array([a, b, c, d]), [Color(0.8, 0.2, 0.2), Color(0.2, 0.4, 0.85), Color(0.95, 0.8, 0.2)][row])
 	for item in decor:
 		var p: Vector2 = item["position"]
 		if item["kind"] == TrackDecor.Kind.TIRES:
