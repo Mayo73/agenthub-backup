@@ -1,5 +1,6 @@
 class_name AiCell
 extends Node2D
+## Eine KI-gesteuerte Zelle. Werte aus dem SpeciesCatalog, Entscheidungen in AiBrain, Bewegung in CellMotion.
 
 var species_id := ""
 var motion := CellMotion.new()

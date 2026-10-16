@@ -17,7 +17,9 @@ Evolutionsspiel in Godot 4.7 mit GDScript, Draufsicht auf eine Wasserwelt, nach 
 | `scripts/main.gd` | Verdrahtung der Hauptszene: `world`, `camera` |
 | `scripts/controls.gd` | `Controls`: Aktionen `hoch`, `runter`, `links`, `rechts`, `schwimmen` (linke Maustaste), `pause`; `Controls.key_vector()` |
 
-Geplante Klassen (entstehen durch Tickets, Namen genau so verwenden): `CellMotion`, `PlayerInput`, `PlayerCell`, `CameraZoom`, `Diet`, `CellProgress`, `FoodItem`, `FoodField`, `MouthContact`, `FoodView`, `Hud`, `CellHealth`, `SpeciesCatalog`, `AiBrain`, `AiCell`, `EcoSpawner`, `CombatRules`, `ParallaxDots`, `WaterBackdrop`.
+Geplante Klassen (entstehen durch Tickets, Namen genau so verwenden): `CellMotion`, `PlayerInput`, `PlayerCell`, `CameraZoom`, `Diet`, `CellProgress`, `FoodItem`, `FoodField`, `MouthContact`, `FoodView`, `Hud`, `CellHealth`, `SpeciesCatalog`, `AiBrain`, `AiCell`, `EcoSpawner`, `CombatRules`, `ParallaxDots`, `WaterBackdrop`, `PartCatalog`, `CellBuild`, `CellStats`, `PartUnlocks`, `PartPickups`, `PickupView`, `PartGeometry`, `WeaponRules`, `PoisonClouds`, `ElectricOrgan`, `PartShapes`, `PartDrops`, `EditorSession`, `EditorSymmetry`, `CellLook`, `MateCall`, `SaveGame`.
+
+Teil-Lagen (`CellBuild`) sind in Zellradien relativ zur Zellmitte angegeben, Blickrichtung +x; `PartGeometry.world_point()` rechnet sie in Weltkoordinaten um.
 
 ## Regeln
 
