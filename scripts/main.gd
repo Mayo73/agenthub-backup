@@ -21,6 +21,9 @@ var backdrop: WaterBackdrop
 var unlocks: PartUnlocks = PartUnlocks.new()
 var pickups: PartPickups = PartPickups.new(13)
 var pickup_view: PickupView
+var mate := MateCall.new()
+var partner_view: PartnerView
+var editor_open := false
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
 
@@ -50,9 +53,14 @@ func _ready() -> void:
 	pickup_view.name = "Pickups"
 	pickup_view.pickups = pickups
 	world.add_child(pickup_view)
+	partner_view = PartnerView.new()
+	partner_view.name = "Partner"
+	world.add_child(partner_view)
 
 
 func _physics_process(delta: float) -> void:
+	if editor_open:
+		return
 	player_health.tick(delta)
 	feed_player()
 	refill_food()
@@ -64,6 +72,7 @@ func _physics_process(delta: float) -> void:
 	resolve_weapons(delta)
 	resolve_combat()
 	check_death()
+	update_mate()
 
 
 ## Frisst alles, was das Maul der Spielerzelle berührt und zur Ernährung passt.
@@ -71,6 +80,8 @@ func feed_player() -> void:
 	for item in food.take_at(player.mouth_point(), MOUTH_REACH, player.diet):
 		if progress.eat(item.value):
 			player.set_stage(progress.stage)
+			mate.add_charge()
+			hud.show_message("Neuer Ruf bereit: Taste C oder rechte Maustaste")
 
 
 ## Entfernt weit entfernte Nahrung und streut neue um den Spieler, wenn sie knapp wird.
@@ -194,3 +205,26 @@ func resolve_weapons(delta: float) -> void:
 			zapped = true
 	if zapped:
 		electric.fire()
+
+
+## Ruf auslösen, beim Erreichen des Partners den Zelleditor öffnen, Partner zeichnen.
+func update_mate() -> void:
+	if Input.is_action_just_pressed("rufen"):
+		call_mate()
+	if mate.reached(player.position, player.radius):
+		open_editor()
+	partner_view.partner_pos = mate.partner_pos
+
+
+func call_mate() -> bool:
+	if mate.call_partner(player.position, player.motion.heading):
+		hud.show_message("Ein Partner antwortet – schwimm zu ihm!")
+		return true
+	return false
+
+
+## Öffnet den Zelleditor. Bis der Editor eingebaut ist, hält die Spielerzelle nur an.
+func open_editor() -> void:
+	editor_open = true
+	player.input_enabled = false
+	mate.finish()
