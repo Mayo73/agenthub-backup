@@ -43,6 +43,7 @@ var slot_prefix := SaveSlots.PREFIX
 var slot_menu: SlotMenu
 ## Ernährung der gewünschten neuen Partie; "" = Fortsetzen.
 var pending_diet := ""
+var benchmark: Benchmark
 var finished := false
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
@@ -117,6 +118,9 @@ func _ready() -> void:
 	add_child(slot_menu)
 	slot_menu.slot_chosen.connect(_on_slot_chosen)
 	add_click_sounds(slot_menu)
+
+	if Benchmark.requested(OS.get_cmdline_user_args()):
+		start_benchmark()
 
 
 func _physics_process(delta: float) -> void:
@@ -517,3 +521,20 @@ func _on_slot_chosen(slot: int) -> void:
 		autosave_now()
 	else:
 		_on_continue()
+
+
+## Leistungstest: neue Partie ohne Speichern; nach Benchmark.DURATION Sekunden Ergebnis ausgeben und beenden.
+func start_benchmark() -> void:
+	start_new(Diet.PFLANZENFRESSER)
+	autosave = false
+	show_menu(false)
+	benchmark = Benchmark.new()
+	benchmark.name = "Benchmark"
+	benchmark.ai_counter = func() -> int: return ai_cells.size()
+	benchmark.finished.connect(_on_benchmark_finished)
+	add_child(benchmark)
+
+
+func _on_benchmark_finished(text: String) -> void:
+	print(text)
+	get_tree().quit()
