@@ -14,7 +14,7 @@ static func shadow_offset(radius: float, rotation: float) -> Vector2:
 	return (SHADOW_OFFSET * radius).rotated(-rotation)
 
 
-## Mitte des Glanzlichts in Pixeln, im Koordinatensystem der um rotation gedrohten Zelle.
+## Mitte des Glanzlichts in Pixeln, im Koordinatensystem der um rotation gedrehten Zelle.
 static func highlight_center(radius: float, rotation: float) -> Vector2:
 	return (HIGHLIGHT_POS * radius).rotated(-rotation)
 
