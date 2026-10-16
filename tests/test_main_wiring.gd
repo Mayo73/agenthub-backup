@@ -194,3 +194,13 @@ func test_platz_im_hud() -> void:
 	main.place = 3
 	main.restart()
 	check(main.place == 1, "main.place ist 1 nach restart()")
+
+
+func test_musik_und_countdown() -> void:
+	check(main.get_node("Music") is AudioStreamPlayer, "Music ist AudioStreamPlayer")
+	check(main.music.stream is AudioStreamWAV, "music.stream ist AudioStreamWAV")
+	check(main.get_node("RaceSounds") != null, "RaceSounds existiert")
+	main.race_sounds.update(main.race)
+	check_eq(main.race_sounds.beeps, 1, "race_sounds.beeps ist 1 nach update()")
+	main.restart()
+	check_eq(main.race_sounds.last_text, "", "last_text ist leer nach restart()")

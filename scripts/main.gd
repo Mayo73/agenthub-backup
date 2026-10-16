@@ -35,6 +35,9 @@ var last_record := {}
 var ai_cars: Array[Node2D] = []
 var place := 1
 
+var race_sounds: Node
+var music: AudioStreamPlayer
+
 
 func _ready() -> void:
 	Controls.setup()
@@ -75,9 +78,20 @@ func _ready() -> void:
 		ai_cars.append(ai)
 	place_ai_cars()
 
+	race_sounds = preload("res://scripts/race_sounds.gd").new()
+	race_sounds.name = "RaceSounds"
+	add_child(race_sounds)
+	music = AudioStreamPlayer.new()
+	music.name = "Music"
+	music.stream = MusicSynth.theme()
+	music.volume_db = -14.0
+	add_child(music)
+	music.play()
+
 
 func _physics_process(delta: float) -> void:
 	race.update(delta)
+	race_sounds.update(race)
 	car.input_enabled = race.can_drive()
 	for ai in ai_cars:
 		ai.driving_enabled = race.can_drive()
@@ -130,6 +144,7 @@ func restart() -> void:
 	last_record = {}
 	place_ai_cars()
 	place = 1
+	race_sounds.reset()
 
 
 func ai_distances() -> Array:
