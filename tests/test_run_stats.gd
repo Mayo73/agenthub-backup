@@ -54,3 +54,11 @@ func test_kaputte_werte() -> void:
 	check_eq(t.deaths, 0, "Negativer deaths auf 0 begrenzt")
 	check_eq(t.play_time, 0.0, "Negatives play_time auf 0.0 begrenzt")
 	check_eq(t.food_eaten, 0, "Fehlendes food_eaten ist 0")
+
+
+func test_aus_json() -> void:
+	s.record_stage("allesfresser")
+	var d: Dictionary = JSON.parse_string(JSON.stringify(s.to_dict()))
+	var t := RunStats.from_dict(d)
+	check_eq(t.diet_history.size(), 1, "diet_history aus JSON gelesen")
+	check_eq(t.main_diet(), "allesfresser", "Hauptnahrung aus JSON")

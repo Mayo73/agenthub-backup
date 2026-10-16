@@ -74,7 +74,7 @@ static func from_dict(d: Dictionary) -> RunStats:
 	s.cells_defeated = maxi(0, int(d.get("cells_defeated", 0)))
 	s.deaths = maxi(0, int(d.get("deaths", 0)))
 	s.editor_visits = maxi(0, int(d.get("editor_visits", 0)))
-	var history: Array[String] = d.get("diet_history", [] as Array[String])
+	var history: Array = d.get("diet_history", [])
 	for entry in history:
 		s.diet_history.append(str(entry))
 	return s
