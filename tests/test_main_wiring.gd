@@ -179,3 +179,9 @@ func test_tod_vertreibt_gegner() -> void:
 func test_lebend_nichts() -> void:
 	main.check_death()
 	check_eq(main.deaths, 0, "main.deaths ist 0 wenn nicht tot")
+
+
+func test_hintergrund() -> void:
+	check(main.backdrop is WaterBackdrop, "main.backdrop is WaterBackdrop wahr")
+	check_eq(main.backdrop.get_index(), 2, "main.backdrop.get_index() ist 2")
+	check(main.backdrop.camera == main.camera, "main.backdrop.camera == main.camera wahr")
