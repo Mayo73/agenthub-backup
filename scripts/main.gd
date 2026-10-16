@@ -95,7 +95,7 @@ func _physics_process(delta: float) -> void:
 	hud.show_score(scorer)
 	hud.show_laps(lap_timer)
 	hud.show_place(place, ai_cars.size() + 1)
-	hud.show_race(race, scorer.total, last_record.get("new_time", false), last_record.get("new_points", false))
+	hud.show_race(race, scorer.total, last_record.get("new_time", false), last_record.get("new_points", false), place, ai_cars.size() + 1)
 
 	skid_marks.track_car(car.physics)
 
