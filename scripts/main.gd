@@ -39,6 +39,11 @@ var audio: GameAudio
 var stats := RunStats.new()
 var end_screen: EndScreen
 var hints := TutorialHints.new()
+var slot_prefix := SaveSlots.PREFIX
+var slot_menu: SlotMenu
+## Ernährung der gewünschten neuen Partie; "" = Fortsetzen.
+var pending_diet := ""
+var benchmark: Benchmark
 var finished := false
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
@@ -75,9 +80,9 @@ func _ready() -> void:
 	main_menu = MainMenu.new()
 	main_menu.name = "MainMenu"
 	add_child(main_menu)
-	main_menu.set_can_continue(FileAccess.file_exists(save_path))
-	main_menu.new_game.connect(_on_new_game)
-	main_menu.continue_game.connect(_on_continue)
+	main_menu.set_can_continue(SaveSlots.first_used(slot_prefix) > 0)
+	main_menu.new_game.connect(ask_slot_new)
+	main_menu.continue_game.connect(ask_slot_continue)
 	main_menu.quit_game.connect(quit)
 	pause_menu = PauseMenu.new()
 	pause_menu.name = "PauseMenu"
@@ -107,6 +112,15 @@ func _ready() -> void:
 	add_click_sounds(main_menu)
 	add_click_sounds(pause_menu)
 	add_click_sounds(settings_menu)
+
+	slot_menu = SlotMenu.new()
+	slot_menu.name = "SlotMenu"
+	add_child(slot_menu)
+	slot_menu.slot_chosen.connect(_on_slot_chosen)
+	add_click_sounds(slot_menu)
+
+	if Benchmark.requested(OS.get_cmdline_user_args()):
+		start_benchmark()
 
 
 func _physics_process(delta: float) -> void:
@@ -204,10 +218,12 @@ func resolve_combat() -> void:
 		if CombatRules.can_bite(player.diet) and CombatRules.bite_hits(player.motion.position, player.motion.heading, player.radius, cell.motion.position, cell.radius):
 			if cell.health.damage(CombatRules.bite_damage(CombatRules.PLAYER_BITE, player.radius, cell.radius)):
 				cell.motion.knockback(cell.motion.position - player.motion.position, 120.0)
+				cell.flash.trigger()
 				audio.play("treffer")
 		if cell.damage > 0.0 and CombatRules.can_bite(cell.diet) and CombatRules.bite_hits(cell.motion.position, cell.motion.heading, cell.radius, player.motion.position, player.radius):
 			if player_health.damage(CombatRules.bite_damage(cell.damage, cell.radius, player.radius)):
 				player.motion.knockback(player.motion.position - cell.motion.position, 160.0)
+				player.flash.trigger()
 				hint("gefahr")
 				audio.play("treffer")
 		if cell.health.is_dead():
@@ -265,6 +281,7 @@ func resolve_weapons(delta: float) -> void:
 		if WeaponRules.spike_hits(tips, cell.motion.position, cell.radius) > 0:
 			if cell.health.damage(WeaponRules.SPIKE_DAMAGE):
 				cell.motion.knockback(cell.motion.position - pos, 100.0)
+				cell.flash.trigger()
 		cell.health.drain(poison.damage_at(cell.motion.position, cell.radius, delta))
 		if zap and ElectricOrgan.in_range(pos, player.radius, cell.motion.position, cell.radius):
 			cell.health.damage(ElectricOrgan.DAMAGE)
@@ -277,8 +294,10 @@ func resolve_weapons(delta: float) -> void:
 func update_mate() -> void:
 	if Input.is_action_just_pressed("rufen"):
 		call_mate()
-	if mate.reached(player.position, player.radius):
+	if mate.reached(player.position, player.radius * 2.0 - MateCall.PARTNER_RADIUS):
 		open_editor()
+	partner_view.look = player.look
+	partner_view.radius = player.radius
 	partner_view.partner_pos = mate.partner_pos
 
 
@@ -340,6 +359,7 @@ func start_new(diet: String) -> void:
 	autosave = true
 	hints = TutorialHints.new()
 	hint("bewegen")
+	show_menu(false)
 
 
 func save_now() -> bool:
@@ -388,7 +408,6 @@ func show_menu(value: bool) -> void:
 
 func _on_new_game(diet: String) -> void:
 	start_new(diet)
-	show_menu(false)
 
 
 func _on_continue() -> void:
@@ -413,7 +432,7 @@ func back_to_menu() -> void:
 	autosave_now()
 	paused = false
 	pause_menu.close()
-	main_menu.set_can_continue(FileAccess.file_exists(save_path))
+	main_menu.set_can_continue(SaveSlots.first_used(slot_prefix) > 0)
 	show_menu(true)
 
 
@@ -485,3 +504,42 @@ func hint(id: String) -> void:
 	if text != "":
 		hud.show_message(text, 6.0)
 
+
+# Neue Funktionen für Spielstandplatz-Auswahl
+
+func ask_slot_new(diet: String) -> void:
+	pending_diet = diet
+	slot_menu.prefix = slot_prefix
+	slot_menu.open("Neue Partie – Platz wählen", false)
+
+
+func ask_slot_continue() -> void:
+	pending_diet = ""
+	slot_menu.prefix = slot_prefix
+	slot_menu.open("Fortsetzen – Spielstand wählen", true)
+
+
+func _on_slot_chosen(slot: int) -> void:
+	save_path = SaveSlots.path_for(slot, slot_prefix)
+	if pending_diet != "":
+		_on_new_game(pending_diet)
+		autosave_now()
+	else:
+		_on_continue()
+
+
+## Leistungstest: neue Partie ohne Speichern; nach Benchmark.DURATION Sekunden Ergebnis ausgeben und beenden.
+func start_benchmark() -> void:
+	start_new(Diet.PFLANZENFRESSER)
+	autosave = false
+	show_menu(false)
+	benchmark = Benchmark.new()
+	benchmark.name = "Benchmark"
+	benchmark.ai_counter = func() -> int: return ai_cells.size()
+	benchmark.finished.connect(_on_benchmark_finished)
+	add_child(benchmark)
+
+
+func _on_benchmark_finished(text: String) -> void:
+	print(text)
+	get_tree().quit()
