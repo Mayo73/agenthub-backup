@@ -49,6 +49,7 @@ var auto_spawn := true
 var bubbles := BubbleTrail.new()
 var bubble_view: BubbleView
 var bubble_timer := 0.0
+var burst_view: DeathBurstView
 var finished := false
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
@@ -128,6 +129,10 @@ func _ready() -> void:
 	bubble_view.name = "Bubbles"
 	bubble_view.trail = bubbles
 	world.add_child(bubble_view)
+
+	burst_view = DeathBurstView.new()
+	burst_view.name = "Bursts"
+	world.add_child(burst_view)
 
 	if Benchmark.requested(OS.get_cmdline_user_args()):
 		start_benchmark()
@@ -248,6 +253,7 @@ func resolve_combat() -> void:
 				audio.play("treffer")
 		if cell.health.is_dead():
 			stats.cells_defeated += 1
+			burst_view.bursts.add(cell.motion.position, cell.radius, cell.color)
 			var part := PartDrops.drop_for(cell.species_id, unlocks)
 			if part != "" and unlocks.unlock(part):
 				hud.show_message("Teil erbeutet: %s" % PartCatalog.name_of(part))
@@ -262,6 +268,7 @@ func check_death() -> void:
 		return
 	deaths += 1
 	stats.deaths += 1
+	burst_view.bursts.add(player.motion.position, player.radius, player.look.color)
 	audio.play("tod")
 	player_health.reset(RESPAWN_INVULNERABLE)
 	player.motion.velocity = Vector2.ZERO
