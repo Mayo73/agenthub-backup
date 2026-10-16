@@ -77,3 +77,36 @@ static func mix(a: PackedFloat32Array, b: PackedFloat32Array) -> PackedFloat32Ar
 		var vb := b[i] if i < b.size() else 0.0
 		out[i] = va + vb
 	return out
+
+
+## Ton, dessen Frequenz linear von f0 nach f1 gleitet. Die Phase wird aufsummiert, damit nichts knackt.
+static func sweep(f0: float, f1: float, duration: float, wave: int = Wave.SINE, volume: float = 0.5) -> PackedFloat32Array:
+	var n := int(duration * MIX_RATE)
+	var out := PackedFloat32Array()
+	out.resize(n)
+	var phase := 0.0
+	for i in n:
+		var f := lerpf(f0, f1, float(i) / maxf(1.0, float(n - 1)))
+		out[i] = wave_value(wave, phase) * volume
+		phase += f / MIX_RATE
+	return out
+
+
+## Blendet linear auf 0 aus: erster Wert unverändert, letzter Wert 0.
+static func fade_out(samples: PackedFloat32Array) -> PackedFloat32Array:
+	var out := samples.duplicate()
+	var n := out.size()
+	for i in n:
+		out[i] *= 1.0 - float(i) / maxf(1.0, float(n - 1))
+	return out
+
+
+## Einfacher Tiefpass (y += alpha * (x - y)); kleines alpha klingt dumpfer.
+static func lowpass(samples: PackedFloat32Array, alpha: float) -> PackedFloat32Array:
+	var out := PackedFloat32Array()
+	out.resize(samples.size())
+	var y := 0.0
+	for i in samples.size():
+		y += alpha * (samples[i] - y)
+		out[i] = y
+	return out
