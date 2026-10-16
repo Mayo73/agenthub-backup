@@ -64,3 +64,8 @@ func test_escape_bricht_ab() -> void:
 	check(Controls.key_for("gas") == KEY_W, "key_for('gas') sollte unverändert KEY_W sein")
 	check(menu.settings.keys.has("gas") == false, "settings.keys sollte 'gas' nicht haben nach Escape")
 	check(menu.key_buttons["gas"].text == "W", "Button text sollte unverändert W sein")
+
+
+func test_klick() -> void:
+	check(menu.get_node("Click") is AudioStreamPlayer, "Click Node ist AudioStreamPlayer")
+	check(menu.key_buttons["gas"].pressed.is_connected(menu.play_click), "key_buttons['gas'].pressed ist mit play_click verbunden")
