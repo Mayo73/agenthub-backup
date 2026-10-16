@@ -25,9 +25,9 @@ func take_touching(center: Vector2, radius: float) -> int:
 	for p in positions:
 		if center.distance_to(p) > radius + RADIUS:
 			kept.append(p)
-	var taken := positions.size() - kept.size()
+	var removed := positions.size() - kept.size()
 	positions = kept
-	return taken
+	return removed
 
 
 ## Entfernt alle Funde, die weiter als max_dist von center liegen, und gibt ihre Anzahl zurück.
