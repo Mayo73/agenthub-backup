@@ -65,10 +65,18 @@ func refresh() -> void:
 	queue_redraw()
 
 
+## Linienzug einer Geißel in Pixeln relativ zur Zellmitte, passend zur aktuellen Zeit.
+func flagellum_points(part: Dictionary) -> PackedVector2Array:
+	return PartAnimation.place_points(PartAnimation.flagellum(time), part, radius)
+
+
 func _draw() -> void:
 	for part in build.parts:
 		if PartCatalog.category_of(part["id"]) == "antrieb":
-			draw_colored_polygon(PartShapes.placed(part, radius), PartShapes.color_of(part["id"]))
+			if part["id"] == "geissel":
+				draw_polyline(flagellum_points(part), PartShapes.color_of(part["id"]), maxf(1.5, radius * 0.1))
+			else:
+				draw_colored_polygon(PartShapes.placed(part, radius), PartShapes.color_of(part["id"]))
 	CellPainter.draw_cell(self, Vector2.ZERO, look, radius, time)
 	for part in build.parts:
 		if PartCatalog.category_of(part["id"]) != "antrieb":
