@@ -35,3 +35,23 @@ static func build(path: TrackPath) -> Array[Dictionary]:
 	for q in side_points(path, 450.0, path.width * 0.5 + 260.0):
 		items.append({"kind": Kind.TREE, "position": q})
 	return items
+
+
+const STAND_LENGTH := 420.0
+const STAND_DEPTH := 120.0
+const STAND_GAP := 90.0
+
+
+## Rechteck (4 Ecken) der Tribüne: links neben der Startlinie, mit STAND_GAP Abstand zum Streckenrand.
+static func grandstand(path: TrackPath) -> PackedVector2Array:
+	if path == null or path.length <= 0.0:
+		return PackedVector2Array()
+	var start := path.start_position()
+	var forward := Vector2.from_angle(path.start_heading())
+	var side := forward.rotated(-PI / 2.0)
+	var near := path.width * 0.5 + STAND_GAP
+	var a := start + side * near - forward * STAND_LENGTH * 0.5
+	var b := start + side * near + forward * STAND_LENGTH * 0.5
+	var c := b + side * STAND_DEPTH
+	var d := a + side * STAND_DEPTH
+	return PackedVector2Array([a, b, c, d])
