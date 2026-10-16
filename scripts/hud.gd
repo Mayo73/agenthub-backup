@@ -2,6 +2,8 @@ class_name Hud
 extends CanvasLayer
 ## Anzeige über dem Spiel. Die Knoten werden in _init angelegt, damit Tests ohne Szene auskommen.
 
+signal finish_pressed
+
 var box: VBoxContainer
 var dna_label: Label
 var growth_bar: ProgressBar
@@ -9,6 +11,7 @@ var stage_label: Label
 var health_bar: ProgressBar
 var message_label: Label
 var message_time := 0.0
+var finish_button: Button
 
 
 func _init() -> void:
@@ -43,6 +46,15 @@ func _init() -> void:
 	message_label.add_theme_font_size_override("font_size", 30)
 	message_label.position = Vector2(24, 980)
 	add_child(message_label)
+	finish_button = Button.new()
+	finish_button.name = "Finish"
+	finish_button.text = "An Land gehen"
+	finish_button.custom_minimum_size = Vector2(320, 56)
+	finish_button.add_theme_font_size_override("font_size", 26)
+	finish_button.position = Vector2(1576, 24)
+	finish_button.visible = false
+	finish_button.pressed.connect(func() -> void: finish_pressed.emit())
+	add_child(finish_button)
 
 
 func show_progress(progress: CellProgress) -> void:
@@ -66,3 +78,7 @@ func _process(delta: float) -> void:
 		message_time -= delta
 		if message_time <= 0.0:
 			message_label.text = ""
+
+## Zeigt den Knopf „An Land gehen", sobald die Zellenphase beendet werden kann.
+func show_can_finish(value: bool) -> void:
+	finish_button.visible = value
