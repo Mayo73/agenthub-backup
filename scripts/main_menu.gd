@@ -1,7 +1,9 @@
 extends Control
 
 const GAME_SCENE := "res://scenes/main.tscn"
+const SETTINGS_SCENE := "res://scenes/settings_menu.tscn"
 var highscore_path := HighscoreTable.DEFAULT_PATH
+var settings_path := UserSettings.DEFAULT_PATH
 
 @onready var start_button: Button = $Buttons/Start
 @onready var settings_button: Button = $Buttons/Settings
@@ -15,8 +17,10 @@ var highscore_path := HighscoreTable.DEFAULT_PATH
 @onready var car_next: Button = $Buttons/CarRow/CarNext
 
 func _ready() -> void:
+	UserSettings.load_from(settings_path).apply()
 	start_button.pressed.connect(start_game)
 	quit_button.pressed.connect(quit_game)
+	settings_button.pressed.connect(open_settings)
 	track_prev.pressed.connect(_on_track_prev)
 	track_next.pressed.connect(_on_track_next)
 	car_prev.pressed.connect(_on_car_prev)
@@ -30,6 +34,9 @@ func start_game() -> void:
 
 func quit_game() -> void:
 	get_tree().quit()
+
+func open_settings() -> void:
+	get_tree().change_scene_to_file(SETTINGS_SCENE)
 
 func update_track_label() -> void:
 	track_name.text = TrackCatalog.name_of(GameSettings.track_id)

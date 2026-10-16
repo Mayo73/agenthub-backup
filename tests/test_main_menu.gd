@@ -9,18 +9,23 @@ func setup() -> void:
 func teardown() -> void:
 	GameSettings.car_id = CarCatalog.DEFAULT_ID
 	GameSettings.track_id = TrackCatalog.DEFAULT_ID
+	AudioServer.set_bus_volume_db(0, 0.0)
 	menu.free()
 	menu = null
 
 func test_knoepfe() -> void:
 	check_eq(menu.start_button.text, "Rennen starten", "Start-Knopf Text")
 	check_eq(menu.settings_button.text, "Einstellungen", "Settings-Knopf Text")
-	check(menu.settings_button.disabled, "Settings-Knopf ist ausgegraut")
+	check(not menu.settings_button.disabled, "Einstellungen-Knopf ist freigeschaltet")
 	check_eq(menu.quit_button.text, "Beenden", "Quit-Knopf Text")
 
 func test_knoepfe_verbunden() -> void:
 	check(menu.start_button.pressed.is_connected(menu.start_game), "Start-Knopf mit start_game verbunden")
 	check(menu.quit_button.pressed.is_connected(menu.quit_game), "Quit-Knopf mit quit_game verbunden")
+
+func test_einstellungen_verbunden() -> void:
+	check(menu.settings_button.pressed.is_connected(menu.open_settings), "Settings-Knopf mit open_settings verbunden")
+	check(ResourceLoader.exists(menu.SETTINGS_SCENE), "Einstellungen-Szene existiert")
 
 func test_rennszene_existiert() -> void:
 	check(ResourceLoader.exists(menu.GAME_SCENE), "Rennszene existiert")
