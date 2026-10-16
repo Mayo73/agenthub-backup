@@ -14,9 +14,7 @@ func setup() -> void:
 func teardown() -> void:
 	b.free()
 	if FileAccess.file_exists(PATH):
-		var file := FileAccess.open(PATH, FileAccess.WRITE)
-		if file != null:
-			file.close()
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(PATH))
 
 
 func test_angefragt() -> void:
