@@ -31,3 +31,32 @@ func test_kamera_zoom() -> void:
 	main.player.radius = 24.0
 	main._process(100.0)
 	check_eq(main.camera.zoom.x, 0.8, "Nach Wachstum auf Radius 24.0 ist Zoom 0.8")
+
+
+func test_nahrung_angelegt() -> void:
+	check_eq(main.food.items.size(), 60, "main.food.items.size() ist 60")
+	check(main.food_view.field == main.food, "main.food_view.field == main.food ist wahr")
+	check_eq(main.food_view.get_index(), 0, "main.food_view.get_index() ist 0")
+
+
+func test_pflanze_fressen() -> void:
+	main.food.items.clear()
+	main.food.add_item(Diet.PFLANZE, main.player.mouth_point())
+	main.feed_player()
+	check_eq(main.progress.dna, 1, "main.progress.dna ist 1")
+	check_eq(main.food.items.size(), 0, "main.food.items.size() ist 0")
+
+
+func test_fleisch_nicht_fressen() -> void:
+	main.food.items.clear()
+	main.food.add_item(Diet.FLEISCH, main.player.mouth_point())
+	main.feed_player()
+	check_eq(main.progress.dna, 0, "main.progress.dna ist 0")
+	check_eq(main.progress.growth, 0, "main.progress.growth ist 0")
+	check_eq(main.food.items.size(), 1, "main.food.items.size() ist 1")
+
+
+func test_nachfuellen() -> void:
+	main.food.items.clear()
+	main.refill_food()
+	check_eq(main.food.items.size(), 20, "main.food.items.size() ist 20")
