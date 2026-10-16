@@ -68,3 +68,14 @@ func remove_far(center: Vector2, max_dist: float) -> int:
 	for item in to_remove:
 		items.erase(item)
 	return to_remove.size()
+
+
+## Entfernt alle Stücke, die das Maul berührt und die zur Ernährung passen, und gibt sie zurück.
+func take_at(mouth: Vector2, reach: float, diet: String) -> Array[FoodItem]:
+	var taken: Array[FoodItem] = []
+	for item in items:
+		if Diet.can_eat(diet, item.kind) and MouthContact.touches(mouth, reach, item.position, item.radius):
+			taken.append(item)
+	for item in taken:
+		items.erase(item)
+	return taken

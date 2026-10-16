@@ -58,3 +58,21 @@ func test_entfernen() -> void:
 	var removed := field.remove_far(Vector2.ZERO, 150.0)
 	check_eq(removed, 1, "remove_far gibt 1 zurück")
 	check_eq(field.items.size(), 2, "items.size() ist 2 danach")
+
+
+func test_fressen_am_maul() -> void:
+	var field := FoodField.new(5)
+	field.add_item(Diet.PFLANZE, Vector2(10, 0))
+	field.add_item(Diet.FLEISCH, Vector2(11, 0))
+
+	var taken := field.take_at(Vector2(10, 0), 4.0, Diet.PFLANZENFRESSER)
+	check_eq(taken.size(), 1, "take_at Pflanze hat Größe 1")
+	check_eq(taken[0].kind, Diet.PFLANZE, "take_at[0].kind ist PFLANZE")
+	check_eq(field.items.size(), 1, "items.size() ist 1 danach")
+
+	taken = field.take_at(Vector2(-30, 0), 4.0, Diet.FLEISCHFRESSER)
+	check_eq(taken.size(), 0, "take_at fernes Fleisch hat Größe 0")
+
+	taken = field.take_at(Vector2(10, 0), 4.0, Diet.ALLESFRESSER)
+	check_eq(taken.size(), 1, "take_at ALLESFRESSER hat Größe 1")
+	check_eq(field.items.size(), 0, "items.size() ist 0 danach")
