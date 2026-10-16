@@ -37,7 +37,7 @@ func test_kamera_zoom() -> void:
 func test_nahrung_angelegt() -> void:
 	check_eq(main.food.items.size(), 60, "main.food.items.size() ist 60")
 	check(main.food_view.field == main.food, "main.food_view.field == main.food ist wahr")
-	check_eq(main.food_view.get_index(), 0, "main.food_view.get_index() ist 0")
+	check_eq(main.food_view.get_index(), 1, "main.food_view.get_index() ist 1 (direkt über dem Hintergrund)")
 
 
 func test_pflanze_fressen() -> void:
@@ -183,5 +183,5 @@ func test_lebend_nichts() -> void:
 
 func test_hintergrund() -> void:
 	check(main.backdrop is WaterBackdrop, "main.backdrop is WaterBackdrop wahr")
-	check_eq(main.backdrop.get_index(), 2, "main.backdrop.get_index() ist 2")
+	check_eq(main.backdrop.get_index(), 0, "main.backdrop.get_index() ist 0")
 	check(main.backdrop.camera == main.camera, "main.backdrop.camera == main.camera wahr")

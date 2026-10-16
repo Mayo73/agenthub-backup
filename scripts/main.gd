@@ -40,6 +40,7 @@ func _ready() -> void:
 	backdrop.name = "Backdrop"
 	backdrop.camera = camera
 	world.add_child(backdrop)
+	world.move_child(backdrop, 0)
 
 
 func _physics_process(delta: float) -> void:
