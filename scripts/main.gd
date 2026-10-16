@@ -17,6 +17,12 @@ var spawner := EcoSpawner.new(11)
 var ai_cells: Array[AiCell] = []
 var player_health := CellHealth.new()
 var deaths := 0
+var backdrop: WaterBackdrop
+var unlocks: PartUnlocks = PartUnlocks.new()
+var pickups: PartPickups = PartPickups.new(13)
+var pickup_view: PickupView
+var poison := PoisonClouds.new()
+var electric := ElectricOrgan.new()
 
 
 func _ready() -> void:
@@ -35,16 +41,26 @@ func _ready() -> void:
 	hud.name = "Hud"
 	add_child(hud)
 	hud.show_progress(progress)
+	backdrop = WaterBackdrop.new()
+	backdrop.name = "Backdrop"
+	backdrop.camera = camera
+	world.add_child(backdrop)
+	pickup_view = PickupView.new()
+	pickup_view.name = "Pickups"
+	pickup_view.pickups = pickups
+	world.add_child(pickup_view)
 
 
 func _physics_process(delta: float) -> void:
 	player_health.tick(delta)
 	feed_player()
 	refill_food()
+	collect_pickups()
 	spawn_ai()
 	despawn_far_ai()
 	think_ai()
 	feed_ai()
+	resolve_weapons(delta)
 	resolve_combat()
 	check_death()
 
@@ -101,7 +117,7 @@ func think_ai() -> void:
 		infos.append(cell.info())
 	for cell in ai_cells:
 		var kind := Diet.FLEISCH if cell.diet == Diet.FLEISCHFRESSER else Diet.PFLANZE
-		var item := food.nearest(cell.position, kind, cell.brain.sight)
+		var item = food.nearest(cell.position, kind, cell.brain.sight)
 		cell.think(infos, item.position if item != null else null)
 
 
@@ -120,6 +136,9 @@ func resolve_combat() -> void:
 			if player_health.damage(CombatRules.bite_damage(cell.damage, cell.radius, player.radius)):
 				player.motion.knockback(player.motion.position - cell.motion.position, 160.0)
 		if cell.health.is_dead():
+			var part := PartDrops.drop_for(cell.species_id, unlocks)
+			if part != "" and unlocks.unlock(part):
+				hud.show_message("Teil erbeutet: %s" % PartCatalog.name_of(part))
 			for pos in CombatRules.meat_positions(cell.motion.position, cell.radius):
 				food.add_item(Diet.FLEISCH, pos)
 			remove_ai(cell)
@@ -137,3 +156,40 @@ func check_death() -> void:
 		if cell.position.distance_to(player.position) < clear_dist:
 			remove_ai(cell)
 	hud.show_message("Deine Zelle wurde gefressen – eine neue schlüpft.")
+
+
+## Hält einen Teilefund in der Nähe bereit, solange noch Teile gesperrt sind.
+## Berühren schaltet das nächste Teil frei.
+func collect_pickups() -> void:
+	var spread := EcoSpawner.view_scale(player.radius)
+	pickups.remove_far(player.position, 2000.0 * spread)
+	if pickups.positions.is_empty() and not unlocks.all_unlocked():
+		pickups.spawn_around(player.position, 600.0 * spread, 1200.0 * spread)
+	var count := pickups.take_touching(player.position, player.radius)
+	for _i in count:
+		var id = unlocks.next_locked()
+		if unlocks.unlock(id):
+			hud.show_message("Neues Teil gefunden: %s" % PartCatalog.name_of(id))
+
+
+## Stacheln, Gift und Elektroorgan der Spielerzelle gegen KI-Zellen.
+func resolve_weapons(delta: float) -> void:
+	var pos := player.motion.position
+	var heading := player.motion.heading
+	var tips := WeaponRules.spike_tips(pos, heading, player.radius, player.build)
+	poison.tick(delta)
+	electric.tick(delta)
+	if player.build.count("gift") > 0 and player.motion.speed() > 20.0:
+		poison.emit(PartGeometry.world_point(pos, heading, player.radius, Vector2(-1.2, 0)))
+	var zap := player.build.count("elektro") > 0 and electric.is_ready()
+	var zapped := false
+	for cell in ai_cells:
+		if WeaponRules.spike_hits(tips, cell.motion.position, cell.radius) > 0:
+			if cell.health.damage(WeaponRules.SPIKE_DAMAGE):
+				cell.motion.knockback(cell.motion.position - pos, 100.0)
+		cell.health.drain(poison.damage_at(cell.motion.position, cell.radius, delta))
+		if zap and ElectricOrgan.in_range(pos, player.radius, cell.motion.position, cell.radius):
+			cell.health.damage(ElectricOrgan.DAMAGE)
+			zapped = true
+	if zapped:
+		electric.fire()
