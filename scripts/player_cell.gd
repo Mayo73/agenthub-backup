@@ -11,6 +11,7 @@ var input_enabled := true
 var diet := Diet.PFLANZENFRESSER
 var build := CellBuild.starter(Diet.PFLANZENFRESSER)
 var stage := 0
+var look := CellLook.new()
 
 
 func _physics_process(delta: float) -> void:
@@ -45,6 +46,12 @@ func set_build(p_build: CellBuild) -> void:
 	refresh()
 
 
+## Übernimmt ein neues Aussehen (Farbe, Muster, Streckung), z. B. nach dem Zelleditor.
+func set_look(p_look: CellLook) -> void:
+	look = p_look
+	queue_redraw()
+
+
 ## Rechnet Größe, Tempo, Wendigkeit und Ernährung aus Größenabschnitt und Aufbau neu aus.
 func refresh() -> void:
 	radius = CellProgress.radius_for_stage(stage)
@@ -60,7 +67,7 @@ func _draw() -> void:
 	for part in build.parts:
 		if PartCatalog.category_of(part["id"]) == "antrieb":
 			draw_colored_polygon(PartShapes.placed(part, radius), PartShapes.color_of(part["id"]))
-	draw_circle(Vector2.ZERO, radius, COLOR)
+	draw_colored_polygon(look.outline(radius), look.color)
 	for part in build.parts:
 		if PartCatalog.category_of(part["id"]) != "antrieb":
 			draw_colored_polygon(PartShapes.placed(part, radius), PartShapes.color_of(part["id"]))
