@@ -172,3 +172,13 @@ func test_puls_vorbei() -> void:
 	cell.drive(1.0, Vector2.ZERO)
 	check_eq(cell.scale.x, 1.0, "scale.x ist 1.0 nach Ablauf des Pulses")
 	check_eq(cell.radius, 12.0, "radius ist 12.0 nach Ablauf des Pulses")
+
+
+func test_schein_start() -> void:
+	cell.glow_alpha()
+	check_eq(cell.glow_alpha(), 0.3, "glow_alpha() ist 0.3 zu Start")
+
+
+func test_schein_flackert() -> void:
+	cell.drive(PI / 18.0, Vector2.ZERO)
+	check_eq(cell.glow_alpha(), 0.45, "glow_alpha() ist 0.45 nach drive(PI / 18.0)")
