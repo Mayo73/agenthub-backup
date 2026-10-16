@@ -134,3 +134,23 @@ func test_duese_pulsiert() -> void:
 	var b := cell.jet_points(part)[1]
 	check_eq(cell.jet_points(part).size(), 4, "jet_points hat 4 Punkte")
 	check(not a.is_equal_approx(b), "Düse pulsiert nach drive()")
+
+
+func test_maul_ruhig() -> void:
+	check_eq(cell.mouth_open(), 1.0, "mouth_open() ist 1.0 in Ruhe")
+
+
+func test_maul_kaut() -> void:
+	cell.bite()
+	cell.drive(0.15, Vector2.ZERO)
+	check_eq(cell.mouth_open(), 1.5, "mouth_open() ist 1.5 nach bite() + drive(0.15)")
+	cell.drive(1.0, Vector2.ZERO)
+	check_eq(cell.mouth_open(), 1.0, "mouth_open() ist 1.0 nach Ablauf der Kaubewegung")
+
+
+func test_maul_form() -> void:
+	var part := {"id": "kiefer", "pos": Vector2(1, 0), "angle": 0.0}
+	check(cell.mouth_points(part)[1].is_equal_approx(Vector2(1.35 * cell.radius, 0.16 * cell.radius)), "mouth_points[1] ist (1.35r, 0.16r) in Ruhe")
+	cell.bite()
+	cell.drive(0.15, Vector2.ZERO)
+	check(cell.mouth_points(part)[1].is_equal_approx(Vector2(1.35 * cell.radius, 0.24 * cell.radius)), "mouth_points[1] ist (1.35r, 0.24r) während Kaubewegung")
