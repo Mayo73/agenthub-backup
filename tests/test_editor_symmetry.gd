@@ -22,7 +22,7 @@ func test_gespiegelt_einbauen() -> void:
 	check_eq(idx[1], 3, "Gespiegeltes Teil an Index 3")
 	check_eq(s.working.parts[3]["pos"], Vector2(-0.8, -0.6), "Spiegelbild hat richtige Position")
 	check_eq(s.working.parts[3]["angle"], -0.3, "Spiegelbild hat gespiegelten Winkel")
-	check_eq(s.cost(), 30, "Kosten: Kiefer(10) + Geißel(15) + Spiegel-Geißel(15) = 40, Original-Maul(10) = netto 30 DNA")
+	check_eq(s.cost(), 30, "Kosten: zwei Geißeln à 15 DNA")
 
 
 func test_auf_der_achse_einmal() -> void:
