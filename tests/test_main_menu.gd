@@ -75,3 +75,10 @@ func test_bestwerte_anzeigen() -> void:
 	check_eq(menu.track_best.text, "Bestzeit –  ·  Rekord 0 Punkte", "Bestwerte für Altstadtkurs (keine Einträge)")
 
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+
+
+func test_klick() -> void:
+	check(menu.get_node("Click") is AudioStreamPlayer, "Click Node ist AudioStreamPlayer")
+	check(menu.click_player.stream is AudioStreamWAV, "click_player.stream ist AudioStreamWAV")
+	check(menu.track_next.pressed.is_connected(menu.play_click), "track_next.pressed ist mit play_click verbunden")
+	check(menu.car_prev.pressed.is_connected(menu.play_click), "car_prev.pressed ist mit play_click verbunden")
