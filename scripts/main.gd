@@ -163,9 +163,11 @@ func feed_player() -> void:
 	for item in food.take_at(player.mouth_point(), MOUTH_REACH, player.diet):
 		audio.play("fressen_pflanze" if item.kind == Diet.PFLANZE else "fressen_fleisch")
 		stats.food_eaten += 1
+		player.bite()
 		hint("fressen")
 		if progress.eat(item.value):
 			player.set_stage(progress.stage)
+			player.pulse()
 			mate.add_charge()
 			hud.show_message("Neuer Ruf bereit: Taste C oder rechte Maustaste")
 			autosave_now()
@@ -237,6 +239,7 @@ func resolve_combat() -> void:
 				cell.motion.knockback(cell.motion.position - player.motion.position, 120.0)
 				cell.flash.trigger()
 				audio.play("treffer")
+				player.bite()
 		if cell.damage > 0.0 and CombatRules.can_bite(cell.diet) and CombatRules.bite_hits(cell.motion.position, cell.motion.heading, cell.radius, player.motion.position, player.radius):
 			if player_health.damage(CombatRules.bite_damage(cell.damage, cell.radius, player.radius)):
 				player.motion.knockback(player.motion.position - cell.motion.position, 160.0)
