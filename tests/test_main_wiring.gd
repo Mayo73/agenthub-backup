@@ -1,5 +1,7 @@
 extends "res://tests/base_test.gd"
 
+const AiBrain = preload("res://scripts/ai_brain.gd")
+
 var main: Node2D
 
 
@@ -76,3 +78,42 @@ func test_wachsen_beim_fressen() -> void:
 	main.feed_player()
 	check_eq(main.progress.stage, 1, "main.progress.stage ist 1")
 	check_eq(main.player.radius, 18.0, "main.player.radius ist 18.0")
+
+
+func test_ki_zellen() -> void:
+	# Main muss bereit sein, damit progress.stage verfügbar ist
+	main._physics_process(0.016)
+	main.spawn_ai()
+	check_eq(main.ai_cells.size(), 30, "main.ai_cells.size() ist 30 nach spawn_ai")
+	check(main.ai_cells[0].get_parent() == main.world, "main.ai_cells[0].get_parent() == main.world")
+	var count: int = main.ai_cells.size()
+	main.spawn_ai()
+	check_eq(main.ai_cells.size(), count, "weiterhin 30 Zellen nach erneutem spawn_ai")
+
+
+func test_ki_entfernen() -> void:
+	main._physics_process(0.016)
+	main.spawn_ai()
+	var size: int = main.ai_cells.size()
+	main.ai_cells[0].position = Vector2(99999, 0)
+	main.despawn_far_ai()
+	check_eq(main.ai_cells.size(), size - 1, "main.ai_cells.size() ist 29 nach despawn_far_ai")
+
+
+func test_ki_entscheidet() -> void:
+	main._physics_process(0.016)
+	main.spawn_ai()
+	main.think_ai()
+	for cell in main.ai_cells:
+		check(cell.brain.state in [AiBrain.SUCHEN, AiBrain.JAGEN, AiBrain.FLIEHEN, AiBrain.TREIBEN], "cell.brain.state ist ein gültiger Zustand")
+
+
+func test_ki_frisst() -> void:
+	main.food.items.clear()
+	var cell := AiCell.new()
+	cell.setup("blasenling", Vector2(300, 0))
+	main.world.add_child(cell)
+	main.ai_cells.append(cell)
+	main.food.add_item(Diet.PFLANZE, cell.mouth_point())
+	main.feed_ai()
+	check_eq(main.food.items.size(), 0, "main.food.items.size() ist 0 nach feed_ai")
