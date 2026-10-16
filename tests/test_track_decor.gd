@@ -48,3 +48,24 @@ func test_echte_strecke() -> void:
 	check(items.size() > 10, "sollte mehr als 10 Deko-Elemente haben")
 	for item in items:
 		check(not path.is_on_track(item["position"]), "Deko darf nicht auf der Strecke sein")
+
+
+func test_tribuene_vier_ecken() -> void:
+	var s := TrackDecor.grandstand(square)
+	check(s.size() == 4, "sollte 4 Ecken haben")
+	check(absf(s[0].distance_to(s[1]) - TrackDecor.STAND_LENGTH) < 0.01, "Seitenlänge STAND_LENGTH korrekt")
+	check(absf(s[1].distance_to(s[2]) - TrackDecor.STAND_DEPTH) < 0.01, "Tiefe STAND_DEPTH korrekt")
+
+
+func test_tribuene_neben_strecke() -> void:
+	var path := TrackPath.new(TrackPath.smooth_closed(TrackCatalog.points_of("hafen"), 10), 280.0)
+	var s := TrackDecor.grandstand(path)
+	for ecke in s:
+		check(not path.is_on_track(ecke), "Ecke darf nicht auf der Strecke sein")
+	var center := (s[0] + s[2]) * 0.5
+	var dist := center.distance_to(path.start_position())
+	check(dist >= 200.0 and dist <= 400.0, "Mittelpunkt sollte 200-400 Pixel von Start entfernt sein")
+
+
+func test_tribuene_ohne_strecke() -> void:
+	check(TrackDecor.grandstand(null).size() == 0, "null path soll keine Ecken ergeben")
