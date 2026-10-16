@@ -117,3 +117,40 @@ func test_ki_frisst() -> void:
 	main.food.add_item(Diet.PFLANZE, cell.mouth_point())
 	main.feed_ai()
 	check_eq(main.food.items.size(), 0, "main.food.items.size() ist 0 nach feed_ai")
+
+
+func _add_ai(id: String, pos: Vector2, heading: float) -> AiCell:
+	var cell := AiCell.new()
+	cell.setup(id, pos)
+	cell.motion.heading = heading
+	main.world.add_child(cell)
+	main.ai_cells.append(cell)
+	return cell
+
+
+func test_spieler_beisst() -> void:
+	main.player.diet = Diet.FLEISCHFRESSER
+	var meat_before: int = main.food.count_kind(Diet.FLEISCH)
+	_add_ai("blasenling", Vector2(20, 0), 0.0)
+	main.resolve_combat()
+	check_eq(main.ai_cells.size(), 0, "main.ai_cells.size() ist 0")
+	check_eq(main.food.count_kind(Diet.FLEISCH), meat_before + 3, "main.food.count_kind(Diet.FLEISCH) ist meat_before + 3")
+
+
+func test_pflanzenfresser_beisst_nicht() -> void:
+	var cell := _add_ai("blasenling", Vector2(20, 0), 0.0)
+	main.resolve_combat()
+	check_eq(cell.health.hp, 20.0, "cell.health.hp ist 20.0")
+	check_eq(main.ai_cells.size(), 1, "main.ai_cells.size() ist 1")
+
+
+func test_ki_beisst() -> void:
+	_add_ai("schnapper", Vector2(30, 0), PI)
+	main.resolve_combat()
+	check_eq(main.player_health.hp, 77.5, "main.player_health.hp ist 77.5")
+
+
+func test_ki_von_hinten_harmlos() -> void:
+	_add_ai("schnapper", Vector2(30, 0), 0.0)
+	main.resolve_combat()
+	check_eq(main.player_health.hp, 100.0, "main.player_health.hp ist 100.0")
