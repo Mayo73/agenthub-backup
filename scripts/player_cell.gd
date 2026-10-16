@@ -57,5 +57,10 @@ func refresh() -> void:
 
 
 func _draw() -> void:
+	for part in build.parts:
+		if PartCatalog.category_of(part["id"]) == "antrieb":
+			draw_colored_polygon(PartShapes.placed(part, radius), PartShapes.color_of(part["id"]))
 	draw_circle(Vector2.ZERO, radius, COLOR)
-	draw_circle(Vector2(radius * 0.8, 0), radius * 0.25, MOUTH_COLOR)
+	for part in build.parts:
+		if PartCatalog.category_of(part["id"]) != "antrieb":
+			draw_colored_polygon(PartShapes.placed(part, radius), PartShapes.color_of(part["id"]))
