@@ -15,12 +15,12 @@ func _process(delta: float) -> void:
 
 ## Eckpunkte der Raute um pos. Die Größe pulsiert mit der Zeit t zwischen dem 0,8- und 1,2-fachen von PartPickups.RADIUS.
 static func diamond(pos: Vector2, t: float) -> PackedVector2Array:
-	var s := PartPickups.RADIUS * (1.0 + 0.2 * sin(t * 4.0))
+	var s: float = PartPickups.RADIUS * (1.0 + 0.2 * sin(t * 4.0))
 	return PackedVector2Array([pos + Vector2(s, 0), pos + Vector2(0, s), pos + Vector2(-s, 0), pos + Vector2(0, -s)])
 
 
 func _draw() -> void:
 	if pickups == null:
 		return
-	for p in pickups.positions:
+	for p: Vector2 in pickups.positions:
 		draw_colored_polygon(diamond(p, time), COLOR)
