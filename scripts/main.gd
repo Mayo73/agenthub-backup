@@ -28,6 +28,10 @@ var editor: CellEditor
 var save_path := SaveGame.DEFAULT_PATH
 ## Erst nach start_new() oder load_saved() wird automatisch gespeichert.
 var autosave := false
+var main_menu: MainMenu
+var pause_menu: PauseMenu
+var in_menu := false
+var paused := false
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
 
@@ -60,6 +64,20 @@ func _ready() -> void:
 	partner_view = PartnerView.new()
 	partner_view.name = "Partner"
 	world.add_child(partner_view)
+	main_menu = MainMenu.new()
+	main_menu.name = "MainMenu"
+	add_child(main_menu)
+	main_menu.set_can_continue(FileAccess.file_exists(save_path))
+	main_menu.new_game.connect(_on_new_game)
+	main_menu.continue_game.connect(_on_continue)
+	main_menu.quit_game.connect(quit)
+	pause_menu = PauseMenu.new()
+	pause_menu.name = "PauseMenu"
+	add_child(pause_menu)
+	pause_menu.resume.connect(toggle_pause)
+	pause_menu.to_main_menu.connect(back_to_menu)
+	pause_menu.quit_game.connect(quit)
+	show_menu(true)
 
 
 func _physics_process(delta: float) -> void:
@@ -299,3 +317,55 @@ func load_saved() -> bool:
 	hud.show_progress(progress)
 	autosave = true
 	return true
+
+
+## Zeigt oder verbirgt das Hauptmenü; im Menü steht die Spielwelt still.
+func show_menu(value: bool) -> void:
+	in_menu = value
+	main_menu.visible = value
+	hud.visible = not value
+	world.visible = not value
+	set_physics_process(not value)
+	world.process_mode = Node.PROCESS_MODE_DISABLED if value else Node.PROCESS_MODE_INHERIT
+
+
+func _on_new_game(diet: String) -> void:
+	start_new(diet)
+	show_menu(false)
+
+
+func _on_continue() -> void:
+	if load_saved():
+		show_menu(false)
+
+
+## Esc im Spiel: Pause an oder aus. Im Hauptmenü und im Editor wirkungslos.
+func toggle_pause() -> void:
+	if in_menu or editor_open:
+		return
+	paused = not paused
+	if paused:
+		pause_menu.open()
+	else:
+		pause_menu.close()
+	set_physics_process(not paused)
+	world.process_mode = Node.PROCESS_MODE_DISABLED if paused else Node.PROCESS_MODE_INHERIT
+
+
+func back_to_menu() -> void:
+	autosave_now()
+	paused = false
+	pause_menu.close()
+	main_menu.set_can_continue(FileAccess.file_exists(save_path))
+	show_menu(true)
+
+
+func quit() -> void:
+	autosave_now()
+	get_tree().quit()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("pause"):
+		toggle_pause()
+
