@@ -4,6 +4,7 @@ extends Node2D
 
 const COLOR := Color(0.5, 0.88, 0.82)
 const MOUTH_COLOR := Color(0.1, 0.3, 0.3)
+const CHEW_TIME := 0.3
 
 var motion := CellMotion.new()
 var radius := 12.0
@@ -13,6 +14,8 @@ var build := CellBuild.starter(Diet.PFLANZENFRESSER)
 var stage := 0
 var look := CellLook.new()
 var time := 0.0 ## Laufzeit für Animationen in Sekunden.
+## Restzeit der Kaubewegung in Sekunden.
+var chew_left := 0.0
 var flash := HitFlash.new()
 
 
@@ -27,6 +30,7 @@ func _physics_process(delta: float) -> void:
 ## Bewegt die Zelle um einen Zeitschritt und überträgt Lage und Ausrichtung auf den Node.
 func drive(delta: float, wish: Vector2) -> void:
 	time += delta
+	chew_left = maxf(0.0, chew_left - delta)
 	flash.tick(delta)
 	motion.step(delta, wish)
 	position = motion.position
@@ -108,6 +112,8 @@ func _draw() -> void:
 		var category := PartCatalog.category_of(part["id"])
 		if category == "auge":
 			draw_eye(part)
+		elif category == "maul":
+			draw_colored_polygon(mouth_points(part), PartLooks.color(part["id"]))
 		elif category != "antrieb":
 			draw_colored_polygon(PartLooks.placed(part, radius), PartLooks.color(part["id"]))
 
@@ -129,3 +135,22 @@ func draw_eye(part: Dictionary) -> void:
 func eye_openness(part: Dictionary) -> float:
 	var pos: Vector2 = part["pos"]
 	return EyeLook.openness(time, pos.y)
+
+
+## Startet eine Kaubewegung (beim Fressen oder Beißen).
+func bite() -> void:
+	chew_left = CHEW_TIME
+
+
+## Öffnung des Mauls: 1 = normal, bis 1,5 mitten in der Kaubewegung.
+func mouth_open() -> float:
+	return 1.0 + 0.5 * sin(PI * chew_left / CHEW_TIME)
+
+
+## Umriss des Mauls in Pixeln relativ zur Zellmitte, quer zur Blickrichtung um mouth_open() geweitet.
+func mouth_points(part: Dictionary) -> PackedVector2Array:
+	var open := mouth_open()
+	var pts := PackedVector2Array()
+	for p in PartLooks.shape(part["id"]):
+		pts.append(Vector2(p.x, p.y * open))
+	return PartLooks.place(pts, part, radius)
