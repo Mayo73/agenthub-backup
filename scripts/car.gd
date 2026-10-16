@@ -14,6 +14,7 @@ var smoke: CPUParticles2D
 var car_id := CarCatalog.DEFAULT_ID
 var engine_player: AudioStreamPlayer2D
 var squeal_player: AudioStreamPlayer2D
+var sprite: Sprite2D
 
 
 func _ready() -> void:
@@ -50,6 +51,8 @@ func _ready() -> void:
 	squeal_player.volume_db = EngineAudio.SILENT_DB
 	add_child(squeal_player)
 	squeal_player.play()
+
+	apply_skin(car_id)
 
 
 func _physics_process(delta: float) -> void:
@@ -115,6 +118,23 @@ func apply_car(id: String) -> void:
 	var roof := get_node_or_null("Roof") as Polygon2D
 	if roof:
 		roof.color = CarCatalog.color_of(id).darkened(0.3)
+	apply_skin(id)
+
+
+## Zeigt das Bild des Autos. Ohne Bild bleiben die Polygone sichtbar.
+func apply_skin(id: String) -> void:
+	if sprite == null:
+		sprite = Sprite2D.new()
+		sprite.name = "Sprite"
+		sprite.scale = Vector2(0.5, 0.5)
+		add_child(sprite)
+	var path := CarCatalog.sprite_of(id)
+	sprite.texture = load(path) as Texture2D if path != "" else null
+	for part in ["Body", "Roof", "Windshield", "Headlights", "Headlights2"]:
+		var node := get_node_or_null(part) as CanvasItem
+		if node:
+			node.visible = sprite.texture == null
+
 
 ## Passt die Motorklänge an den Fahrzustand an.
 func update_sound() -> void:
