@@ -210,3 +210,39 @@ func test_alle_frei_kein_fund() -> void:
 	main.pickups.positions.clear()
 	main.collect_pickups()
 	check_eq(main.pickups.positions.size(), 0, "main.pickups.positions.size() ist 0")
+
+
+func test_stachel_hinten() -> void:
+	var b := CellBuild.starter(Diet.PFLANZENFRESSER)
+	b.add_part("stachel", Vector2(-1, 0))
+	main.player.set_build(b)
+	var cell := _add_ai("weidezelle", Vector2(-40, 0), 0.0)
+	main.resolve_weapons(0.016)
+	check_eq(cell.health.hp, 105.0, "cell.health.hp ist 105.0")
+
+
+func test_ohne_stachel() -> void:
+	var cell := _add_ai("weidezelle", Vector2(-40, 0), 0.0)
+	main.resolve_weapons(0.016)
+	check_eq(cell.health.hp, 120.0, "cell.health.hp ist 120.0")
+
+
+func test_gift() -> void:
+	var b := CellBuild.starter(Diet.PFLANZENFRESSER)
+	b.add_part("gift", Vector2(-1, 0))
+	main.player.set_build(b)
+	main.player.motion.velocity = Vector2(100, 0)
+	var cell := _add_ai("blasenling", Vector2(-20, 0), 0.0)
+	main.resolve_weapons(0.5)
+	check_eq(main.poison.clouds.size(), 1, "main.poison.clouds.size() ist 1")
+	check_eq(cell.health.hp, 14.0, "cell.health.hp ist 14.0")
+
+
+func test_elektro() -> void:
+	var b := CellBuild.starter(Diet.PFLANZENFRESSER)
+	b.add_part("elektro", Vector2(0, 0.5))
+	main.player.set_build(b)
+	var cell := _add_ai("schnapper", Vector2(25, 0), PI)
+	main.resolve_weapons(0.016)
+	check_eq(cell.health.hp, 22.0, "cell.health.hp ist 22.0")
+	check(not main.electric.is_ready(), "main.electric.is_ready() falsch")
