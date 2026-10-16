@@ -25,6 +25,9 @@ var mate := MateCall.new()
 var partner_view: PartnerView
 var editor_open := false
 var editor: CellEditor
+var save_path := SaveGame.DEFAULT_PATH
+## Erst nach start_new() oder load_saved() wird automatisch gespeichert.
+var autosave := false
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
 
@@ -82,6 +85,7 @@ func feed_player() -> void:
 			player.set_stage(progress.stage)
 			mate.add_charge()
 			hud.show_message("Neuer Ruf bereit: Taste C oder rechte Maustaste")
+			autosave_now()
 
 
 ## Entfernt weit entfernte Nahrung und streut neue um den Spieler, wenn sie knapp wird.
@@ -251,3 +255,46 @@ func close_editor(build: CellBuild) -> void:
 	editor_open = false
 	player.input_enabled = true
 	hud.show_progress(progress)
+	autosave_now()
+
+
+## Neue Partie mit Startaufbau passend zur Ernährung (Pflanzen- oder Fleischfresser).
+func start_new(diet: String) -> void:
+	progress = CellProgress.new()
+	player_health.reset()
+	unlocks = PartUnlocks.new()
+	mate = MateCall.new()
+	player.diet = diet
+	player.set_build(CellBuild.starter(diet))
+	player.set_stage(0)
+	player.set_look(CellLook.new())
+	hud.show_progress(progress)
+	autosave = true
+
+
+func save_now() -> bool:
+	var data := SaveGame.to_dict(progress, player_health, player.build, unlocks)
+	data["look"] = player.look.to_dict()
+	data["diet"] = player.diet
+	return SaveGame.write_file(save_path, data)
+
+
+func autosave_now() -> void:
+	if autosave:
+		save_now()
+
+
+## Lädt den Spielstand; false, wenn keiner da ist oder er nicht passt.
+func load_saved() -> bool:
+	var data := SaveGame.read_file(save_path)
+	if data.is_empty() or not SaveGame.apply(data, progress, player_health, unlocks):
+		return false
+	player.diet = str(data.get("diet", Diet.PFLANZENFRESSER))
+	player.set_build(SaveGame.read_build(data))
+	player.set_stage(progress.stage)
+	var look_data: Variant = data.get("look")
+	if look_data is Dictionary:
+		player.set_look(CellLook.from_dict(look_data))
+	hud.show_progress(progress)
+	autosave = true
+	return true
