@@ -37,3 +37,19 @@ func test_drifter_rutscht_eher() -> void:
 	check_eq(p.traction_limit, 1150.0, "p.traction_limit ist 1150.0")
 	check_eq(p.handbrake_grip, 0.45, "p.handbrake_grip ist 0.45")
 	check_eq(p.drift_steer_bonus, 1.6, "p.drift_steer_bonus ist 1.6")
+
+
+func test_bilder() -> void:
+	for id in CarCatalog.ids():
+		check(ResourceLoader.exists(CarCatalog.sprite_of(id)), "Bild für '" + id + "' existiert")
+	check_eq(CarCatalog.sprite_of("gibtsnicht"), "", "sprite_of('gibtsnicht') ist ''")
+	check_eq(CarCatalog.sprite_of("grip"), "res://assets/cars/car_grip.png", "sprite_of('grip') ist 'res://assets/cars/car_grip.png'")
+
+
+func test_gegner() -> void:
+	var expected: Array[String] = ["grip", "drifter", "allround"]
+	check_eq(CarCatalog.opponents("allround", 3), expected, "opponents('allround', 3)")
+	expected = ["allround", "grip"]
+	check_eq(CarCatalog.opponents("drifter", 2), expected, "opponents('drifter', 2)")
+	expected = ["allround"]
+	check_eq(CarCatalog.opponents("gibtsnicht", 1), expected, "opponents('gibtsnicht', 1)")
