@@ -7,7 +7,10 @@ signal continue_game
 signal open_settings
 signal quit_game
 
+const TITLE_TEXTURE: Texture2D = preload("res://assets/ui/titelbild.png")
+
 var box: VBoxContainer
+var title_image: TextureRect
 var title_label: Label
 var herbivore_button: Button
 var carnivore_button: Button
@@ -23,6 +26,14 @@ func _init() -> void:
 	background.color = Color("#0B2B3D")
 	background.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(background)
+	title_image = TextureRect.new()
+	title_image.name = "TitleImage"
+	title_image.texture = TITLE_TEXTURE
+	title_image.set_anchors_preset(Control.PRESET_FULL_RECT)
+	title_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	title_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	title_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(title_image)
 	box = VBoxContainer.new()
 	box.name = "Box"
 	box.position = Vector2(760, 280)
