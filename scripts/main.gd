@@ -46,6 +46,9 @@ var pending_diet := ""
 var benchmark: Benchmark
 ## false in Vorführszenen: keine neuen KI-Zellen und keine neue Nahrung.
 var auto_spawn := true
+var bubbles := BubbleTrail.new()
+var bubble_view: BubbleView
+var bubble_timer := 0.0
 var finished := false
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
@@ -121,6 +124,11 @@ func _ready() -> void:
 	slot_menu.slot_chosen.connect(_on_slot_chosen)
 	add_click_sounds(slot_menu)
 
+	bubble_view = BubbleView.new()
+	bubble_view.name = "Bubbles"
+	bubble_view.trail = bubbles
+	world.add_child(bubble_view)
+
 	if Benchmark.requested(OS.get_cmdline_user_args()):
 		start_benchmark()
 
@@ -133,6 +141,7 @@ func _physics_process(delta: float) -> void:
 	if editor_open:
 		return
 	stats.tick(delta)
+	update_bubbles(delta)
 	player_health.tick(delta)
 	feed_player()
 	if auto_spawn:
@@ -580,3 +589,13 @@ func start_scene(scene_name: String) -> void:
 		food.add_item(entry[0], entry[1])
 	hud.show_progress(progress)
 	hud.show_message(str(d["text"]), 8.0)
+
+
+## Lässt hinter der schnell schwimmenden Spielerzelle Bläschen aufsteigen.
+func update_bubbles(delta: float) -> void:
+	bubbles.tick(delta)
+	bubble_timer += delta
+	if player.motion.speed() > 60.0 and bubble_timer >= 0.08:
+		bubble_timer = 0.0
+		var back := PartGeometry.world_point(player.motion.position, player.motion.heading, player.radius, Vector2(-1.1, 0))
+		bubbles.emit(back, maxf(1.5, player.radius * 0.15))
