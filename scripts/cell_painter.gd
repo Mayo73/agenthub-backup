@@ -40,6 +40,7 @@ static func draw_cell(canvas: CanvasItem, center: Vector2, look: CellLook, radiu
 		points.append(center + p)
 	var rot := canvas.get_global_transform().get_rotation()
 	canvas.draw_colored_polygon(shadow_points(points, radius, rot), CellShading.SHADOW_COLOR)
+	canvas.draw_colored_polygon(points, look.color, uv, TEXTURE)
 	for mark: Dictionary in CellPattern.marks(look.pattern):
 		var mpos: Vector2 = mark["pos"]
 		var pos := center + CellPattern.to_local(mpos, radius, look)

@@ -87,6 +87,10 @@ func _draw() -> void:
 	for part in visible_parts():
 		if PartCatalog.category_of(part["id"]) != "antrieb":
 			draw_colored_polygon(PartLooks.placed(part, radius), PartLooks.color(part["id"]))
+	var eye_pos := Vector2(radius * 0.35 * look.stretch, -radius * 0.35)
+	var eye_r := radius * 0.16
+	draw_circle(eye_pos, eye_r, Color.WHITE)
+	draw_circle(eye_pos + EyeLook.pupil_offset(pupil_dir(), eye_r), eye_r * 0.5, Color(0.05, 0.05, 0.1))
 
 
 ## Acht Stacheln rundum (Dreiecke), Spitzen bei 1,5 Radien.
