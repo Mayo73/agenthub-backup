@@ -264,3 +264,40 @@ func test_teil_schon_frei() -> void:
 	main.resolve_combat()
 	check_eq(main.unlocks.unlocked.size(), 4, "main.unlocks.unlocked.size() ist 4")
 	check(main.hud.message_label.text == "", "main.hud.message_label.text ist leer")
+
+
+func test_ruf() -> void:
+	check(not main.call_mate(), "main.call_mate() falsch")
+	main.mate.add_charge()
+	check(main.call_mate(), "main.call_mate() wahr")
+	check(main.mate.partner_pos != null, "main.mate.partner_pos != null wahr")
+	check(main.partner_view.get_parent() == main.world, "main.partner_view.get_parent() == main.world wahr")
+
+
+func test_wachstum_bringt_ruf() -> void:
+	main.food.items.clear()
+	main.progress.eat(9)
+	main.food.add_item(Diet.PFLANZE, main.player.mouth_point())
+	main.feed_player()
+	check_eq(main.mate.charges, 1, "main.mate.charges ist 1")
+
+
+func test_partner_erreicht() -> void:
+	main.mate.add_charge()
+	main.call_mate()
+	main.player.position = main.mate.partner_pos
+	main.update_mate()
+	check(main.editor_open, "main.editor_open wahr")
+	check(main.mate.partner_pos == null, "main.mate.partner_pos == null wahr")
+	check(not main.player.input_enabled, "main.player.input_enabled falsch")
+	check(main.partner_view.partner_pos == null, "main.partner_view.partner_pos == null wahr")
+
+
+func test_editor_haelt_spiel_an() -> void:
+	main.editor_open = true
+	main._physics_process(0.016)
+	check_eq(main.ai_cells.size(), 0, "main.ai_cells.size() ist 0")
+
+
+func test_ruftaste() -> void:
+	check(InputMap.has_action("rufen"), "InputMap.has_action(\"rufen\") wahr")
