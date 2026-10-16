@@ -59,6 +59,7 @@ func _ready() -> void:
 
 	ghost = preload("res://scripts/ghost_car.gd").new()
 	ghost.name = "Ghost"
+	ghost.set_car(GameSettings.car_id)
 	world.add_child(ghost)
 	world.move_child(ghost, car.get_index())
 

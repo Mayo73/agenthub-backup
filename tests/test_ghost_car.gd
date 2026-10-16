@@ -27,3 +27,11 @@ func test_folgt_aufnahme() -> void:
 	check(ghost.visible, "nach show_at mit gültiger Aufnahme sichtbar")
 	check(ghost.position.distance_to(Vector2(5, 0)) < 0.01, "position korrekt bei midway")
 	check(ghost.rotation == 0.0, "rotation ist 0.0 bei gerader Strecke")
+
+
+func test_auto_bild() -> void:
+	check(ghost.texture == null, "vorher ist texture null")
+	ghost.set_car("grip")
+	check(ghost.texture.resource_path == "res://assets/cars/car_grip.png", "texture nach set_car('grip') korrekt")
+	ghost.set_car("gibtsnicht")
+	check(ghost.texture.resource_path == "res://assets/cars/car_grip.png", "texture bleibt bei unbekannter ID gleich")
