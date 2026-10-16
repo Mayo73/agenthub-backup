@@ -4,25 +4,25 @@ extends RefCounted
 const DEFAULT_ID := "allround"
 
 const CARS := {
-		"allround": {
-			"name": "Allrounder",
-			"color": Color(0.86, 0.2, 0.18),
-			"sprite": "res://assets/cars/car_allround.png",
-			"tuning": {},
-		},
-		"grip": {
-			"name": "Grip-Coupé",
-			"color": Color(0.2, 0.45, 0.9),
-			"sprite": "res://assets/cars/car_grip.png",
-			"tuning": {"grip": 34.0, "slide_grip": 2.2, "traction_limit": 1700.0, "max_speed": 740.0, "power_oversteer": 0.8},
-		},
-		"drifter": {
-			"name": "Drift-Kombi",
-			"color": Color(0.95, 0.75, 0.15),
-			"sprite": "res://assets/cars/car_drifter.png",
-			"tuning": {"traction_limit": 1150.0, "slide_grip": 1.2, "handbrake_grip": 0.45, "power_oversteer": 1.5, "drift_steer_bonus": 1.6, "max_speed": 775.0},
-		},
-	}
+	"allround": {
+		"name": "Allrounder",
+		"color": Color(0.86, 0.2, 0.18),
+		"sprite": "res://assets/cars/car_allround.png",
+		"tuning": {},
+	},
+	"grip": {
+		"name": "Grip-Coupé",
+		"color": Color(0.2, 0.45, 0.9),
+		"sprite": "res://assets/cars/car_grip.png",
+		"tuning": {"grip": 34.0, "slide_grip": 2.2, "traction_limit": 1700.0, "max_speed": 740.0, "power_oversteer": 0.8},
+	},
+	"drifter": {
+		"name": "Drift-Kombi",
+		"color": Color(0.95, 0.75, 0.15),
+		"sprite": "res://assets/cars/car_drifter.png",
+		"tuning": {"traction_limit": 1150.0, "slide_grip": 1.2, "handbrake_grip": 0.45, "power_oversteer": 1.5, "drift_steer_bonus": 1.6, "max_speed": 775.0},
+	},
+}
 
 
 static func ids() -> Array[String]:
