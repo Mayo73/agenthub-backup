@@ -17,6 +17,7 @@ var spawner := EcoSpawner.new(11)
 var ai_cells: Array[AiCell] = []
 var player_health := CellHealth.new()
 var deaths := 0
+var backdrop: WaterBackdrop
 
 
 func _ready() -> void:
@@ -35,6 +36,10 @@ func _ready() -> void:
 	hud.name = "Hud"
 	add_child(hud)
 	hud.show_progress(progress)
+	backdrop = WaterBackdrop.new()
+	backdrop.name = "Backdrop"
+	backdrop.camera = camera
+	world.add_child(backdrop)
 
 
 func _physics_process(delta: float) -> void:
