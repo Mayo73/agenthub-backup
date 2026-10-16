@@ -94,3 +94,9 @@ func test_titelbild() -> void:
 	check(image.texture != null, "BackgroundImage hat eine Textur")
 	check(menu.get_node("BackgroundImage").get_index() < menu.get_node("Buttons").get_index(), "BackgroundImage kommt vor Buttons")
 	check(menu.get_node("ButtonShade") is ColorRect, "ButtonShade ist ein ColorRect")
+
+func test_autobild() -> void:
+	check(menu.car_preview.texture != null, "car_preview.texture ist nicht null")
+	menu._on_car_next()
+	var expected_texture := CarCatalog.sprite_of(GameSettings.car_id)
+	check(menu.car_preview.texture.resource_path == expected_texture, "car_preview.texture entspricht CarCatalog.sprite_of(GameSettings.car_id)")

@@ -17,6 +17,7 @@ var music: AudioStreamPlayer
 @onready var car_prev: Button = $Buttons/CarRow/CarPrev
 @onready var car_name: Label = $Buttons/CarRow/CarName
 @onready var car_next: Button = $Buttons/CarRow/CarNext
+@onready var car_preview: TextureRect = $Buttons/CarPreview
 
 func _ready() -> void:
 	click_player = AudioStreamPlayer.new()
@@ -71,6 +72,7 @@ func _on_track_next() -> void:
 func update_car_label() -> void:
 	car_name.text = CarCatalog.name_of(GameSettings.car_id)
 	car_name.modulate = CarCatalog.color_of(GameSettings.car_id).lightened(0.3)
+	car_preview.texture = load(CarCatalog.sprite_of(GameSettings.car_id)) as Texture2D
 
 func _on_car_prev() -> void:
 	GameSettings.previous_car()
