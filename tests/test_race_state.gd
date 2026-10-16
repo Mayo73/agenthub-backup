@@ -110,3 +110,20 @@ func test_ergebnistext_mit_rekord() -> void:
 
 	expected = "Ziel!\nGesamtzeit 1:27.50\nBeste Runde 0:28.50\nPunkte 1234\nNeuer Punkterekord!\nEnter: neues Rennen"
 	check_eq(race.result_text(1234, false, true), expected, "result_text nur mit Punkterekord")
+
+
+func test_ergebnistext_mit_platz() -> void:
+	race.update(3.0)
+	race.update(87.5)
+	race.on_lap(30.0)
+	race.on_lap(28.5)
+	race.on_lap(29.0)
+
+	var expected := "Ziel!\nPlatz 2 von 4\nGesamtzeit 1:27.50\nBeste Runde 0:28.50\nPunkte 1234\nEnter: neues Rennen"
+	check_eq(race.result_text(1234, false, false, 2, 4), expected, "result_text mit Platz 2 von 4")
+
+	expected = "Ziel!\nPlatz 1 von 4\nGesamtzeit 1:27.50\nBeste Runde 0:28.50\nPunkte 1234\nNeue Bestzeit!\nEnter: neues Rennen"
+	check_eq(race.result_text(1234, true, false, 1, 4), expected, "result_text mit Platz 1 und neuer Zeit")
+
+	expected = "Ziel!\nGesamtzeit 1:27.50\nBeste Runde 0:28.50\nPunkte 1234\nEnter: neues Rennen"
+	check_eq(race.result_text(1234), expected, "result_text ohne Platz")

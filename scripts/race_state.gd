@@ -67,8 +67,11 @@ func best_lap() -> float:
 
 
 ## Erstellt den Ergebnistext mit Punkten
-func result_text(points: int, new_time: bool = false, new_points: bool = false) -> String:
-	var text := "Ziel!\nGesamtzeit %s\nBeste Runde %s\nPunkte %d" \
+func result_text(points: int, new_time: bool = false, new_points: bool = false, place: int = 0, total: int = 0) -> String:
+	var text := "Ziel!"
+	if place > 0:
+		text += "\nPlatz %d von %d" % [place, total]
+	text += "\nGesamtzeit %s\nBeste Runde %s\nPunkte %d" \
 		% [LapTimer.format_time(race_time), LapTimer.format_time(best_lap()), points]
 	if new_time:
 		text += "\nNeue Bestzeit!"
