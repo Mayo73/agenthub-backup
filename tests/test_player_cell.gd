@@ -26,3 +26,34 @@ func test_wachsen() -> void:
 	cell.set_stage(2)
 	check_eq(cell.radius, 27.0, "cell.radius ist 27.0 nach set_stage(2)")
 	check_eq(cell.motion.max_speed, 280.0, "cell.motion.max_speed ist 280.0 nach set_stage(2)")
+
+
+func test_startaufbau() -> void:
+	check_eq(cell.build.mouths().size(), 1, "build.mouths().size() ist 1")
+	check_eq(cell.build.mouths()[0], "filtermaul", "build.mouths()[0] ist filtermaul")
+	check_eq(cell.stage, 0, "cell.stage ist 0")
+
+
+func test_aufbau_uebernehmen() -> void:
+	var b := CellBuild.starter(Diet.FLEISCHFRESSER)
+	b.add_part("geissel", Vector2(-1, 0))
+	cell.set_build(b)
+	check_eq(cell.diet, Diet.FLEISCHFRESSER, "cell.diet ist FLEISCHFRESSER nach set_build")
+	check_eq(cell.motion.max_speed, 280.0, "max_speed ist 280.0 nach set_build")
+	check_eq(cell.motion.turn_rate, 6.0, "turn_rate ist 6.0 nach set_build")
+	cell.set_stage(1)
+	check_eq(cell.motion.max_speed, 310.0, "max_speed ist 310.0 nach set_stage(1)")
+	check_eq(cell.radius, 18.0, "radius ist 18.0 nach set_stage(1)")
+
+
+func test_wimpern_wendiger() -> void:
+	var b := CellBuild.starter(Diet.PFLANZENFRESSER)
+	b.add_part("wimpern", Vector2(0, 1))
+	cell.set_build(b)
+	check_eq(cell.motion.turn_rate, 9.0, "turn_rate ist 9.0 mit Wimpern")
+
+
+func test_ohne_maul_bleibt_ernaehrung() -> void:
+	cell.diet = Diet.FLEISCHFRESSER
+	cell.set_build(CellBuild.new())
+	check_eq(cell.diet, Diet.FLEISCHFRESSER, "cell.diet bleibt FLEISCHFRESSER ohne Maul")
