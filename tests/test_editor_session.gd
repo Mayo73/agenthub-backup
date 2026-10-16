@@ -29,9 +29,9 @@ func test_bestaetigen() -> void:
 	var p := CellProgress.new()
 	p.eat(20)
 	check(s.confirm(p) == null, "Nicht genug DNA: Bestätigen schlägt fehl")
-	check_eq(p.dna, 20, "DNA bleibt unverändert bei Fehlgeschlagener Bestätigung")
+	check_eq(p.dna, 20, "DNA bleibt unverändert bei fehlgeschlagener Bestätigung")
 	p.eat(10)
-	check(s.confirm(p) == s.working, "Genug DNA: Bestätigen succeeds")
+	check(s.confirm(p) == s.working, "Genug DNA: Bestätigen klappt")
 	check_eq(p.dna, 5, "DNA wird nach Bestätigung verrechnet (20 + 10 - 25 = 5)")
 
 
@@ -52,4 +52,4 @@ func test_ohne_maul_ungueltig() -> void:
 func test_abbrechen() -> void:
 	s.place("kiefer", Vector2(0.9, 0.3))
 	check(s.cancel() == s.original, "Abbrechen gibt Original zurück")
-	check_eq(s.cancel().parts.size(), 2, "Origianl hat weiterhin 2 Teile")
+	check_eq(s.cancel().parts.size(), 2, "Original hat weiterhin 2 Teile")

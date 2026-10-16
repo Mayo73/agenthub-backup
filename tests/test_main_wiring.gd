@@ -1,6 +1,5 @@
 extends "res://tests/base_test.gd"
 
-const AiBrain = preload("res://scripts/ai_brain.gd")
 
 var main: Node2D
 
