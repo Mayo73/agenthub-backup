@@ -12,6 +12,7 @@ var diet := Diet.PFLANZENFRESSER
 var build := CellBuild.starter(Diet.PFLANZENFRESSER)
 var stage := 0
 var look := CellLook.new()
+var time := 0.0 ## Laufzeit für Animationen in Sekunden.
 
 
 func _physics_process(delta: float) -> void:
@@ -24,6 +25,7 @@ func _physics_process(delta: float) -> void:
 
 ## Bewegt die Zelle um einen Zeitschritt und überträgt Lage und Ausrichtung auf den Node.
 func drive(delta: float, wish: Vector2) -> void:
+	time += delta
 	motion.step(delta, wish)
 	position = motion.position
 	rotation = motion.heading
@@ -63,11 +65,19 @@ func refresh() -> void:
 	queue_redraw()
 
 
+## Linienzug einer Geißel in Pixeln relativ zur Zellmitte, passend zur aktuellen Zeit.
+func flagellum_points(part: Dictionary) -> PackedVector2Array:
+	return PartAnimation.place_points(PartAnimation.flagellum(time), part, radius)
+
+
 func _draw() -> void:
 	for part in build.parts:
 		if PartCatalog.category_of(part["id"]) == "antrieb":
-			draw_colored_polygon(PartShapes.placed(part, radius), PartShapes.color_of(part["id"]))
-	draw_colored_polygon(look.outline(radius), look.color)
+			if part["id"] == "geissel":
+				draw_polyline(flagellum_points(part), PartShapes.color_of(part["id"]), maxf(1.5, radius * 0.1))
+			else:
+				draw_colored_polygon(PartShapes.placed(part, radius), PartShapes.color_of(part["id"]))
+	CellPainter.draw_cell(self, Vector2.ZERO, look, radius, time)
 	for part in build.parts:
 		if PartCatalog.category_of(part["id"]) != "antrieb":
 			draw_colored_polygon(PartShapes.placed(part, radius), PartShapes.color_of(part["id"]))

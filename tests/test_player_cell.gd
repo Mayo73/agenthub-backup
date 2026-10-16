@@ -79,3 +79,27 @@ func test_aussehen_bleibt_beim_wachsen() -> void:
 	cell.set_look(l)
 	cell.set_stage(2)
 	check(cell.look.color.is_equal_approx(Color.RED), "look.color bleibt RED nach set_stage(2)")
+
+
+func test_zeit_startet_bei_null() -> void:
+	check_eq(cell.time, 0.0, "cell.time ist 0.0")
+
+
+func test_zeit_laeuft() -> void:
+	cell.drive(0.5, Vector2.ZERO)
+	cell.drive(0.25, Vector2.ZERO)
+	check_eq(cell.time, 0.75, "cell.time ist 0.75 nach zwei drive()-Aufrufen")
+
+
+func test_geissel_punkte() -> void:
+	var part := {"id": "geissel", "pos": Vector2(-1, 0), "angle": 0.0}
+	check_eq(cell.flagellum_points(part).size(), 8, "flagellum_points hat 8 Punkte")
+	check(cell.flagellum_points(part)[0].is_equal_approx(Vector2(-cell.radius, 0)), "erster Punkt ist bei -radius")
+
+
+func test_geissel_bewegt_sich() -> void:
+	var part := {"id": "geissel", "pos": Vector2(-1, 0), "angle": 0.0}
+	var a := cell.flagellum_points(part)[7]
+	cell.drive(0.1, Vector2.ZERO)
+	var b := cell.flagellum_points(part)[7]
+	check(not a.is_equal_approx(b), "Geißelendpunkt bewegt sich nach drive()")
