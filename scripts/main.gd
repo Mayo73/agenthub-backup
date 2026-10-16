@@ -38,7 +38,7 @@ var settings_menu: SettingsMenu
 var audio: GameAudio
 var stats := RunStats.new()
 var end_screen: EndScreen
-var hints: TutorialHints
+var hints := TutorialHints.new()
 var finished := false
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
@@ -481,8 +481,6 @@ func _on_end_to_menu() -> void:
 
 ## Zeigt einen Einführungshinweis einmal pro Partie (6 Sekunden lang).
 func hint(id: String) -> void:
-	if hints == null:
-		return
 	var text := hints.trigger(id)
 	if text != "":
 		hud.show_message(text, 6.0)
