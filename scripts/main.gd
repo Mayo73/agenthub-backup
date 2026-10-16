@@ -39,6 +39,10 @@ var audio: GameAudio
 var stats := RunStats.new()
 var end_screen: EndScreen
 var hints := TutorialHints.new()
+var slot_prefix := SaveSlots.PREFIX
+var slot_menu: SlotMenu
+## Ernährung der gewünschten neuen Partie; "" = Fortsetzen.
+var pending_diet := ""
 var finished := false
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
@@ -75,9 +79,9 @@ func _ready() -> void:
 	main_menu = MainMenu.new()
 	main_menu.name = "MainMenu"
 	add_child(main_menu)
-	main_menu.set_can_continue(FileAccess.file_exists(save_path))
-	main_menu.new_game.connect(_on_new_game)
-	main_menu.continue_game.connect(_on_continue)
+	main_menu.set_can_continue(SaveSlots.first_used(slot_prefix) > 0)
+	main_menu.new_game.connect(ask_slot_new)
+	main_menu.continue_game.connect(ask_slot_continue)
 	main_menu.quit_game.connect(quit)
 	pause_menu = PauseMenu.new()
 	pause_menu.name = "PauseMenu"
@@ -107,6 +111,12 @@ func _ready() -> void:
 	add_click_sounds(main_menu)
 	add_click_sounds(pause_menu)
 	add_click_sounds(settings_menu)
+
+	slot_menu = SlotMenu.new()
+	slot_menu.name = "SlotMenu"
+	add_child(slot_menu)
+	slot_menu.slot_chosen.connect(_on_slot_chosen)
+	add_click_sounds(slot_menu)
 
 
 func _physics_process(delta: float) -> void:
@@ -340,6 +350,7 @@ func start_new(diet: String) -> void:
 	autosave = true
 	hints = TutorialHints.new()
 	hint("bewegen")
+	show_menu(false)
 
 
 func save_now() -> bool:
@@ -388,7 +399,6 @@ func show_menu(value: bool) -> void:
 
 func _on_new_game(diet: String) -> void:
 	start_new(diet)
-	show_menu(false)
 
 
 func _on_continue() -> void:
@@ -413,7 +423,7 @@ func back_to_menu() -> void:
 	autosave_now()
 	paused = false
 	pause_menu.close()
-	main_menu.set_can_continue(FileAccess.file_exists(save_path))
+	main_menu.set_can_continue(SaveSlots.first_used(slot_prefix) > 0)
 	show_menu(true)
 
 
@@ -485,3 +495,25 @@ func hint(id: String) -> void:
 	if text != "":
 		hud.show_message(text, 6.0)
 
+
+# Neue Funktionen für Spielstandplatz-Auswahl
+
+func ask_slot_new(diet: String) -> void:
+	pending_diet = diet
+	slot_menu.prefix = slot_prefix
+	slot_menu.open("Neue Partie – Platz wählen", false)
+
+
+func ask_slot_continue() -> void:
+	pending_diet = ""
+	slot_menu.prefix = slot_prefix
+	slot_menu.open("Fortsetzen – Spielstand wählen", true)
+
+
+func _on_slot_chosen(slot: int) -> void:
+	save_path = SaveSlots.path_for(slot, slot_prefix)
+	if pending_diet != "":
+		_on_new_game(pending_diet)
+		autosave_now()
+	else:
+		_on_continue()
