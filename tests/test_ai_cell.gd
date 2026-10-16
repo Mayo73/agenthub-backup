@@ -38,3 +38,29 @@ func test_info() -> void:
 func test_maul() -> void:
 	cell.setup("blasenling", Vector2.ZERO)
 	check_eq(cell.mouth_point(), Vector2(12, 0), "mouth point")
+
+
+func test_aussehen_der_art() -> void:
+	var c := AiCell.new()
+	c.setup("schnapper", Vector2.ZERO)
+	check_eq(c.look.pattern, "streifen", "pattern")
+	check_eq(c.look.stretch, 1.3, "stretch")
+	check_eq(c.behavior, "jaeger", "behavior")
+	c.free()
+
+
+func test_stacheln() -> void:
+	var c := AiCell.new()
+	c.setup("stachelkugel", Vector2.ZERO)
+	check_eq(c.spike_shapes().size(), 8, "spike count")
+	var spikes := c.spike_shapes()
+	check(spikes[0][1].is_equal_approx(Vector2(c.radius * 1.5, 0)), "first spike tip")
+	c.free()
+
+
+func test_zeit() -> void:
+	var c := AiCell.new()
+	c.setup("blasenling", Vector2.ZERO)
+	c.drive(0.5)
+	check_eq(c.time, 0.5, "time")
+	c.free()
