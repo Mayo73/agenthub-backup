@@ -13,6 +13,7 @@ var build := CellBuild.starter(Diet.PFLANZENFRESSER)
 var stage := 0
 var look := CellLook.new()
 var time := 0.0 ## Laufzeit für Animationen in Sekunden.
+var flash := HitFlash.new()
 
 
 func _physics_process(delta: float) -> void:
@@ -26,6 +27,7 @@ func _physics_process(delta: float) -> void:
 ## Bewegt die Zelle um einen Zeitschritt und überträgt Lage und Ausrichtung auf den Node.
 func drive(delta: float, wish: Vector2) -> void:
 	time += delta
+	flash.tick(delta)
 	motion.step(delta, wish)
 	position = motion.position
 	rotation = motion.heading
@@ -74,16 +76,18 @@ func _draw() -> void:
 	for part in build.parts:
 		if PartCatalog.category_of(part["id"]) == "antrieb":
 			if part["id"] == "geissel":
-				draw_polyline(flagellum_points(part), PartShapes.color_of(part["id"]), maxf(1.5, radius * 0.1))
+				draw_polyline(flagellum_points(part), PartLooks.color(part["id"]), maxf(1.5, radius * 0.1))
 			else:
-				draw_colored_polygon(PartShapes.placed(part, radius), PartShapes.color_of(part["id"]))
+				draw_colored_polygon(PartLooks.placed(part, radius), PartLooks.color(part["id"]))
 	CellPainter.draw_cell(self, Vector2.ZERO, look, radius, time)
+	if flash.is_active():
+		draw_circle(Vector2.ZERO, radius * 1.05, flash.overlay_color())
 	for part in build.parts:
 		var category := PartCatalog.category_of(part["id"])
 		if category == "auge":
 			draw_eye(part)
 		elif category != "antrieb":
-			draw_colored_polygon(PartShapes.placed(part, radius), PartShapes.color_of(part["id"]))
+			draw_colored_polygon(PartLooks.placed(part, radius), PartLooks.color(part["id"]))
 
 
 ## Auge mit Pupille in Schwimmrichtung (+x), blinzelt ab und zu; das Stielauge mit Stiel.
