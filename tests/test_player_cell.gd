@@ -57,3 +57,25 @@ func test_ohne_maul_bleibt_ernaehrung() -> void:
 	cell.diet = Diet.FLEISCHFRESSER
 	cell.set_build(CellBuild.new())
 	check_eq(cell.diet, Diet.FLEISCHFRESSER, "cell.diet bleibt FLEISCHFRESSER ohne Maul")
+
+
+func test_aussehen_start() -> void:
+	check(cell.look.color.is_equal_approx(CellLook.DEFAULT_COLOR), "look.color ist DEFAULT_COLOR zu Start")
+	check_eq(cell.look.pattern, "keins", "look.pattern ist keins zu Start")
+
+
+func test_aussehen_setzen() -> void:
+	var l := CellLook.new()
+	l.set_stretch(1.5)
+	cell.set_look(l)
+	check(cell.look == l, "cell.look ist gleich nach set_look")
+	# Radius 12 * Streckung 1,5 = 18
+	check(cell.look.outline(cell.radius)[0].is_equal_approx(Vector2(18, 0)), "outline[0] bei Streckung 1,5")
+
+
+func test_aussehen_bleibt_beim_wachsen() -> void:
+	var l := CellLook.new()
+	l.color = Color.RED
+	cell.set_look(l)
+	cell.set_stage(2)
+	check(cell.look.color.is_equal_approx(Color.RED), "look.color bleibt RED nach set_stage(2)")
