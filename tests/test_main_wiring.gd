@@ -60,3 +60,10 @@ func test_nachfuellen() -> void:
 	main.food.items.clear()
 	main.refill_food()
 	check_eq(main.food.items.size(), 20, "main.food.items.size() ist 20")
+
+
+func test_hud() -> void:
+	check(main.hud is Hud, "main.hud ist ein Hud")
+	main.progress.eat(3)
+	main._process(0.016)
+	check_eq(main.hud.dna_label.text, "DNA: 3", "hud zeigt DNA nach Fressen")
