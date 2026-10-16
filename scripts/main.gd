@@ -218,10 +218,12 @@ func resolve_combat() -> void:
 		if CombatRules.can_bite(player.diet) and CombatRules.bite_hits(player.motion.position, player.motion.heading, player.radius, cell.motion.position, cell.radius):
 			if cell.health.damage(CombatRules.bite_damage(CombatRules.PLAYER_BITE, player.radius, cell.radius)):
 				cell.motion.knockback(cell.motion.position - player.motion.position, 120.0)
+				cell.flash.trigger()
 				audio.play("treffer")
 		if cell.damage > 0.0 and CombatRules.can_bite(cell.diet) and CombatRules.bite_hits(cell.motion.position, cell.motion.heading, cell.radius, player.motion.position, player.radius):
 			if player_health.damage(CombatRules.bite_damage(cell.damage, cell.radius, player.radius)):
 				player.motion.knockback(player.motion.position - cell.motion.position, 160.0)
+				player.flash.trigger()
 				hint("gefahr")
 				audio.play("treffer")
 		if cell.health.is_dead():
@@ -279,6 +281,7 @@ func resolve_weapons(delta: float) -> void:
 		if WeaponRules.spike_hits(tips, cell.motion.position, cell.radius) > 0:
 			if cell.health.damage(WeaponRules.SPIKE_DAMAGE):
 				cell.motion.knockback(cell.motion.position - pos, 100.0)
+				cell.flash.trigger()
 		cell.health.drain(poison.damage_at(cell.motion.position, cell.radius, delta))
 		if zap and ElectricOrgan.in_range(pos, player.radius, cell.motion.position, cell.radius):
 			cell.health.damage(ElectricOrgan.DAMAGE)
