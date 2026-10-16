@@ -87,3 +87,10 @@ func test_menuemusik() -> void:
 	check(menu.get_node("Music") is AudioStreamPlayer, "Music Node ist AudioStreamPlayer")
 	check(menu.music.stream is AudioStreamWAV, "menu.music.stream ist AudioStreamWAV")
 	check(absf(menu.music.volume_db - (-18.0)) < 0.001, "music.volume_db ist -18.0")
+
+func test_titelbild() -> void:
+	var image := menu.get_node("BackgroundImage") as TextureRect
+	check(image != null, "BackgroundImage existiert")
+	check(image.texture != null, "BackgroundImage hat eine Textur")
+	check(menu.get_node("BackgroundImage").get_index() < menu.get_node("Buttons").get_index(), "BackgroundImage kommt vor Buttons")
+	check(menu.get_node("ButtonShade") is ColorRect, "ButtonShade ist ein ColorRect")
