@@ -17,7 +17,7 @@ Evolutionsspiel in Godot 4.7 mit GDScript, Draufsicht auf eine Wasserwelt, nach 
 | `scripts/main.gd` | Verdrahtung der Hauptszene: `world`, `camera` |
 | `scripts/controls.gd` | `Controls`: Aktionen `hoch`, `runter`, `links`, `rechts`, `schwimmen` (linke Maustaste), `pause`; `Controls.key_vector()` |
 
-Geplante Klassen (entstehen durch Tickets, Namen genau so verwenden): `CellMotion`, `PlayerInput`, `PlayerCell`, `CameraZoom`, `Diet`, `CellProgress`, `FoodItem`, `FoodField`, `MouthContact`, `FoodView`, `Hud`, `CellHealth`, `SpeciesCatalog`, `AiBrain`, `AiCell`, `EcoSpawner`, `CombatRules`, `ParallaxDots`, `WaterBackdrop`, `PartCatalog`, `CellBuild`, `CellStats`, `PartUnlocks`, `PartPickups`, `PickupView`, `PartGeometry`, `WeaponRules`, `PoisonClouds`, `ElectricOrgan`, `PartShapes`, `PartDrops`, `EditorSession`, `EditorSymmetry`, `CellLook`, `MateCall`, `SaveGame`, `EditorPreview`, `EditorHistory`, `EditorPlacement`, `CellEditorPanel`, `CellEditorCanvas`, `CellEditor`, `PartnerView`, `UserSettings`, `RunStats`, `MainMenu`, `PauseMenu`, `SettingsMenu`.
+Geplante Klassen (entstehen durch Tickets, Namen genau so verwenden): `CellMotion`, `PlayerInput`, `PlayerCell`, `CameraZoom`, `Diet`, `CellProgress`, `FoodItem`, `FoodField`, `MouthContact`, `FoodView`, `Hud`, `CellHealth`, `SpeciesCatalog`, `AiBrain`, `AiCell`, `EcoSpawner`, `CombatRules`, `ParallaxDots`, `WaterBackdrop`, `PartCatalog`, `CellBuild`, `CellStats`, `PartUnlocks`, `PartPickups`, `PickupView`, `PartGeometry`, `WeaponRules`, `PoisonClouds`, `ElectricOrgan`, `PartShapes`, `PartDrops`, `EditorSession`, `EditorSymmetry`, `CellLook`, `MateCall`, `SaveGame`, `EditorPreview`, `EditorHistory`, `EditorPlacement`, `CellEditorPanel`, `CellEditorCanvas`, `CellEditor`, `PartnerView`, `UserSettings`, `RunStats`, `MainMenu`, `PauseMenu`, `SettingsMenu`, `SoundSynth`, `MusicSynth`, `CellSounds`, `CellMusic`, `AudioBuses`, `GameAudio`, `PhaseEnd`, `EndScreen`, `TutorialHints`, `SaveSlots`, `SlotMenu`, `FpsMeter`, `Benchmark`.
 
 Menüs und Editor sind `CanvasLayer` bzw. `Node`, die ihre Bedienelemente im Code anlegen und Klicks per Signal melden; `main.gd` entscheidet, was passiert. Tests lösen Knöpfe mit `button.pressed.emit()` aus.
 
@@ -55,3 +55,15 @@ Bis Medien aus Higgsfield kommen, zeichnen die Nodes mit `_draw()` einfache Plat
 - Weiche, organische Formen, leicht durchscheinend; Wasser tiefblau bis türkis (Hintergrund `#0B2B3D`).
 - Farben: Pflanzennahrung grün (`#6CCB5F`), Fleisch rot (`#D9534F`), Spielerzelle hell (Türkis `#7FE0D0`), Gefahren mit kräftigen Warnfarben (Orange, Violett).
 - Die Spielerzelle muss sich immer klar von anderen Zellen und von Nahrung abheben.
+
+### Bilder aus Higgsfield
+
+Fertige Bilder liegen unter `assets/` und werden mit `preload("res://assets/...")` geladen (Pfade nennt das Ticket). Gezeichnet wird mit `draw_texture_rect(...)` bzw. `TextureRect`.
+
+- Draufsicht auf eine Unterwasser-Mikrowelt, weiche organische Formen, leicht durchscheinend, sanfte Biolumineszenz.
+- Sprites als PNG mit Transparenz; Wasserhintergrund `assets/water/wasser_tiefe.png` ist 1024 × 1024 und nahtlos kachelbar.
+- Keine Schrift in Bildern, keine Marken, Logos oder bekannten Figuren.
+
+## Audio
+
+Alle Klänge entstehen im Code (`SoundSynth`, `MusicSynth`, keine Audiodateien). Musik läuft über den Bus „Musik“, alles andere über „Effekte“ (`AudioBuses`).
