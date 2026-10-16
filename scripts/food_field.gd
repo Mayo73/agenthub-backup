@@ -45,9 +45,7 @@ func count_kind(kind: String) -> int:
 	return cnt
 
 
-const INF_DIST := 999999.0
-
-func nearest(pos: Vector2, kind: String, max_dist: float = INF_DIST) -> FoodItem:
+func nearest(pos: Vector2, kind: String, max_dist: float = INF) -> FoodItem:
 	var result: FoodItem = null
 	var best_dist := max_dist
 	for item in items:
