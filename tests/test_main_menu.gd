@@ -82,3 +82,8 @@ func test_klick() -> void:
 	check(menu.click_player.stream is AudioStreamWAV, "click_player.stream ist AudioStreamWAV")
 	check(menu.track_next.pressed.is_connected(menu.play_click), "track_next.pressed ist mit play_click verbunden")
 	check(menu.car_prev.pressed.is_connected(menu.play_click), "car_prev.pressed ist mit play_click verbunden")
+
+func test_menuemusik() -> void:
+	check(menu.get_node("Music") is AudioStreamPlayer, "Music Node ist AudioStreamPlayer")
+	check(menu.music.stream is AudioStreamWAV, "menu.music.stream ist AudioStreamWAV")
+	check(absf(menu.music.volume_db - (-18.0)) < 0.001, "music.volume_db ist -18.0")

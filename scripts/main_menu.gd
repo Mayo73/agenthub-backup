@@ -5,6 +5,7 @@ const SETTINGS_SCENE := "res://scenes/settings_menu.tscn"
 var highscore_path := HighscoreTable.DEFAULT_PATH
 var settings_path := UserSettings.DEFAULT_PATH
 var click_player: AudioStreamPlayer
+var music: AudioStreamPlayer
 
 @onready var start_button: Button = $Buttons/Start
 @onready var settings_button: Button = $Buttons/Settings
@@ -22,6 +23,14 @@ func _ready() -> void:
 	click_player.name = "Click"
 	click_player.stream = SoundBank.click()
 	add_child(click_player)
+
+	music = AudioStreamPlayer.new()
+	music.name = "Music"
+	music.stream = MusicSynth.theme()
+	music.volume_db = -18.0
+	add_child(music)
+	music.play()
+
 	UserSettings.load_from(settings_path).apply()
 	start_button.pressed.connect(start_game)
 	quit_button.pressed.connect(quit_game)
