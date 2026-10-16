@@ -5,6 +5,8 @@ extends Node
 ## Neuer Aufbau nach Bestätigen, unveränderter Aufbau nach Abbrechen.
 signal finished(build: CellBuild)
 
+const COLORS := [Color("#7FE0D0"), Color("#6CCB5F"), Color("#E0C060"), Color("#D98FE0"), Color("#E07F7F"), Color("#7FA8E0")]
+
 var session: EditorSession
 var history := EditorHistory.new()
 var progress: CellProgress
@@ -16,6 +18,11 @@ var tools: HBoxContainer
 var undo_button: Button
 var redo_button: Button
 var symmetry_button: CheckButton
+var look: CellLook
+var look_box: VBoxContainer
+var color_buttons: Array[Button] = []
+var pattern_option: OptionButton
+var stretch_slider: HSlider
 
 
 func _init() -> void:
@@ -55,6 +62,36 @@ func _init() -> void:
 	panel.confirm_pressed.connect(confirm)
 	panel.cancel_pressed.connect(cancel)
 	canvas.changed.connect(_on_changed)
+
+	look_box = VBoxContainer.new()
+	look_box.name = "Look"
+	look_box.position = Vector2(24, 720)
+	panel.add_child(look_box)
+	var title := Label.new()
+	title.text = "Aussehen"
+	look_box.add_child(title)
+	var row := HBoxContainer.new()
+	look_box.add_child(row)
+	for c in COLORS:
+		var b := Button.new()
+		b.custom_minimum_size = Vector2(40, 40)
+		b.modulate = c
+		b.pressed.connect(set_color.bind(c))
+		row.add_child(b)
+		color_buttons.append(b)
+	pattern_option = OptionButton.new()
+	for p in CellLook.PATTERNS:
+		pattern_option.add_item(str(p).capitalize())
+	look_box.add_child(pattern_option)
+	stretch_slider = HSlider.new()
+	stretch_slider.min_value = CellLook.MIN_STRETCH
+	stretch_slider.max_value = CellLook.MAX_STRETCH
+	stretch_slider.step = 0.05
+	stretch_slider.value = 1.0
+	stretch_slider.custom_minimum_size = Vector2(260, 32)
+	look_box.add_child(stretch_slider)
+	pattern_option.item_selected.connect(set_pattern_index)
+	stretch_slider.value_changed.connect(set_stretch)
 
 
 func open(build: CellBuild, unlocks: PartUnlocks, p_progress: CellProgress, stage: int) -> void:
@@ -107,6 +144,36 @@ func confirm() -> void:
 func cancel() -> void:
 	confirmed = false
 	finished.emit(session.cancel())
+
+
+## Der Editor arbeitet auf einer Kopie; main.gd übernimmt look nach dem Bestätigen.
+func set_look(l: CellLook) -> void:
+	look = l.copy()
+	canvas.look = look
+	pattern_option.select(CellLook.PATTERNS.find(look.pattern))
+	stretch_slider.set_value_no_signal(look.stretch)
+	canvas.queue_redraw()
+
+
+func set_color(c: Color) -> void:
+	if look == null:
+		return
+	look.color = c
+	canvas.queue_redraw()
+
+
+func set_pattern_index(i: int) -> void:
+	if look == null:
+		return
+	look.set_pattern(CellLook.PATTERNS[i])
+	canvas.queue_redraw()
+
+
+func set_stretch(s: float) -> void:
+	if look == null:
+		return
+	look.set_stretch(s)
+	canvas.queue_redraw()
 
 
 func _unhandled_input(event: InputEvent) -> void:
