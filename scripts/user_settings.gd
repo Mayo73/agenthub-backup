@@ -27,8 +27,8 @@ static func load_from(path: String = DEFAULT_PATH) -> UserSettings:
 	var content := FileAccess.get_file_as_string(path)
 	if content == null:
 		return settings
-	var parsed := JSON.parse_string(content) as Dictionary
-	if parsed == null or not (parsed is Dictionary):
+	var parsed = JSON.parse_string(content)
+	if not (parsed is Dictionary):
 		return settings
 	var d := parsed as Dictionary
 	settings.volume = clampf(float(d.get("volume", 0.8)), 0.0, 1.0)

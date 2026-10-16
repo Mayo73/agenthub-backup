@@ -90,7 +90,7 @@ func _physics_process(delta: float) -> void:
 		scorer.update(delta, car.physics.slip_angle_deg(), car.physics.speed(), track.path.is_on_track(pos))
 		lap_timer.update(delta, track.path.progress_at(pos))
 		ghost_recording.record(lap_timer.current_time, car.physics.position, car.physics.heading)
-	place = RaceRanking.place(lap_timer.distance(), ai_distances())
+		place = RaceRanking.place(lap_timer.distance(), ai_distances())
 	ghost.show_at(ghost_best, lap_timer.current_time)
 	hud.show_score(scorer)
 	hud.show_laps(lap_timer)

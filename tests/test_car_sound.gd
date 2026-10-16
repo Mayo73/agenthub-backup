@@ -15,7 +15,7 @@ func teardown() -> void:
 func test_motor_vorhanden() -> void:
 	check(car.get_node("Engine") is AudioStreamPlayer2D, "Engine ist ein AudioStreamPlayer2D")
 	check(car.engine_player.stream is AudioStreamWAV, "engine_player.stream ist AudioStreamWAV")
-	check(absf(car.engine_player.pitch_scale - 0.6) < 0.001, "pitch_scale初始值正确")
+	check(absf(car.engine_player.pitch_scale - 0.6) < 0.001, "pitch_scale hat den Startwert 0.6")
 
 
 func test_motor_folgt_tempo() -> void:
