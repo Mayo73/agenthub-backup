@@ -24,3 +24,10 @@ func test_spieler() -> void:
 	main._process(0.016)
 	check_eq(main.camera.position.x, main.player.position.x, "camera x folgt player")
 	check_eq(main.camera.position.y, main.player.position.y, "camera y folgt player")
+
+
+func test_kamera_zoom() -> void:
+	check_eq(main.camera.zoom.x, 1.6, "Anfangs-Zoom ist 1.6 für Radius 12.0")
+	main.player.radius = 24.0
+	main._process(100.0)
+	check_eq(main.camera.zoom.x, 0.8, "Nach Wachstum auf Radius 24.0 ist Zoom 0.8")
