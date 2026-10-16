@@ -7,6 +7,8 @@ signal finished(build: CellBuild)
 
 const COLORS := [Color("#7FE0D0"), Color("#6CCB5F"), Color("#E0C060"), Color("#D98FE0"), Color("#E07F7F"), Color("#7FA8E0")]
 
+const BACKGROUND_TEXTURE: Texture2D = preload("res://assets/ui/editor_hintergrund.png")
+
 var session: EditorSession
 var history := EditorHistory.new()
 var progress: CellProgress
@@ -18,6 +20,7 @@ var tools: HBoxContainer
 var undo_button: Button
 var redo_button: Button
 var symmetry_button: CheckButton
+var background_image: TextureRect
 var look: CellLook
 var look_box: VBoxContainer
 var color_buttons: Array[Button] = []
@@ -35,6 +38,14 @@ func _init() -> void:
 	background.set_anchors_preset(Control.PRESET_FULL_RECT)
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	view_layer.add_child(background)
+	background_image = TextureRect.new()
+	background_image.name = "BackgroundImage"
+	background_image.texture = BACKGROUND_TEXTURE
+	background_image.set_anchors_preset(Control.PRESET_FULL_RECT)
+	background_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	background_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	background_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	view_layer.add_child(background_image)
 	canvas = CellEditorCanvas.new()
 	canvas.name = "Canvas"
 	view_layer.add_child(canvas)

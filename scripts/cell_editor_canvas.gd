@@ -97,10 +97,7 @@ func _draw() -> void:
 	if session == null:
 		return
 	if look != null:
-		var outline := PackedVector2Array()
-		for p in look.outline(SCALE):
-			outline.append(CENTER + p)
-		draw_colored_polygon(outline, look.color)
+		CellPainter.draw_cell(self, CENTER, look, SCALE, 0.0)
 	else:
 		draw_circle(CENTER, SCALE, BODY_COLOR)
 	for i in session.working.parts.size():
