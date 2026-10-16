@@ -103,3 +103,18 @@ func test_geissel_bewegt_sich() -> void:
 	cell.drive(0.1, Vector2.ZERO)
 	var b := cell.flagellum_points(part)[7]
 	check(not a.is_equal_approx(b), "Geißelendpunkt bewegt sich nach drive()")
+
+
+func test_auge_offen() -> void:
+	cell.drive(1.0, Vector2.ZERO)
+	check_eq(cell.eye_openness({"id": "knopfauge", "pos": Vector2(0.5, 0.0), "angle": 0.0}), 1.0, "Auge ist offen")
+
+
+func test_auge_blinzelt() -> void:
+	cell.drive(0.05, Vector2.ZERO)
+	check_eq(cell.eye_openness({"id": "knopfauge", "pos": Vector2(0.5, 0.0), "angle": 0.0}), 0.1, "Auge blinzelt")
+
+
+func test_auge_versetzt() -> void:
+	cell.drive(0.05, Vector2.ZERO)
+	check_eq(cell.eye_openness({"id": "knopfauge", "pos": Vector2(0.5, 1.0), "angle": 0.0}), 1.0, "Auge mit Versetzung ist offen")
