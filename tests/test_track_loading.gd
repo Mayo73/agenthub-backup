@@ -30,3 +30,22 @@ func test_beim_start_geladen() -> void:
 	check_eq(main.get_node("World/Track").track_id, TrackCatalog.DEFAULT_ID,
 		"track_id sollte beim Start DEFAULT_ID sein")
 	main.free()
+
+
+func test_deko_geladen() -> void:
+	var track: Node2D = preload("res://scripts/track.gd").new()
+	track.load_track("altstadt")
+	check(track.decor.size() > 0, "sollte mindestens einen Deko-Eintrag geben")
+
+	var has_tires := false
+	var has_tree := false
+	for item in track.decor:
+		if item["kind"] == TrackDecor.Kind.TIRES:
+			has_tires = true
+		if item["kind"] == TrackDecor.Kind.TREE:
+			has_tree = true
+	check(has_tires, "sollte einen Reifenstapel geben")
+	check(has_tree, "sollte einen Baum geben")
+
+	check(track.has_method("_draw_decor"), "track sollte Methode _draw_decor haben")
+	track.free()
