@@ -11,6 +11,7 @@ var player: PlayerCell
 var progress := CellProgress.new()
 var food := FoodField.new(7)
 var food_view: FoodView
+var hud: Hud
 
 
 func _ready() -> void:
@@ -25,6 +26,10 @@ func _ready() -> void:
 	food_view.field = food
 	world.add_child(food_view)
 	world.move_child(food_view, 0)
+	hud = Hud.new()
+	hud.name = "Hud"
+	add_child(hud)
+	hud.show_progress(progress)
 
 
 func _physics_process(_delta: float) -> void:
@@ -49,3 +54,4 @@ func _process(delta: float) -> void:
 	camera.position = player.position
 	var zoom := CameraZoom.smooth(camera.zoom.x, CameraZoom.target_for_radius(player.radius), delta)
 	camera.zoom = Vector2(zoom, zoom)
+	hud.show_progress(progress)
