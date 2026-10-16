@@ -17,7 +17,7 @@ Evolutionsspiel in Godot 4.7 mit GDScript, Draufsicht auf eine Wasserwelt, nach 
 | `scripts/main.gd` | Verdrahtung der Hauptszene: `world`, `camera` |
 | `scripts/controls.gd` | `Controls`: Aktionen `hoch`, `runter`, `links`, `rechts`, `schwimmen` (linke Maustaste), `pause`; `Controls.key_vector()` |
 
-Geplante Klassen (entstehen durch Tickets, Namen genau so verwenden): `CellMotion`, `PlayerInput`, `PlayerCell`, `CameraZoom`, `Diet`, `CellProgress`, `FoodItem`, `FoodField`, `MouthContact`, `FoodView`, `Hud`, `CellHealth`, `SpeciesCatalog`, `AiBrain`, `AiCell`, `EcoSpawner`, `CombatRules`, `ParallaxDots`, `WaterBackdrop`, `PartCatalog`, `CellBuild`, `CellStats`, `PartUnlocks`, `PartPickups`, `PickupView`, `PartGeometry`, `WeaponRules`, `PoisonClouds`, `ElectricOrgan`, `PartShapes`, `PartDrops`, `EditorSession`, `EditorSymmetry`, `CellLook`, `MateCall`, `SaveGame`, `EditorPreview`, `EditorHistory`, `EditorPlacement`, `CellEditorPanel`, `CellEditorCanvas`, `CellEditor`, `PartnerView`, `UserSettings`, `RunStats`, `MainMenu`, `PauseMenu`, `SettingsMenu`, `SoundSynth`, `MusicSynth`, `CellSounds`, `CellMusic`, `AudioBuses`, `GameAudio`, `PhaseEnd`, `EndScreen`, `TutorialHints`, `SaveSlots`, `SlotMenu`, `FpsMeter`, `Benchmark`.
+Geplante Klassen (entstehen durch Tickets, Namen genau so verwenden): `CellMotion`, `PlayerInput`, `PlayerCell`, `CameraZoom`, `Diet`, `CellProgress`, `FoodItem`, `FoodField`, `MouthContact`, `FoodView`, `Hud`, `CellHealth`, `SpeciesCatalog`, `AiBrain`, `AiCell`, `EcoSpawner`, `CombatRules`, `ParallaxDots`, `WaterBackdrop`, `PartCatalog`, `CellBuild`, `CellStats`, `PartUnlocks`, `PartPickups`, `PickupView`, `PartGeometry`, `WeaponRules`, `PoisonClouds`, `ElectricOrgan`, `PartShapes`, `PartDrops`, `EditorSession`, `EditorSymmetry`, `CellLook`, `MateCall`, `SaveGame`, `EditorPreview`, `EditorHistory`, `EditorPlacement`, `CellEditorPanel`, `CellEditorCanvas`, `CellEditor`, `PartnerView`, `UserSettings`, `RunStats`, `MainMenu`, `PauseMenu`, `SettingsMenu`, `SoundSynth`, `MusicSynth`, `CellSounds`, `CellMusic`, `AudioBuses`, `GameAudio`, `PhaseEnd`, `EndScreen`, `TutorialHints`, `SaveSlots`, `SlotMenu`, `FpsMeter`, `Benchmark`, `CellBody`, `CellPattern`, `CellPainter`, `PartAnimation`, `EyeLook`, `HitFlash`, `DemoScenes`, `BubbleTrail`, `BubbleView`.
 
 Menüs und Editor sind `CanvasLayer` bzw. `Node`, die ihre Bedienelemente im Code anlegen und Klicks per Signal melden; `main.gd` entscheidet, was passiert. Tests lösen Knöpfe mit `button.pressed.emit()` aus.
 
@@ -63,6 +63,7 @@ Fertige Bilder liegen unter `assets/` und werden mit `preload("res://assets/..."
 - Draufsicht auf eine Unterwasser-Mikrowelt, weiche organische Formen, leicht durchscheinend, sanfte Biolumineszenz.
 - Sprites als PNG mit Transparenz; Wasserhintergrund `assets/water/wasser_tiefe.png` ist 1024 × 1024 und nahtlos kachelbar.
 - Keine Schrift in Bildern, keine Marken, Logos oder bekannten Figuren.
+- Zellkörper: `assets/cells/zellkoerper.png` ist fast weiß und wird mit der Zellfarbe eingefärbt (`CellPainter.draw_cell`); alle Zellen (Spieler, KI, Partner, Editor) zeichnen ihren Körper damit.
 
 ## Audio
 
