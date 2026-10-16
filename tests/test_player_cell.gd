@@ -118,3 +118,19 @@ func test_auge_blinzelt() -> void:
 func test_auge_versetzt() -> void:
 	cell.drive(0.05, Vector2.ZERO)
 	check_eq(cell.eye_openness({"id": "knopfauge", "pos": Vector2(0.5, 1.0), "angle": 0.0}), 1.0, "Auge mit Versetzung ist offen")
+
+
+func test_wimpern_linien() -> void:
+	var part := {"id": "wimpern", "pos": Vector2(-1, 0), "angle": 0.0}
+	var lines := cell.cilia_lines(part)
+	check_eq(lines.size(), 5, "cilia_lines hat 5 Linien")
+	check(lines[0][0].is_equal_approx(Vector2(-cell.radius, -0.25 * cell.radius)), "erste Linie beginnt bei (-radius, -0.25*radius)")
+
+
+func test_duese_pulsiert() -> void:
+	var part := {"id": "duese", "pos": Vector2(-1, 0), "angle": 0.0}
+	var a := cell.jet_points(part)[1]
+	cell.drive(0.1, Vector2.ZERO)
+	var b := cell.jet_points(part)[1]
+	check_eq(cell.jet_points(part).size(), 4, "jet_points hat 4 Punkte")
+	check(not a.is_equal_approx(b), "Düse pulsiert nach drive()")
