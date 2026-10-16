@@ -72,11 +72,33 @@ func flagellum_points(part: Dictionary) -> PackedVector2Array:
 	return PartAnimation.place_points(PartAnimation.flagellum(time), part, radius)
 
 
+## Wimpern als Linienzüge in Pixeln relativ zur Zellmitte.
+func cilia_lines(part: Dictionary) -> Array[PackedVector2Array]:
+	var out: Array[PackedVector2Array] = []
+	for line in PartAnimation.cilia(time):
+		out.append(PartLooks.place(line, part, radius))
+	return out
+
+
+## Umriss der Düse in Pixeln relativ zur Zellmitte; pulsiert im Takt.
+func jet_points(part: Dictionary) -> PackedVector2Array:
+	var s := PartAnimation.jet_scale(time)
+	var pts := PackedVector2Array()
+	for p in PartLooks.shape("duese"):
+		pts.append(p * s)
+	return PartLooks.place(pts, part, radius)
+
+
 func _draw() -> void:
 	for part in build.parts:
 		if PartCatalog.category_of(part["id"]) == "antrieb":
 			if part["id"] == "geissel":
 				draw_polyline(flagellum_points(part), PartLooks.color(part["id"]), maxf(1.5, radius * 0.1))
+			elif part["id"] == "wimpern":
+				for line in cilia_lines(part):
+					draw_polyline(line, PartLooks.color(part["id"]), maxf(1.0, radius * 0.05))
+			elif part["id"] == "duese":
+				draw_colored_polygon(jet_points(part), PartLooks.color(part["id"]))
 			else:
 				draw_colored_polygon(PartLooks.placed(part, radius), PartLooks.color(part["id"]))
 	CellPainter.draw_cell(self, Vector2.ZERO, look, radius, time)
