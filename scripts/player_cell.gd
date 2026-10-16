@@ -13,6 +13,7 @@ var build := CellBuild.starter(Diet.PFLANZENFRESSER)
 var stage := 0
 var look := CellLook.new()
 var time := 0.0 ## Laufzeit für Animationen in Sekunden.
+var flash := HitFlash.new()
 
 
 func _physics_process(delta: float) -> void:
@@ -26,6 +27,7 @@ func _physics_process(delta: float) -> void:
 ## Bewegt die Zelle um einen Zeitschritt und überträgt Lage und Ausrichtung auf den Node.
 func drive(delta: float, wish: Vector2) -> void:
 	time += delta
+	flash.tick(delta)
 	motion.step(delta, wish)
 	position = motion.position
 	rotation = motion.heading
@@ -78,6 +80,8 @@ func _draw() -> void:
 			else:
 				draw_colored_polygon(PartShapes.placed(part, radius), PartShapes.color_of(part["id"]))
 	CellPainter.draw_cell(self, Vector2.ZERO, look, radius, time)
+	if flash.is_active():
+		draw_circle(Vector2.ZERO, radius * 1.05, flash.overlay_color())
 	for part in build.parts:
 		var category := PartCatalog.category_of(part["id"])
 		if category == "auge":
