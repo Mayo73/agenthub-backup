@@ -37,3 +37,10 @@ func test_wenden_begrenzt() -> void:
 func test_lange_eingabe_normalisiert() -> void:
 	m.step(0.1, Vector2(2, 0))
 	check_eq(m.velocity.x, 60.0, "velocity.x bei Eingabe > 1 wird normalisiert")
+
+
+func test_rueckstoss() -> void:
+	m.knockback(Vector2(0, 2), 100.0)
+	check_eq(m.velocity, Vector2(0, 100.0), "Rückstoß in positiver y-Richtung")
+	m.knockback(Vector2.ZERO, 100.0)
+	check_eq(m.velocity, Vector2(0, 100.0), "kein Rückstoß bei Vektor ZERO")

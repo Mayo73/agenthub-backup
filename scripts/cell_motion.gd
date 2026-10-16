@@ -28,3 +28,10 @@ func step(delta: float, wish: Vector2) -> void:
 
 func speed() -> float:
 	return velocity.length()
+
+
+## Stößt die Zelle in Richtung direction (wird normalisiert) mit strength Pixeln pro Sekunde an.
+func knockback(direction: Vector2, strength: float) -> void:
+	if direction == Vector2.ZERO:
+		return
+	velocity += direction.normalized() * strength
