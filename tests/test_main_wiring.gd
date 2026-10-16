@@ -179,3 +179,125 @@ func test_tod_vertreibt_gegner() -> void:
 func test_lebend_nichts() -> void:
 	main.check_death()
 	check_eq(main.deaths, 0, "main.deaths ist 0 wenn nicht tot")
+
+
+func test_hintergrund() -> void:
+	check(main.backdrop is WaterBackdrop, "main.backdrop is WaterBackdrop wahr")
+	check_eq(main.backdrop.get_index(), 2, "main.backdrop.get_index() ist 2")
+	check(main.backdrop.camera == main.camera, "main.backdrop.camera == main.camera wahr")
+
+
+func test_teilefund_liegt_bereit() -> void:
+	main.pickups.positions.clear()
+	main.collect_pickups()
+	check_eq(main.pickups.positions.size(), 1, "main.pickups.positions.size() ist 1")
+	check(main.pickup_view.pickups == main.pickups, "main.pickup_view.pickups == main.pickups ist wahr")
+	check(main.pickup_view.get_parent() == main.world, "main.pickup_view.get_parent() == main.world ist wahr")
+
+
+func test_teilefund_einsammeln() -> void:
+	main.pickups.positions.clear()
+	main.pickups.positions.append(main.player.position)
+	main.collect_pickups()
+	check(main.unlocks.is_unlocked("geissel"), "main.unlocks.is_unlocked(\"geissel\") ist wahr")
+	check_eq(main.hud.message_label.text, "Neues Teil gefunden: Geißel", "main.hud.message_label.text stimmt")
+	check_eq(main.pickups.positions.size(), 0, "main.pickups.positions.size() ist 0")
+
+
+func test_alle_frei_kein_fund() -> void:
+	for id in PartCatalog.UNLOCK_ORDER:
+		main.unlocks.unlock(id)
+	main.pickups.positions.clear()
+	main.collect_pickups()
+	check_eq(main.pickups.positions.size(), 0, "main.pickups.positions.size() ist 0")
+
+
+func test_stachel_hinten() -> void:
+	var b := CellBuild.starter(Diet.PFLANZENFRESSER)
+	b.add_part("stachel", Vector2(-1, 0))
+	main.player.set_build(b)
+	var cell := _add_ai("weidezelle", Vector2(-40, 0), 0.0)
+	main.resolve_weapons(0.016)
+	check_eq(cell.health.hp, 105.0, "cell.health.hp ist 105.0")
+
+
+func test_ohne_stachel() -> void:
+	var cell := _add_ai("weidezelle", Vector2(-40, 0), 0.0)
+	main.resolve_weapons(0.016)
+	check_eq(cell.health.hp, 120.0, "cell.health.hp ist 120.0")
+
+
+func test_gift() -> void:
+	var b := CellBuild.starter(Diet.PFLANZENFRESSER)
+	b.add_part("gift", Vector2(-1, 0))
+	main.player.set_build(b)
+	main.player.motion.velocity = Vector2(100, 0)
+	var cell := _add_ai("blasenling", Vector2(-20, 0), 0.0)
+	main.resolve_weapons(0.5)
+	check_eq(main.poison.clouds.size(), 1, "main.poison.clouds.size() ist 1")
+	check_eq(cell.health.hp, 14.0, "cell.health.hp ist 14.0")
+
+
+func test_elektro() -> void:
+	var b := CellBuild.starter(Diet.PFLANZENFRESSER)
+	b.add_part("elektro", Vector2(0, 0.5))
+	main.player.set_build(b)
+	var cell := _add_ai("schnapper", Vector2(25, 0), PI)
+	main.resolve_weapons(0.016)
+	check_eq(cell.health.hp, 22.0, "cell.health.hp ist 22.0")
+	check(not main.electric.is_ready(), "main.electric.is_ready() falsch")
+
+
+func test_teil_erbeuten() -> void:
+	main.player.diet = Diet.FLEISCHFRESSER
+	_add_ai("blasenling", Vector2(20, 0), 0.0)
+	main.resolve_combat()
+	check_eq(main.ai_cells.size(), 0, "main.ai_cells.size() ist 0")
+	check(main.unlocks.is_unlocked("stielauge"), "main.unlocks.is_unlocked(\"stielauge\") ist wahr")
+	check(main.hud.message_label.text == "Teil erbeutet: Stielauge", "main.hud.message_label.text stimmt")
+
+
+func test_teil_schon_frei() -> void:
+	main.unlocks.unlock("stielauge")
+	main.player.diet = Diet.FLEISCHFRESSER
+	_add_ai("blasenling", Vector2(20, 0), 0.0)
+	main.resolve_combat()
+	check_eq(main.unlocks.unlocked.size(), 4, "main.unlocks.unlocked.size() ist 4")
+	check(main.hud.message_label.text == "", "main.hud.message_label.text ist leer")
+
+
+func test_ruf() -> void:
+	check(not main.call_mate(), "main.call_mate() falsch")
+	main.mate.add_charge()
+	check(main.call_mate(), "main.call_mate() wahr")
+	check(main.mate.partner_pos != null, "main.mate.partner_pos != null wahr")
+	check(main.partner_view.get_parent() == main.world, "main.partner_view.get_parent() == main.world wahr")
+
+
+func test_wachstum_bringt_ruf() -> void:
+	main.food.items.clear()
+	main.progress.eat(9)
+	main.food.add_item(Diet.PFLANZE, main.player.mouth_point())
+	main.feed_player()
+	check_eq(main.mate.charges, 1, "main.mate.charges ist 1")
+
+
+func test_partner_erreicht() -> void:
+	main.mate.add_charge()
+	main.call_mate()
+	main.player.position = main.mate.partner_pos
+	main.update_mate()
+	check(main.editor_open, "main.editor_open wahr")
+	check(main.mate.partner_pos == null, "main.mate.partner_pos == null wahr")
+	check(not main.player.input_enabled, "main.player.input_enabled falsch")
+	check(main.partner_view.partner_pos == null, "main.partner_view.partner_pos == null wahr")
+
+
+func test_editor_haelt_spiel_an() -> void:
+	main.editor_open = true
+	main._physics_process(0.016)
+	check_eq(main.ai_cells.size(), 0, "main.ai_cells.size() ist 0")
+
+
+func test_ruftaste() -> void:
+	check(InputMap.has_action("rufen"), "InputMap.has_action(\"rufen\") wahr")

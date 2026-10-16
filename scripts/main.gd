@@ -17,6 +17,15 @@ var spawner := EcoSpawner.new(11)
 var ai_cells: Array[AiCell] = []
 var player_health := CellHealth.new()
 var deaths := 0
+var backdrop: WaterBackdrop
+var unlocks: PartUnlocks = PartUnlocks.new()
+var pickups: PartPickups = PartPickups.new(13)
+var pickup_view: PickupView
+var mate := MateCall.new()
+var partner_view: PartnerView
+var editor_open := false
+var poison := PoisonClouds.new()
+var electric := ElectricOrgan.new()
 
 
 func _ready() -> void:
@@ -35,18 +44,34 @@ func _ready() -> void:
 	hud.name = "Hud"
 	add_child(hud)
 	hud.show_progress(progress)
+	backdrop = WaterBackdrop.new()
+	backdrop.name = "Backdrop"
+	backdrop.camera = camera
+	world.add_child(backdrop)
+	pickup_view = PickupView.new()
+	pickup_view.name = "Pickups"
+	pickup_view.pickups = pickups
+	world.add_child(pickup_view)
+	partner_view = PartnerView.new()
+	partner_view.name = "Partner"
+	world.add_child(partner_view)
 
 
 func _physics_process(delta: float) -> void:
+	if editor_open:
+		return
 	player_health.tick(delta)
 	feed_player()
 	refill_food()
+	collect_pickups()
 	spawn_ai()
 	despawn_far_ai()
 	think_ai()
 	feed_ai()
+	resolve_weapons(delta)
 	resolve_combat()
 	check_death()
+	update_mate()
 
 
 ## Frisst alles, was das Maul der Spielerzelle berührt und zur Ernährung passt.
@@ -54,6 +79,8 @@ func feed_player() -> void:
 	for item in food.take_at(player.mouth_point(), MOUTH_REACH, player.diet):
 		if progress.eat(item.value):
 			player.set_stage(progress.stage)
+			mate.add_charge()
+			hud.show_message("Neuer Ruf bereit: Taste C oder rechte Maustaste")
 
 
 ## Entfernt weit entfernte Nahrung und streut neue um den Spieler, wenn sie knapp wird.
@@ -101,7 +128,7 @@ func think_ai() -> void:
 		infos.append(cell.info())
 	for cell in ai_cells:
 		var kind := Diet.FLEISCH if cell.diet == Diet.FLEISCHFRESSER else Diet.PFLANZE
-		var item := food.nearest(cell.position, kind, cell.brain.sight)
+		var item = food.nearest(cell.position, kind, cell.brain.sight)
 		cell.think(infos, item.position if item != null else null)
 
 
@@ -120,6 +147,9 @@ func resolve_combat() -> void:
 			if player_health.damage(CombatRules.bite_damage(cell.damage, cell.radius, player.radius)):
 				player.motion.knockback(player.motion.position - cell.motion.position, 160.0)
 		if cell.health.is_dead():
+			var part := PartDrops.drop_for(cell.species_id, unlocks)
+			if part != "" and unlocks.unlock(part):
+				hud.show_message("Teil erbeutet: %s" % PartCatalog.name_of(part))
 			for pos in CombatRules.meat_positions(cell.motion.position, cell.radius):
 				food.add_item(Diet.FLEISCH, pos)
 			remove_ai(cell)
@@ -137,3 +167,63 @@ func check_death() -> void:
 		if cell.position.distance_to(player.position) < clear_dist:
 			remove_ai(cell)
 	hud.show_message("Deine Zelle wurde gefressen – eine neue schlüpft.")
+
+
+## Hält einen Teilefund in der Nähe bereit, solange noch Teile gesperrt sind.
+## Berühren schaltet das nächste Teil frei.
+func collect_pickups() -> void:
+	var spread := EcoSpawner.view_scale(player.radius)
+	pickups.remove_far(player.position, 2000.0 * spread)
+	if pickups.positions.is_empty() and not unlocks.all_unlocked():
+		pickups.spawn_around(player.position, 600.0 * spread, 1200.0 * spread)
+	var count := pickups.take_touching(player.position, player.radius)
+	for _i in count:
+		var id = unlocks.next_locked()
+		if unlocks.unlock(id):
+			hud.show_message("Neues Teil gefunden: %s" % PartCatalog.name_of(id))
+
+
+## Stacheln, Gift und Elektroorgan der Spielerzelle gegen KI-Zellen.
+func resolve_weapons(delta: float) -> void:
+	var pos := player.motion.position
+	var heading := player.motion.heading
+	var tips := WeaponRules.spike_tips(pos, heading, player.radius, player.build)
+	poison.tick(delta)
+	electric.tick(delta)
+	if player.build.count("gift") > 0 and player.motion.speed() > 20.0:
+		poison.emit(PartGeometry.world_point(pos, heading, player.radius, Vector2(-1.2, 0)))
+	var zap := player.build.count("elektro") > 0 and electric.is_ready()
+	var zapped := false
+	for cell in ai_cells:
+		if WeaponRules.spike_hits(tips, cell.motion.position, cell.radius) > 0:
+			if cell.health.damage(WeaponRules.SPIKE_DAMAGE):
+				cell.motion.knockback(cell.motion.position - pos, 100.0)
+		cell.health.drain(poison.damage_at(cell.motion.position, cell.radius, delta))
+		if zap and ElectricOrgan.in_range(pos, player.radius, cell.motion.position, cell.radius):
+			cell.health.damage(ElectricOrgan.DAMAGE)
+			zapped = true
+	if zapped:
+		electric.fire()
+
+
+## Ruf auslösen, beim Erreichen des Partners den Zelleditor öffnen, Partner zeichnen.
+func update_mate() -> void:
+	if Input.is_action_just_pressed("rufen"):
+		call_mate()
+	if mate.reached(player.position, player.radius):
+		open_editor()
+	partner_view.partner_pos = mate.partner_pos
+
+
+func call_mate() -> bool:
+	if mate.call_partner(player.position, player.motion.heading):
+		hud.show_message("Ein Partner antwortet – schwimm zu ihm!")
+		return true
+	return false
+
+
+## Öffnet den Zelleditor. Bis der Editor eingebaut ist, hält die Spielerzelle nur an.
+func open_editor() -> void:
+	editor_open = true
+	player.input_enabled = false
+	mate.finish()
