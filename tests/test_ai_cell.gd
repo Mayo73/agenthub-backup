@@ -64,3 +64,28 @@ func test_zeit() -> void:
 	c.drive(0.5)
 	check_eq(c.time, 0.5, "time")
 	c.free()
+
+
+func test_blick_geradeaus() -> void:
+	var c := AiCell.new()
+	c.setup("blasenling", Vector2.ZERO)
+	c.motion.heading = 0.0
+	c.wish = Vector2(0, 1)
+	check(c.pupil_dir().is_equal_approx(Vector2(0, 1)), "pupil dir geradeaus")
+	c.free()
+
+
+func test_blick_gedreht() -> void:
+	var c := AiCell.new()
+	c.setup("blasenling", Vector2.ZERO)
+	c.motion.heading = PI / 2.0
+	c.wish = Vector2(0, 1)
+	check(c.pupil_dir().is_equal_approx(Vector2(1, 0)), "pupil dir gedreht")
+	c.free()
+
+
+func test_kein_ziel() -> void:
+	var c := AiCell.new()
+	c.setup("blasenling", Vector2.ZERO)
+	check(c.pupil_dir() == Vector2.ZERO, "kein ziel")
+	c.free()
