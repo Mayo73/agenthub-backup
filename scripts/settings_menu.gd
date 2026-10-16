@@ -6,12 +6,17 @@ var settings_path := UserSettings.DEFAULT_PATH
 var settings: UserSettings
 var key_buttons := {}
 var waiting_action := ""
+var click_player: AudioStreamPlayer
 
 @onready var volume_slider: HSlider = $Items/VolumeRow/Volume
 @onready var fullscreen_box: CheckBox = $Items/Fullscreen
 @onready var back_button: Button = $Items/Back
 
 func _ready() -> void:
+	click_player = AudioStreamPlayer.new()
+	click_player.name = "Click"
+	click_player.stream = SoundBank.click()
+	add_child(click_player)
 	settings = UserSettings.load_from(settings_path)
 	Controls.setup()
 	Controls.apply_bindings(settings.keys)
@@ -63,6 +68,7 @@ func _build_key_rows() -> void:
 		button.custom_minimum_size = Vector2(180, 0)
 		button.text = Controls.key_name(Controls.key_for(action))
 		button.pressed.connect(start_rebind.bind(action))
+		button.pressed.connect(play_click)
 		grid.add_child(button)
 		key_buttons[action] = button
 
@@ -89,3 +95,8 @@ func _input(event: InputEvent) -> void:
 	if waiting_action != "" and event is InputEventKey and event.pressed and not event.echo:
 		handle_key(event.physical_keycode)
 		get_viewport().set_input_as_handled()
+
+
+func play_click() -> void:
+	if click_player and click_player.is_inside_tree():
+		click_player.play()
