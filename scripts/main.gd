@@ -92,6 +92,9 @@ func _ready() -> void:
 	add_child(audio)
 	apply_settings()
 	show_menu(true)
+	add_click_sounds(main_menu)
+	add_click_sounds(pause_menu)
+	add_click_sounds(settings_menu)
 
 
 func _physics_process(delta: float) -> void:
@@ -278,6 +281,8 @@ func open_editor() -> void:
 	editor.open(player.build, unlocks, progress, progress.stage)
 	editor.set_look(player.look)
 	editor.finished.connect(close_editor)
+	editor.canvas.changed.connect(func() -> void: audio.play("teil_setzen"))
+	add_click_sounds(editor)
 
 
 ## Übernimmt das Ergebnis des Editors und kehrt ins Spiel zurück.
@@ -413,4 +418,12 @@ func apply_settings() -> void:
 	else:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 		DisplayServer.window_set_size(settings.resolution())
+
+
+## Hängt an alle Knöpfe unter node (rekursiv) einen Klick-Klang.
+func add_click_sounds(node: Node) -> void:
+	for child in node.get_children():
+		if child is BaseButton:
+			(child as BaseButton).pressed.connect(func() -> void: audio.play("klick"))
+		add_click_sounds(child)
 
