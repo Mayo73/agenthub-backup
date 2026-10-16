@@ -8,6 +8,7 @@ const MOUTH_COLOR := Color(0.1, 0.3, 0.3)
 var motion := CellMotion.new()
 var radius := 12.0
 var input_enabled := true
+var diet := Diet.PFLANZENFRESSER
 
 
 func _physics_process(delta: float) -> void:
@@ -24,6 +25,10 @@ func drive(delta: float, wish: Vector2) -> void:
 	position = motion.position
 	rotation = motion.heading
 	queue_redraw()
+
+
+func mouth_point() -> Vector2:
+	return MouthContact.mouth_point(motion.position, motion.heading, radius)
 
 
 func _draw() -> void:
