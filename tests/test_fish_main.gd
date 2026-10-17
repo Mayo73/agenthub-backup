@@ -365,3 +365,35 @@ func test_speichern_nach_verbessern() -> void:
 	var data := SaveGame.read_file(test_path)
 	var fish_data = data[FishSave.KEY]
 	check(fish_data["build"]["levels"]["schwanz"] == 1, "Level schwanz=1 gespeichert")
+
+
+## Test: Fortsetzen übernimmt gespeicherten Fischstand.
+func test_fortsetzen_uebernimmt_stand() -> void:
+	var b := FishBuild.new()
+	b.upgrade("schwanz")
+	b.upgrade("schwanz")
+	var p := FishProgress.new()
+	p.dna = 17
+	p.stage = 2
+	p.growth = 5
+	FishStart.pending_fish = FishSave.to_dict(b, p)
+	var f2: Node3D = load("res://scenes/fish.tscn").instantiate()
+	(Engine.get_main_loop() as SceneTree).root.add_child(f2)
+	check_eq(f2.progress.dna, 17, "progress.dna ist 17")
+	check_eq(f2.progress.stage, 2, "progress.stage ist 2")
+	check_eq(f2.progress.growth, 5, "progress.growth ist 5")
+	check_eq(f2.player.build.level("schwanz"), 2, "player.build.level('schwanz') ist 2")
+	check_eq(f2.player.size, FishProgress.SIZES[2], "player.size ist SIZES[2]")
+	check_eq(f2.player.motion.max_speed, 12.0, "player.motion.max_speed ist 12.0")
+	check(FishStart.pending_fish.is_empty(), "FishStart.pending_fish ist leer nach Laden")
+	f2.free()
+
+
+## Test: Ohne Fischstand startet Fisch frisch.
+func test_ohne_fischstand() -> void:
+	FishStart.clear()
+	var f2: Node3D = load("res://scenes/fish.tscn").instantiate()
+	(Engine.get_main_loop() as SceneTree).root.add_child(f2)
+	check_eq(f2.progress.stage, 0, "progress.stage ist 0")
+	check_eq(f2.player.size, 1.0, "player.size ist 1.0")
+	f2.free()

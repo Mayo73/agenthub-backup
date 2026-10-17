@@ -65,6 +65,9 @@ func _ready() -> void:
 	if FishStart.pending_build != null:
 		player.set_build(FishStart.pending_build)
 	progress.dna = FishStart.pending_dna
+	if not FishStart.pending_fish.is_empty():
+		player.set_build(FishSave.apply(FishStart.pending_fish, progress))
+		player.set_size(progress.size())
 	save_path = FishStart.pending_save_path
 	FishStart.clear()
 	apply_sight()

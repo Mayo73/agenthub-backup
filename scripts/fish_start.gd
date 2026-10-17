@@ -20,6 +20,8 @@ static var pending_build: FishBuild = null
 static var pending_dna := 0
 ## Spielstand-Datei des aktuellen Platzes (leer = nicht speichern).
 static var pending_save_path := ""
+## Gespeicherter Stand der Fischphase (FishSave.to_dict), leer = neuer Fisch.
+static var pending_fish: Dictionary = {}
 
 
 ## Erster Fisch aus Aufbau, Aussehen und Ernährung der Zelle. Je passendem Teil eine Stufe, höchstens MAX_START_LEVEL.
@@ -53,3 +55,4 @@ static func clear() -> void:
 	pending_build = null
 	pending_dna = 0
 	pending_save_path = ""
+	pending_fish = {}
