@@ -70,3 +70,9 @@ func test_uebergabe() -> void:
 	FishStart.clear()
 	check(FishStart.pending_build == null, "pending_build wird auf null gesetzt")
 	check_eq(FishStart.pending_dna, 0, "pending_dna wird auf 0 gesetzt")
+
+
+func test_fischstand_leeren() -> void:
+	FishStart.pending_fish = {"dna": 3}
+	FishStart.clear()
+	check(FishStart.pending_fish.is_empty(), "pending_fish ist leer nach clear()")
