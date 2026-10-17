@@ -23,6 +23,24 @@ Menüs und Editor sind `CanvasLayer` bzw. `Node`, die ihre Bedienelemente im Cod
 
 Teil-Lagen (`CellBuild`) sind in Zellradien relativ zur Zellmitte angegeben, Blickrichtung +x; `PartGeometry.world_point()` rechnet sie in Weltkoordinaten um.
 
+## Fischphase (3D)
+
+Nach der Zellenphase folgt eine Fischphase in einer echten 3D-Unterwasserwelt (Wunsch des Nutzers vom 17.10.2026).
+
+- Eigene Szene `scenes/fish.tscn` mit `FishMain` (`scripts/fish_main.gd`, `extends Node3D`). Wie in der Zellenphase entstehen alle Knoten im Code; die Szene enthält nur den Wurzelknoten.
+- Koordinaten in **Metern, y zeigt nach oben**. Wasseroberfläche bei `y = 0`, Meeresboden bei `y = -FishWorld.DEPTH`, Ränder bei ±`FishWorld.HALF_SIZE` in x und z. `FishWorld.clamp_to_water()` hält Lagen im Wasser.
+- Blickrichtung wie in Godot: Bei `yaw = 0` und `pitch = 0` schwimmt der Fisch nach **-z**. Ein Node3D bekommt `rotation = Vector3(pitch, yaw, 0)`.
+- Keine Godot-Physikkörper, auch nicht in 3D (`RigidBody3D`, `CharacterBody3D`, `Area3D`). Bewegung steckt in `FishMotion`, Berührungen werden mit Abständen gerechnet.
+- Logik in `RefCounted`-Klassen mit Tests, Nodes (`Node3D`, `MeshInstance3D`, `CanvasLayer`) nur für Darstellung und Eingabe. Formen entstehen aus Godot-Grundkörpern (`SphereMesh`, `BoxMesh`, `PrismMesh`, `CylinderMesh`) mit `StandardMaterial3D`.
+- Tests für die Fischszene laden `res://scenes/fish.tscn`, hängen sie an `(Engine.get_main_loop() as SceneTree).root` und geben sie in `teardown()` mit `free()` frei (Vorlage: `tests/test_fish_main.gd`).
+
+| Datei | Aufgabe |
+|---|---|
+| `scripts/fish_world.gd` | `FishWorld`: Maße, Farben, `clamp_to_water()`, `depth_of()` |
+| `scripts/fish_main.gd` | `FishMain`: `world`, `camera`, `sun`, `water`, `floor_mesh`, `surface_mesh` |
+
+Geplante Klassen der Fischphase: `FishBuild`, `FishStart`, `FishIntro`, `FishMotion`, `FishInput`, `ChaseCamera`, `FishModel`, `FishPlayer`, `ReefLayout`, `ReefView`, `MarineSnow`, `FishHud`, `FishFood`, `FishFoodView`, `FishProgress`.
+
 ## Regeln
 
 - GDScript 4 mit statischen Typen (`var x: int`, `func f() -> void`).
