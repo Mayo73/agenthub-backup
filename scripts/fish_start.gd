@@ -18,6 +18,8 @@ const MAX_START_LEVEL := 2
 ## Übergabe zwischen den Szenen: main.gd setzt beides vor dem Szenenwechsel, FishMain liest es.
 static var pending_build: FishBuild = null
 static var pending_dna := 0
+## Spielstand-Datei des aktuellen Platzes (leer = nicht speichern).
+static var pending_save_path := ""
 
 
 ## Erster Fisch aus Aufbau, Aussehen und Ernährung der Zelle. Je passendem Teil eine Stufe, höchstens MAX_START_LEVEL.
@@ -50,3 +52,4 @@ static func requested(args: PackedStringArray) -> bool:
 static func clear() -> void:
 	pending_build = null
 	pending_dna = 0
+	pending_save_path = ""
