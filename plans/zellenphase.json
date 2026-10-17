@@ -212,23 +212,18 @@
                                            "T-0197",
                                            "T-0198",
                                            "T-0209",
-                                           "T-0210"
+                                           "T-0210",
+                                           "T-0259",
+                                           "T-0260"
                                        ],
                            "tasks":  [
                                          {
-                                             "text":  "Optik beurteilen",
-                                             "done":  false,
-                                             "punkt":  "P-0004"
-                                         },
-                                         {
                                              "text":  "Zellen ansehen: Körper mit Textur, Muster und wogender Membran, Geißel, Augen, Aufblitzen bei Treffern, Editor-Hintergrund",
-                                             "done":  false,
-                                             "punkt":  "P-0004"
+                                             "done":  false
                                          },
                                          {
                                              "text":  "Erste Bilder ansehen: Wasserhintergrund, Nahrung, Teilefund, Titelbild im Hauptmenü",
-                                             "done":  false,
-                                             "punkt":  "P-0004"
+                                             "done":  false
                                          }
                                      ]
                        },
@@ -409,7 +404,13 @@
                            "title":  "Fischphase: Weiterentwicklung",
                            "description":  "Entwicklungsmenü: DNA verbessert Schwanzflosse (Tempo), Brustflossen (Wendigkeit, Tauchen), Kiefer (Biss, Fleisch), Stacheln (Abwehr) und Augen (Sicht). Jede Stufe sichtbar und messbar. Prüfbar: Tests je Bauteil.",
                            "tickets":  [
-
+                                           "T-0262",
+                                           "T-0263",
+                                           "T-0264",
+                                           "T-0265",
+                                           "T-0266",
+                                           "T-0267",
+                                           "T-0268"
                                        ],
                            "estimate":  7,
                            "tasks":  [
@@ -424,11 +425,24 @@
                            "title":  "Fischphase: Leben im Meer",
                            "description":  "Schwarmfische als Beute, Raubfische als Gefahr, Gesundheit, Bisse und Stacheln, Tod und Wiedereinstieg. Prüfbar: Tests für Jagd, Flucht und Kampf.",
                            "tickets":  [
-
+                                           "T-0269",
+                                           "T-0270",
+                                           "T-0271",
+                                           "T-0272",
+                                           "T-0273",
+                                           "T-0274",
+                                           "T-0275",
+                                           "T-0276",
+                                           "T-0277",
+                                           "T-0278",
+                                           "T-0279"
                                        ],
-                           "estimate":  7,
+                           "estimate":  11,
                            "tasks":  [
-
+                                         {
+                                             "text":  "Leben im Meer ausprobieren: Flucht der Beute, Angriff der Zackenbarsche, Fressen",
+                                             "done":  false
+                                         }
                                      ]
                        },
                        {
@@ -436,7 +450,9 @@
                            "title":  "Fischphase: Optik, Klang, Speichern und Abnahme",
                            "description":  "Schönere Fische und Lichtstimmung, Klänge, Spielstand und Fortsetzen in der Fischphase, Pausemenü, Abnahmetests.",
                            "tickets":  [
-
+                                           "T-0280",
+                                           "T-0281",
+                                           "T-0282"
                                        ],
                            "estimate":  7,
                            "tasks":  [
@@ -470,9 +486,9 @@
                                        ],
                            "tasks":  [
                                          {
-                                             "text":  "Download der Godot-Exportvorlagen freigeben",
+                                             "text":  "Godot-Exportvorlagen installieren (du selbst oder per Chat-Auftrag an Claude)",
                                              "done":  false,
-                                             "punkt":  "P-0001"
+                                             "punkt":  "P-0007"
                                          }
                                      ]
                        },
@@ -495,7 +511,8 @@
                                            "T-0206",
                                            "T-0207",
                                            "T-0215",
-                                           "T-0216"
+                                           "T-0216",
+                                           "T-0261"
                                        ],
                            "tasks":  [
                                          {

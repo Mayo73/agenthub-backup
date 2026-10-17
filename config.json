@@ -9,7 +9,7 @@
   "verifyTimeoutMinutes": 10,
   "idleSeconds": 30,
   "dashboardHosts": ["desktop-niko.tail810eaa.ts.net"],
-  "backup": { "url": "" },
+  "backup": { "url": "https://github.com/Mayo73/agenthub-backup.git" },
   "benachrichtigung": { "ntfy": "" },
   "reviewTimes": ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "21:00", "22:00", "23:00"],
   "reviewMinutes": 20,

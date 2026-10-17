@@ -25,8 +25,8 @@ Arbeitsteilung:
 | `projects/<name>/` | Arbeitskopie eines Projekts auf `main`. Hier wird gemergt. |
 | `workspaces/<name>/` | Git-Worktree des Workers. **Nie von Hand ändern.** |
 | `envs/<name>/` | Gemeinsame Laufzeitumgebungen (z. B. Python-venv), die `verify.cmd` in beiden Ordnern nutzt |
-| `hub/` | `worker.ps1`, `server.ps1`, Dashboard (http://localhost:8787), `stats.ps1` (Kennzahlen je Modell, Auslastung), `review-gate.ps1` (ist ein Review nötig?), `tools/bild.gd` (Bilder freistellen und skalieren), `spielen.cmd <projekt> [Angaben]` (startet ein Projekt zum Ausprobieren, für ChatGPT und den Nutzer), `tools/screenshots.ps1` (Screenshots von Godot-Projekten) |
-| `state/` | `worker.json` (Status, Herzschlag), `worker.log`, `paused` (Pause-Flag), `stopped` (mit `stop-hub.cmd` beendet), `review.lock` (Review läuft), `last-review.json` (Ende des letzten Reviews) |
+| `hub/` | `worker.ps1`, `server.ps1`, Dashboard (http://localhost:8787), `stats.ps1` (Kennzahlen je Modell, Auslastung), `review-gate.ps1` (ist ein Review nötig?), `tools/bild.gd` (Bilder freistellen und skalieren), `spielen.cmd <projekt> [Angaben]` (startet ein Projekt zum Ausprobieren, für ChatGPT und den Nutzer), `tools/screenshots.ps1` (Screenshots von Godot-Projekten), `tools/spieltest.ps1` (Spieltests mit simulierter Eingabe, siehe „Spieltests“), `tools/ton.ps1` (Tonanalyse), `tools/streifen.gd` (Bildstreifen), `backup.ps1` (nächtliche Sicherung) |
+| `state/` | `worker.json` (Status, Herzschlag), `worker.log`, `paused` (Pause-Flag), `stopped` (mit `stop-hub.cmd` beendet), `review.lock` (Review läuft), `last-review.json` (Ende des letzten Reviews), `higgsfield.json` (letzter Kontostand), `last-backup.json` und `backup-hub.git` (Sicherung), `benachrichtigt.json` (schon gemeldete Punkte) |
 
 Ablauf eines Tickets: `todo` → `doing` → `review` (Prüfung bestanden, Branch `agent/<id>` mit einem Commit) oder `failed` (nach allen Versuchen) → `done` (nach Claudes Review).
 
@@ -53,6 +53,7 @@ Arbeite die Schritte der Reihe nach ab und halte dich kurz. Lies Diffs und Beric
 3. **Tickets in `review/`**, jeweils:
    - `runs/<id>/report.md` und `runs/<id>/diff.patch` lesen und gegen die Akzeptanzkriterien des Tickets prüfen. Besonders auf die „Hinweise für den Review“ achten (geänderte Tests, manipulierte Prüfdateien, Merge-Konflikte, rote Ausgangslage). Meldet der Bericht einen Merge-Konflikt mit einem anderen `agent/*`-Branch: beide nacheinander mergen und den Konflikt beim zweiten Merge auflösen; solche Tickets künftig verketten.
    - **Gut:** In `projects/<projekt>` mergen, aber nur wenn dort `main` ausgecheckt und `git status --porcelain` leer ist (sonst arbeitet der Nutzer gerade: nicht mergen, im Protokoll vermerken). Merge-Nachricht per Datei: `git -C projects/<projekt> merge --no-ff -F <datei> agent/<id>`. Danach `projects/<projekt>/verify.cmd` ausführen. Grün: `git branch -d agent/<id>`, Ticket nach `done/` verschieben und unten anhängen: `Review (Datum): gemergt.` Rot: `git -C projects/<projekt> reset --hard ORIG_HEAD`, Ticket bleibt in `review/`, Problem ins Protokoll.
+   - **Spieltests:** Nach den Merges eines Reviews einmal `hub\tools\spieltest.ps1 -Projekt <projekt>` für jedes Projekt mit Spieltests ausführen, in das gemergt wurde. Fehlgeschlagene Tests sind Fehler im Spiel (oder ein veralteter Test): selbst beheben oder ein Ticket planen, im Protokoll unter „Gemergt“ vermerken.
    - **Kleine Mängel** (wenige Zeilen) nach dem Merge selbst in `projects/<projekt>` beheben, `verify.cmd` muss grün sein, normal committen. Vermerk dann `Review (Datum): gemergt, nachgebessert: …`. `hub/stats.ps1` zählt daraus, wie oft nachgebessert werden musste.
    - **Nicht brauchbar:** `git branch -D agent/<id>`, Ticket nach `done/` mit `Review (Datum): abgelehnt, weil …`, bei Bedarf ein besseres Folgeticket anlegen.
    - **Gestapelte Tickets** (im Bericht „Gestapelt: baut auf …“): Der Worker hat sie auf den Branches ihrer noch nicht gemergten Vorgänger aufgebaut. Immer zuerst die Vorgänger reviewen und mergen, dann das gestapelte Ticket (Git erkennt die schon gemergten Vorgänger-Commits). Wird ein Vorgänger abgelehnt, auch alle darauf gestapelten Tickets ablehnen (`git branch -D`) und neu nach `todo/` stellen, sobald der Vorgänger neu umgesetzt ist.
@@ -128,6 +129,7 @@ Regeln:
    - `verify.cmd` liefert Exit-Code 0 nur bei Erfolg und prüft einen **eindeutigen Erfolgsnachweis** (wie die Zeile `ERGEBNIS: … 0 fehlgeschlagen` bei Drift), damit ein abgebrochener Lauf nie als grün gilt.
    - Der Worker prüft in `workspaces/<projekt>`, einem eigenen Git-Worktree, in dem ignorierte Dateien (`.venv`, `node_modules`, Build-Ordner) fehlen. `verify.cmd` muss deshalb in beiden Ordnern funktionieren: gemeinsame Umgebung unter `envs/<projekt>` nutzen oder fehlende Abhängigkeiten selbst einrichten.
    - Der Agent kann keine Befehle ausführen und keine Pakete installieren. Alle Abhängigkeiten legst du beim Aufsetzen fest; Tickets, die neue Pakete brauchen, nennen sie ausdrücklich, und du installierst sie im Review.
+   - Bei Godot-Spielen gleich den Ordner `playtests/` mit der Grundlage `hub\tools\vorlagen\playtest.gd` anlegen (in `protected` eintragen) und die ersten Spieltests schreiben (siehe „Spieltests“).
 5. **`config.json`:** unter `projects` eintragen, mit `protected` (mindestens `verify.cmd` und der Test-Runner) und `testCount`: ein regulärer Ausdruck für die Ergebniszeile des Test-Runners, die erste Klammer ist die Zahl der bestandenen Tests (Drift: `^ERGEBNIS: (\\d+) ok`).
 6. **`plans/<projekt>.json`:** immer anlegen; bei `ablaufplan: nein` mit `"visible": false`. `target` z. B. „Abnahme“. Meilensteine aus Muss und Soll ableiten, jeweils mit `estimate`. Letzter Meilenstein „Abnahme“: automatisch prüfbare Abnahmekriterien als Tests, die übrigen als `tasks` für den Nutzer.
 7. **Aufträge:** Meilensteine als `<Projekt>: …` in `auftraege.md` eintragen, dann wie gewohnt planen.
@@ -213,6 +215,16 @@ Was und warum, in 1–3 Sätzen.
 - `tests/test_....gd`: `test_...` prüft …
 ```
 
+## Spieltests
+
+Godot-Spiele haben neben den Unit-Tests (`tests/`, laufen in `verify.cmd`) **Spieltests** in `playtests/`: Sie laden eine Szene, bedienen das Spiel über die echten Eingabeaktionen wie ein Spieler (Tasten halten, Autopilot, Zelle steuern) und prüfen, was passiert. Sie ersetzen das meiste Ausprobieren durch ChatGPT oder den Nutzer.
+
+- **Ausführen:** `powershell -NoProfile -ExecutionPolicy Bypass -File hub\tools\spieltest.ps1 -Projekt <projekt> [-Test a,b] [-Liste]`. Unsichtbar und schneller als Echtzeit (ein Rennen über 3 Runden in wenigen Sekunden). Ergebnis: `SPIELTEST-OK/-FEHLGESCHLAGEN`-Zeilen, Messwerte (`SPIELTEST-WERT`) und am Ende `SPIELTESTS: <n> ok, <m> fehlgeschlagen`; Skriptfehler machen den Lauf ungültig.
+- **Als Film für Material:** `… -Test <name> -Film -Ziel lastenhefte\punkte\P-0007`. Das Spiel läuft minimiert in Echtzeitbildern (Movie Maker, langsam: etwa 5–10 s Rechenzeit pro Spielsekunde). Ins Ziel kommen die Standbilder (`shot()`, Datei `<test>-<name>.png`), Bildstreifen mit 6 Bildern hintereinander (`film()`, Datei `<test>-<name>-streifen.png`, zeigt Bewegung, Rauch, Wolken, Blitze) und je Test ein **Tonbericht** `<test>-ton.txt`: Pegel, Spitzen, Übersteuerung, Stille, grobe Tonhöhe je Sekunde und, wenn der Test Messwerte wie `tempo` ausgibt, ob die Tonhöhe ihnen folgt. Den Tonbericht liest Claude selbst; ChatGPT bekommt ihn nur, wenn er beim Urteil hilft. Ob es gut klingt, bleibt eine Frage an den Nutzer.
+- **Aufbau:** `playtests/playtest.gd` ist die geschützte Grundlage (Klasse `Playtest`, Vorlage `hub\tools\vorlagen\playtest.gd`). Ein Test `playtests/<name>.gd` setzt `scene_path` und überschreibt `run()`; Hilfen: `wait()`, `press()/release()/hold()/tap()` für Aktionen, `key()/tap_key()` für echte Tasten (mit `physical = false` wie bei Computer Use), `until(bedingung, sekunden, was)`, `check()`, `fail()`, `shot()`, `film()`, `measure()`, `reload_scene()`. Gemeinsame Hilfen eines Projekts in Dateien mit `_` am Anfang (z. B. `_drift.gd` mit Autopilot); sie sind keine Tests.
+- **Neue Spieltests:** Für jedes neue Spielelement, das man sonst ausprobieren müsste, einen Spieltest ergänzen, entweder selbst im Review oder per Ticket (die Agents können Spieltests schreiben, aber nicht ausführen; der Review führt sie aus). Nie die Daten des Nutzers anfassen (Spielstände, Einstellungen): Tests schreiben in eigene Dateien unter `user://spieltest_…`.
+- **Material für Punkte:** Für `ansehen`-Punkte zuerst den Filmlauf nehmen (echte Spielszenen statt Menü), ergänzt um `tools\screenshots.ps1` für einzelne Szenen. `ausprobieren`-Punkte nur noch für Spielgefühl und Bedienung, die kein Spieltest beurteilen kann.
+
 ## Offene Punkte für ChatGPT
 
 Alles, wofür Claude eine Antwort, eine Freigabe oder ein Urteil braucht, geht als **Punkt** an ChatGPT, nie ins Lastenheft. ChatGPT erledigt ihn im Rahmen der Lastenhefte selbst und gibt nur weiter, was es nicht kann oder nicht darf (Befugnis in `lastenhefte/AGENTS.md`). Datei `lastenhefte/punkte/P-0001-kurzname.md`, nächste ID = höchste P-Nummer in `punkte/` und `punkte/erledigt/` + 1:
@@ -263,7 +275,7 @@ Was entschieden oder beurteilt werden soll, mit dem nötigen Zusammenhang (ChatG
 
 **Kosten:** Jede Generierung kostet Credits aus dem Abo des Nutzers. Der Nutzer erlaubt, so viel zu nutzen, wie das Abo hergibt; reicht es nicht, warten die Aufträge, bis das Guthaben wieder aufgefüllt ist (Entscheidung vom 16.10.2026). Trotzdem sparsam:
 
-- Vor dem ersten Auftrag eines Reviews den Kontostand abfragen. Reicht er nicht: im Auftrag `attempted: <jetzt, ISO>` setzen, in diesem Review keine weiteren Medien erzeugen, im Protokoll unter „Medien“ vermerken. Das Gate stößt nach `reviewGate.mediaRetryHours` (6 Stunden) einen neuen Versuch an.
+- Vor dem ersten Auftrag eines Reviews den Kontostand abfragen und als `state/higgsfield.json` festhalten (`{ "credits": 79.75, "plan": "basic", "checked": "<jetzt, ISO>" }`, auch nach dem letzten Auftrag noch einmal); das Dashboard zeigt ihn an. Reicht er nicht: im Auftrag `attempted: <jetzt, ISO>` setzen, in diesem Review keine weiteren Medien erzeugen, im Protokoll unter „Medien“ vermerken. Das Gate stößt nach `reviewGate.mediaRetryHours` (6 Stunden) einen neuen Versuch an.
 - Erst ein Entwurf mit günstigem Modell oder kleiner Auflösung, Varianten erst, wenn der Entwurf passt. Höchstens 3 Generierungen pro Auftrag; passt es dann nicht, den Nutzer fragen (Protokoll „Für dich“).
 - Video nur, wenn ein Projekt es wirklich braucht; es ist die teuerste Art.
 
@@ -313,9 +325,14 @@ Was, wofür, Stil, Größe bzw. Länge, Format.
 - Git liegt unter `C:\Program Files\Git\cmd\git.exe`, falls `git` nicht im PATH ist.
 - `verify.cmd` schreibt sein Protokoll nach `projects/<projekt>/.verify.log`.
 
+## Benachrichtigung und Sicherung
+
+- **Benachrichtigung:** Der Worker meldet dem Nutzer etwa jede Minute Neues, das auf ihn wartet: Punkte, die ChatGPT weitergegeben hat, und ein Ollama, das seit 30 Minuten nicht antwortet. Als Windows-Meldung auf dem PC und, wenn `benachrichtigung.ntfy` in `config.json` gesetzt ist, per ntfy aufs Handy (`Send-HubNachricht`, `Update-Benachrichtigungen` in `hub\common.ps1`). Claude muss dafür nichts tun; Wichtiges gehört trotzdem als Punkt bzw. ins Protokoll.
+- **Sicherung:** `hub\backup.ps1` schiebt jede Nacht die Projekt-Repos (`main` → Branch `projekt/<name>`) und die Hub-Dateien (Branch `hub`, eigener Verlauf in `state/backup-hub.git`, ohne `projects`, `workspaces`, `envs`, `runs`, `state`) in das private GitHub-Repo aus `backup.url`. Der Wächter startet sie, wenn die letzte älter als 23 Stunden ist; Ergebnis in `state/last-backup.json`. Schlägt sie fehl, unter „Für dich“ erwähnen.
+
 ## Grenzen
 
-- Nie pushen, keine Remotes anlegen.
+- Nie pushen, keine Remotes anlegen. Einzige Ausnahme ist die Sicherung durch `hub\backup.ps1` an `backup.url`.
 - Nichts außerhalb von `C:\Users\wiens\AgentHub` ändern. Ausnahme: Software-Installationen nach „Software installieren“.
 - Nie in `workspaces/` arbeiten; keine Tickets, Lastenhefte oder `runs/`-Ordner löschen.
 - Den Worker nicht für eigene Experimente pausieren, ohne ihn danach fortzusetzen.
