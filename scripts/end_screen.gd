@@ -4,8 +4,10 @@ extends CanvasLayer
 
 signal to_main_menu
 signal quit_game
+signal to_fish_phase
 
 var box: VBoxContainer
+var fish_button: Button
 var title_label: Label
 var lines_box: VBoxContainer
 var menu_button: Button
@@ -33,6 +35,12 @@ func _init() -> void:
 	lines_box = VBoxContainer.new()
 	lines_box.name = "Lines"
 	box.add_child(lines_box)
+	fish_button = Button.new()
+	fish_button.name = "Fish"
+	fish_button.text = "Weiter zur Fischphase"
+	fish_button.custom_minimum_size = Vector2(400, 56)
+	box.add_child(fish_button)
+	fish_button.pressed.connect(func() -> void: to_fish_phase.emit())
 	menu_button = Button.new()
 	menu_button.text = "Hauptmenü"
 	menu_button.custom_minimum_size = Vector2(400, 56)
