@@ -9,6 +9,10 @@ var music_volume := 0.8
 var sfx_volume := 0.8
 var fullscreen := false
 var resolution_index := 2
+var difficulty := Difficulty.NORMAL
+
+func set_difficulty(i: int) -> void:
+	difficulty = Difficulty.clamp_index(i)
 
 
 func set_music_volume(v: float) -> void:
@@ -40,6 +44,7 @@ func save(path: String = DEFAULT_PATH) -> bool:
 	cfg.set_value("audio", "sfx", sfx_volume)
 	cfg.set_value("display", "fullscreen", fullscreen)
 	cfg.set_value("display", "resolution", resolution_index)
+	cfg.set_value("game", "difficulty", difficulty)
 	return cfg.save(path) == OK
 
 
@@ -52,4 +57,5 @@ func load_from(path: String = DEFAULT_PATH) -> bool:
 	set_sfx_volume(float(cfg.get_value("audio", "sfx", sfx_volume)))
 	fullscreen = bool(cfg.get_value("display", "fullscreen", fullscreen))
 	set_resolution_index(int(cfg.get_value("display", "resolution", resolution_index)))
+	set_difficulty(int(cfg.get_value("game", "difficulty", difficulty)))
 	return true

@@ -49,3 +49,22 @@ func test_speichern_laden() -> void:
 func test_fehlende_datei() -> void:
 	check(not s.load_from("user://gibtsnicht.cfg"), "Laden nicht existenter Datei schlägt fehl")
 	check_eq(s.music_volume, 0.8, "Standardwerte bleiben erhalten")
+
+
+func test_schwierigkeit_standard() -> void:
+	check_eq(s.difficulty, Difficulty.NORMAL, "Schwierigkeitsgrad ist Normal als Standard")
+
+
+func test_schwierigkeit_grenzen() -> void:
+	s.set_difficulty(5)
+	check_eq(s.difficulty, 2, "Index 5 wird auf maximalen Index 2 begrenzt")
+	s.set_difficulty(-1)
+	check_eq(s.difficulty, 0, "Index -1 wird auf minimalen Index 0 begrenzt")
+
+
+func test_schwierigkeit_gespeichert() -> void:
+	s.set_difficulty(2)
+	check(s.save(PATH), "Speichern soll erfolgreich sein")
+	var t := UserSettings.new()
+	t.load_from(PATH)
+	check_eq(t.difficulty, 2, "Schwierigkeitsgrad wurde gespeichert und geladen")
