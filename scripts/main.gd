@@ -170,6 +170,7 @@ func _physics_process(delta: float) -> void:
 	think_ai()
 	feed_ai()
 	resolve_weapons(delta)
+	resolve_ai_weapons(delta)
 	resolve_combat()
 	check_death()
 	update_mate()
@@ -335,6 +336,18 @@ func resolve_weapons(delta: float) -> void:
 	if zapped:
 		electric.fire()
 		zap_view.show_zaps(pos, zap_targets)
+
+
+## Stacheln, Gift und Elektroorgane der KI-Zellen gegen die Spielerzelle.
+func resolve_ai_weapons(delta: float) -> void:
+	var factor := Difficulty.damage_factor(settings.difficulty)
+	for cell in ai_cells:
+		var tips := SpeciesWeapons.spike_tips(cell.species_id, cell.motion.position, cell.motion.heading, cell.radius)
+		if WeaponRules.spike_hits(tips, player.motion.position, player.radius) > 0:
+			if player_health.damage(WeaponRules.SPIKE_DAMAGE * factor):
+				player.motion.knockback(player.motion.position - cell.motion.position, 140.0)
+				player.flash.trigger()
+				audio.play("treffer")
 
 
 ## Ruf auslösen, beim Erreichen des Partners den Zelleditor öffnen, Partner zeichnen.
