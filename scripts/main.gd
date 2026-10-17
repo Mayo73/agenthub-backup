@@ -19,6 +19,7 @@ var skid_marks: Node2D
 var race := RaceState.new()
 var pause_menu: CanvasLayer
 var ghost: Node2D
+var player_marker: PlayerMarker
 var ghost_best: GhostLap = null
 var ghost_recording := GhostLap.new()
 
@@ -62,6 +63,13 @@ func _ready() -> void:
 	ghost.set_car(GameSettings.car_id)
 	world.add_child(ghost)
 	world.move_child(ghost, car.get_index())
+
+	player_marker = PlayerMarker.new()
+	player_marker.name = "PlayerMarker"
+	player_marker.target = car
+	world.add_child(player_marker)
+	world.move_child(player_marker, car.get_index())
+	player_marker.follow()
 
 	pause_menu = preload("res://scenes/pause_menu.tscn").instantiate()
 	add_child(pause_menu)
