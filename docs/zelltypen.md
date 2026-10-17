@@ -60,3 +60,4 @@ Die Vorführszenen lassen sich mit folgenden Startbefehlen starten:
 - `-- --szene=jagd`: Ein Schnapper jagt die kleine Spielerzelle. Zeigt das Jagdverhalten von Fleischfressern.
 - `-- --szene=flucht`: Ein Blasenling flieht vor der großen Spielerzelle. Zeigt das Fluchtverhalten.
 - `-- --szene=nahrung`: Ein Blasenling schwimmt zur Pflanzennahrung. Zeigt die Nahrungssuche.
+- `-- --szene=verschlingen`: Die Spielerzelle (Fleischfresser, Abschnitt 2) verschluckt den kleinen Blasenling mit einem Biss, den gleich großen Panzerling verletzt ein Biss nur. Zeigt die Ein-Biss-Regel.

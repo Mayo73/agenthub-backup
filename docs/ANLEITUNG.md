@@ -19,4 +19,4 @@ Partner rufen und erreichen. Teile wählen und platzieren, verschieben, drehen (
 Drei Plätze. Automatisches Speichern nach Editor und Größenwechsel. Lautstärke Musik und Effekte. Vollbild und Auflösung wählen.
 
 ## Leistungstest und Vorführszenen
-Start mit `-- --benchmark` (Ergebnis in `leistungstest.txt` im Benutzerordner des Spiels). Mit `-- --szene=<name>` eine Vorführszene starten: jagd, flucht, nahrung, stachel, gift, elektro, tempo, wendigkeit.
+Start mit `-- --benchmark` (Ergebnis in `leistungstest.txt` im Benutzerordner des Spiels). Mit `-- --szene=<name>` eine Vorführszene starten: jagd, flucht, nahrung, stachel, gift, elektro, tempo, wendigkeit, verschlingen.

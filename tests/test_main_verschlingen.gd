@@ -54,3 +54,26 @@ func test_fressen_wie_bisher() -> void:
 	main.eat_value(Diet.FLEISCH, 2)
 	check_eq(main.progress.dna, dna + 2, "DNA um 2 erhöht")
 	check_eq(main.stats.food_eaten, 1, "stats.food_eaten ist 1")
+
+
+func test_szene() -> void:
+	main.start_scene("verschlingen")
+	check_eq(main.ai_cells.size(), 2, "main.ai_cells.size() ist 2")
+	check_eq(main.player.radius, 27.0, "main.player.radius ist 27")
+	check_eq(main.ai_cells[0].species_id, "blasenling", "main.ai_cells[0].species_id ist 'blasenling'")
+	check_eq(main.ai_cells[1].species_id, "panzerling", "main.ai_cells[1].species_id ist 'panzerling'")
+
+
+func test_szene_regel() -> void:
+	main.start_scene("verschlingen")
+	var klein: AiCell = main.ai_cells[0]
+	var gross: AiCell = main.ai_cells[1]
+	klein.motion.position = Vector2(35, 0)
+	gross.motion.position = Vector2(500, 500)
+	main.resolve_combat()
+	check(not main.ai_cells.has(klein), "klein wurde verschluckt")
+	check(main.ai_cells.has(gross), "gross ist noch da")
+	gross.motion.position = Vector2(50, 0)
+	main.resolve_combat()
+	check(main.ai_cells.has(gross), "gross ist immer noch da")
+	check(gross.health.hp < gross.health.max_hp, "gross.health.hp < gross.health.max_hp")

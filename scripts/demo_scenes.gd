@@ -13,6 +13,7 @@ const SCENES := {
 	"elektro": {"text": "Das Elektroorgan entlädt sich bei nahen Gegnern.", "stage": 1, "diet": Diet.PFLANZENFRESSER, "parts": [["elektro", Vector2(0, 0.5)]], "ai": [["schnapper", Vector2(60, 0), PI]], "food": []},
 	"tempo": {"text": "Zwei Geißeln: deutlich schneller als der Startaufbau.", "stage": 1, "diet": Diet.PFLANZENFRESSER, "parts": [["geissel", Vector2(-1, 0.25)], ["geissel", Vector2(-1, -0.25)]], "ai": [], "food": []},
 	"wendigkeit": {"text": "Wimpern: engere Kurven als der Startaufbau.", "stage": 1, "diet": Diet.PFLANZENFRESSER, "parts": [["wimpern", Vector2(0, 1)], ["wimpern", Vector2(0, -1)]], "ai": [], "food": []},
+	"verschlingen": {"text": "Ein-Biss-Regel: Den kleinen Blasenling vorn verschluckst du mit einem Biss, den gleich großen Panzerling unten verletzt ein Biss nur.", "stage": 2, "diet": Diet.FLEISCHFRESSER, "parts": [], "ai": [["blasenling", Vector2(70, 0), 0.0], ["panzerling", Vector2(0, 140), 0.0]], "food": []},
 }
 
 
