@@ -1,0 +1,139 @@
+{
+  "project": "drift",
+  "title": "Drift",
+  "goal": "2D-Driftspiel in isometrischer Ansicht: schnelle Runden fahren und mit Drifts Punkte sammeln. Ziel: Version 1.0 als eigenständiges Windows-Spiel mit Menüs, 3 Strecken, 3 Autos, KI-Gegnern, Bestenliste, Sound und Einstellungen.",
+  "target": "Version 1.0",
+  "milestones": [
+    {
+      "id": "M0",
+      "title": "Grundgerüst",
+      "description": "Fahrphysik, isometrische Teststrecke, Kamera, HUD-Grundlage und Prüfsystem.",
+      "by": "Claude",
+      "done": true,
+      "tickets": [],
+      "tasks": []
+    },
+    {
+      "id": "M1",
+      "title": "Fahrgefühl",
+      "description": "Drift-Wertung mit Kombo, Rundenzeit mit Bestzeit, beides im HUD.",
+      "tickets": ["T-0003", "T-0004", "T-0005"],
+      "tasks": [
+        { "text": "Probefahrt: Wie fühlt sich das Driften an?", "done": false, "punkt": "P-0003" }
+      ]
+    },
+    {
+      "id": "M2",
+      "title": "Reifenspuren und Rauch",
+      "description": "Sichtbare Reifenspuren und Reifenrauch beim Driften.",
+      "tickets": ["T-0006", "T-0007", "T-0008"],
+      "tasks": [
+        { "text": "Aussehen von Spuren und Rauch beurteilen", "done": false, "punkt": "P-0002" }
+      ]
+    },
+    {
+      "id": "M3",
+      "title": "Rennablauf",
+      "description": "Countdown, 3 Runden, Ergebnis mit Zeit und Punkten, Neustart per Taste.",
+      "tickets": ["T-0009", "T-0010", "T-0011", "T-0012"],
+      "tasks": [
+        { "text": "Ein ganzes Rennen durchspielen", "done": false, "punkt": "P-0003" }
+      ]
+    },
+    {
+      "id": "M4",
+      "title": "Geisterauto",
+      "description": "Die beste Runde als Geisterauto, um gegen sich selbst zu fahren.",
+      "tickets": ["T-0013", "T-0014", "T-0015", "T-0016"],
+      "tasks": [
+        { "text": "Gegen das Geisterauto fahren: gut erkennbar, hilfreich?", "done": false, "punkt": "P-0003" }
+      ]
+    },
+    {
+      "id": "M5",
+      "title": "Menüs",
+      "description": "Hauptmenü, Pausemenü mit Esc, Ergebnisbildschirm mit „Nochmal“ und „Zum Menü“, Szenenwechsel.",
+      "tickets": ["T-0017", "T-0018", "T-0019", "T-0020", "T-0021", "T-0022"],
+      "tasks": [
+        { "text": "Menüs durchklicken: Ist alles verständlich?", "done": false, "punkt": "P-0002" }
+      ]
+    },
+    {
+      "id": "M6",
+      "title": "Mehrere Strecken",
+      "description": "3 Strecken mit eigenem Charakter und Streckenauswahl. Streckendesign von Claude.",
+      "estimate": 5,
+      "tickets": ["T-0023", "T-0024", "T-0025", "T-0027", "T-0028"],
+      "tasks": [
+        { "text": "Alle 3 Strecken probefahren", "done": false, "punkt": "P-0003" }
+      ]
+    },
+    {
+      "id": "M7",
+      "title": "Bestenliste",
+      "description": "Bestzeit und höchste Punktzahl je Strecke dauerhaft speichern und anzeigen.",
+      "estimate": 5,
+      "tickets": ["T-0029", "T-0030", "T-0031", "T-0032", "T-0033"],
+      "tasks": []
+    },
+    {
+      "id": "M8",
+      "title": "Mehrere Autos",
+      "description": "3 Autos mit eigenem Fahrverhalten und eigener Farbe, Auswahl vor dem Rennen.",
+      "estimate": 4,
+      "tickets": ["T-0034", "T-0035", "T-0036", "T-0037"],
+      "tasks": [
+        { "text": "Alle 3 Autos probefahren: Fühlen sie sich verschieden an?", "done": false, "punkt": "P-0003" }
+      ]
+    },
+    {
+      "id": "M9",
+      "title": "KI-Gegner",
+      "description": "Computergesteuerte Autos fahren mit, Zusammenstöße zwischen Autos, Platzierung im Ergebnis.",
+      "estimate": 11,
+      "tickets": ["T-0038", "T-0039", "T-0040", "T-0041", "T-0042", "T-0043", "T-0044", "T-0045", "T-0046", "T-0047", "T-0048"],
+      "tasks": [
+        { "text": "Gegen die KI fahren: zu leicht oder zu schwer?", "done": false, "punkt": "P-0003" }
+      ]
+    },
+    {
+      "id": "M10",
+      "title": "Sound",
+      "description": "Motor passend zum Tempo, Reifenquietschen beim Driften, Menüklänge, Musik.",
+      "estimate": 12,
+      "tickets": ["T-0052", "T-0053", "T-0054", "T-0055", "T-0056", "T-0057", "T-0058", "T-0059", "T-0060", "T-0064", "T-0067", "T-0070"],
+      "tasks": [
+        { "text": "Sound anhören und beurteilen", "done": false, "punkt": "P-0006" }
+      ]
+    },
+    {
+      "id": "M11",
+      "title": "Einstellungen",
+      "description": "Lautstärke, Vollbild, Tastenbelegung ändern, dauerhaft gespeichert.",
+      "estimate": 6,
+      "tickets": ["T-0049", "T-0050", "T-0051", "T-0061", "T-0062", "T-0063"],
+      "tasks": []
+    },
+    {
+      "id": "M12",
+      "title": "Grafik-Politur",
+      "description": "Schönere Autos und Strecken-Deko (Reifenstapel, Bäume, Tribünen) statt einfacher Formen. Grafiken mit Higgsfield (A-0001 bis A-0006, von Claude erzeugt), Einbau per Ticket.",
+      "estimate": 13,
+      "tickets": ["T-0065", "T-0066", "T-0068", "T-0069", "T-0071", "T-0072", "T-0073", "T-0074", "T-0075", "T-0076", "T-0077", "T-0078", "T-0079"],
+      "tasks": [
+        { "text": "Optik beurteilen (Autos, Deko, Titelbild im Menü)", "done": false, "punkt": "P-0002" }
+      ]
+    },
+    {
+      "id": "M13",
+      "title": "Version 1.0 (Windows)",
+      "description": "Eigenständige .exe, die ohne Godot läuft. Braucht einmalig die Godot-Exportvorlagen.",
+      "estimate": 2,
+      "tickets": [],
+      "tasks": [
+        { "text": "Download der Exportvorlagen freigeben", "done": false, "punkt": "P-0001" },
+        { "text": "Windows-Version starten und testen", "done": false }
+      ]
+    }
+  ]
+}

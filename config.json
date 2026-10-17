@@ -1,0 +1,40 @@
+{
+  "port": 8787,
+  "ollamaUrl": "http://127.0.0.1:11434",
+  "defaultModel": "qwen3.5:35b-a3b",
+  "claudeLocal": "C:\\Users\\wiens\\.local\\bin\\claude-local.cmd",
+  "godotBin": "C:\\Users\\wiens\\AppData\\Local\\Microsoft\\WinGet\\Packages\\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\\Godot_v4.7.2-stable_win64_console.exe",
+  "maxAttempts": 5,
+  "agentTimeoutMinutes": 20,
+  "verifyTimeoutMinutes": 10,
+  "idleSeconds": 30,
+  "dashboardHosts": ["desktop-niko.tail810eaa.ts.net"],
+  "backup": { "url": "" },
+  "benachrichtigung": { "ntfy": "" },
+  "reviewTimes": ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "21:00", "22:00", "23:00"],
+  "reviewMinutes": 20,
+  "reviewGate": { "minOpen": 15, "minOpenNoon": 40, "maxReview": 20, "pause": ["12:30", "21:00"], "mediaRetryHours": 6 },
+  "projects": {
+    "testspiel": {
+      "path": "C:\\Users\\wiens\\AgentHub\\projects\\testspiel",
+      "baseBranch": "main",
+      "verify": "verify.cmd",
+      "protected": ["verify.cmd", "tests/run_tests.gd", "tests/base_test.gd"],
+      "testCount": "^ERGEBNIS: (\\d+) ok"
+    },
+    "drift": {
+      "path": "C:\\Users\\wiens\\AgentHub\\projects\\drift",
+      "baseBranch": "main",
+      "verify": "verify.cmd",
+      "protected": ["verify.cmd", "tests/run_tests.gd", "tests/base_test.gd", "tests/test_car_physics.gd", "playtests/playtest.gd"],
+      "testCount": "^ERGEBNIS: (\\d+) ok"
+    },
+    "zellenphase": {
+      "path": "C:\\Users\\wiens\\AgentHub\\projects\\zellenphase",
+      "baseBranch": "main",
+      "verify": "verify.cmd",
+      "protected": ["verify.cmd", "tests/run_tests.gd", "tests/base_test.gd", "playtests/playtest.gd"],
+      "testCount": "^ERGEBNIS: (\\d+) ok"
+    }
+  }
+}

@@ -1,0 +1,528 @@
+{
+    "project":  "zellenphase",
+    "title":  "Zellenphase",
+    "goal":  "Windows-Spiel, das die Zellenphase von Spore in Spielablauf, Steuerung, Zelleditor und Optik möglichst eng nachbildet, mit eigenen Medien und Ähnlichkeitsvergleich in der Abnahme.",
+    "target":  "Abnahme",
+    "milestones":  [
+                       {
+                           "id":  "M0",
+                           "title":  "Grundgerüst",
+                           "description":  "Godot-4.7-Projekt, Prüfsystem (verify.cmd, Testlauf), Steuerung, Hauptszene, Vergleichsliste angelegt.",
+                           "by":  "Claude",
+                           "done":  true,
+                           "tickets":  [
+
+                                       ],
+                           "tasks":  [
+
+                                     ]
+                       },
+                       {
+                           "id":  "M1",
+                           "title":  "Prototyp: Schwimmen, Fressen, Wachstum",
+                           "description":  "Mausgeführtes Schwimmen mit Trägheit, Kamera mit Zoom, Pflanzen und Fleisch, Fressen mit dem Maul, DNA und fünf Größenabschnitte, HUD.",
+                           "estimate":  11,
+                           "tickets":  [
+                                           "T-0080",
+                                           "T-0081",
+                                           "T-0082",
+                                           "T-0083",
+                                           "T-0084",
+                                           "T-0085",
+                                           "T-0086",
+                                           "T-0087",
+                                           "T-0088",
+                                           "T-0089",
+                                           "T-0090"
+                                       ],
+                           "tasks":  [
+
+                                     ]
+                       },
+                       {
+                           "id":  "M2",
+                           "title":  "Prototyp: Ökosystem und Kampf",
+                           "description":  "Acht Zellarten, KI mit Flucht, Jagd und Nahrungssuche, Bisse nur mit dem Maul, Gesundheit, Tod und Wiedereinstieg, Wasserteilchen in Tiefenebenen.",
+                           "estimate":  11,
+                           "tickets":  [
+                                           "T-0091",
+                                           "T-0092",
+                                           "T-0093",
+                                           "T-0094",
+                                           "T-0095",
+                                           "T-0096",
+                                           "T-0097",
+                                           "T-0098",
+                                           "T-0099",
+                                           "T-0100",
+                                           "T-0101"
+                                       ],
+                           "tasks":  [
+                                         {
+                                             "text":  "Frühe spielbare Fassung ausprobieren: Schwimmen, Fressen, Kampf und Wachstum",
+                                             "done":  false,
+                                             "punkt":  "P-0005"
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M3",
+                           "title":  "Teile und Freischaltungen",
+                           "description":  "Filtermaul, Kiefer, Rüssel, Geißel und Zilien, Stacheln, Gift und elektrische Abwehr, Augen; Teilefunde und Freischaltung durch besiegte Zellen.",
+                           "estimate":  15,
+                           "tickets":  [
+                                           "T-0102",
+                                           "T-0103",
+                                           "T-0104",
+                                           "T-0105",
+                                           "T-0106",
+                                           "T-0107",
+                                           "T-0108",
+                                           "T-0109",
+                                           "T-0110",
+                                           "T-0111",
+                                           "T-0112",
+                                           "T-0113",
+                                           "T-0114",
+                                           "T-0119",
+                                           "T-0120"
+                                       ],
+                           "tasks":  [
+                                         {
+                                             "text":  "Teile ausprobieren: Wirken Geißel, Wimpern, Stacheln, Gift und Elektroorgan spürbar?",
+                                             "done":  false,
+                                             "punkt":  "P-0005"
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M4",
+                           "title":  "Partnersuche und Zelleditor",
+                           "description":  "Ruf und Partner, Editor mit Körperform, Farbe, Muster, Teile platzieren, verschieben, drehen, entfernen, Symmetrie, DNA-Kosten und Fähigkeitsvorschau.",
+                           "estimate":  16,
+                           "tickets":  [
+                                           "T-0115",
+                                           "T-0116",
+                                           "T-0117",
+                                           "T-0121",
+                                           "T-0122",
+                                           "T-0123",
+                                           "T-0124",
+                                           "T-0130",
+                                           "T-0131",
+                                           "T-0132",
+                                           "T-0133",
+                                           "T-0134",
+                                           "T-0135",
+                                           "T-0136"
+                                       ],
+                           "tasks":  [
+                                         {
+                                             "text":  "Zelleditor ausprobieren: Bedienung und Symmetrie verständlich?",
+                                             "done":  false,
+                                             "punkt":  "P-0005"
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M5",
+                           "title":  "Menüs, Spielstand und Einstellungen",
+                           "description":  "Deutsches Hauptmenü, neue Partie, fortsetzen, Pause, Beenden; Spielstand mit Autospeichern; Lautstärke, Vollbild und Auflösung dauerhaft gespeichert.",
+                           "estimate":  10,
+                           "tickets":  [
+                                           "T-0118",
+                                           "T-0125",
+                                           "T-0127",
+                                           "T-0128",
+                                           "T-0129",
+                                           "T-0137",
+                                           "T-0138",
+                                           "T-0139"
+                                       ],
+                           "tasks":  [
+
+                                     ]
+                       },
+                       {
+                           "id":  "M6",
+                           "title":  "Vollständiger Durchlauf",
+                           "description":  "Ende der Zellenphase mit Abschlussbildschirm, Start als Pflanzen- oder Fleischfresser, Einführung, Entwicklungsrückblick, Rückgängig im Editor, mehrere Spielstände.",
+                           "estimate":  12,
+                           "tickets":  [
+                                           "T-0126",
+                                           "T-0147",
+                                           "T-0148",
+                                           "T-0149",
+                                           "T-0150",
+                                           "T-0151",
+                                           "T-0152",
+                                           "T-0153",
+                                           "T-0154",
+                                           "T-0155",
+                                           "T-0163"
+                                       ],
+                           "tasks":  [
+                                         {
+                                             "text":  "Je einen Durchlauf als Pflanzen- und als Fleischfresser spielen",
+                                             "done":  false,
+                                             "punkt":  "P-0005"
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M7",
+                           "title":  "Optik mit Higgsfield-Medien",
+                           "description":  "Zellen, Teile, Nahrung und Hintergründe als eigene Medien (Higgsfield), räumliche Wirkung, animierte Körperteile; alle Platzhalter ersetzt.",
+                           "estimate":  36,
+                           "tickets":  [
+                                           "T-0159",
+                                           "T-0160",
+                                           "T-0161",
+                                           "T-0162",
+                                           "T-0164",
+                                           "T-0165",
+                                           "T-0166",
+                                           "T-0167",
+                                           "T-0168",
+                                           "T-0169",
+                                           "T-0170",
+                                           "T-0171",
+                                           "T-0172",
+                                           "T-0173",
+                                           "T-0174",
+                                           "T-0175",
+                                           "T-0176",
+                                           "T-0177",
+                                           "T-0181",
+                                           "T-0182",
+                                           "T-0183",
+                                           "T-0184",
+                                           "T-0185",
+                                           "T-0186",
+                                           "T-0187",
+                                           "T-0188",
+                                           "T-0189",
+                                           "T-0190",
+                                           "T-0191",
+                                           "T-0192",
+                                           "T-0193",
+                                           "T-0194",
+                                           "T-0195",
+                                           "T-0196",
+                                           "T-0197",
+                                           "T-0198",
+                                           "T-0209",
+                                           "T-0210"
+                                       ],
+                           "tasks":  [
+                                         {
+                                             "text":  "Optik beurteilen",
+                                             "done":  false,
+                                             "punkt":  "P-0004"
+                                         },
+                                         {
+                                             "text":  "Zellen ansehen: Körper mit Textur, Muster und wogender Membran, Geißel, Augen, Aufblitzen bei Treffern, Editor-Hintergrund",
+                                             "done":  false,
+                                             "punkt":  "P-0004"
+                                         },
+                                         {
+                                             "text":  "Erste Bilder ansehen: Wasserhintergrund, Nahrung, Teilefund, Titelbild im Hauptmenü",
+                                             "done":  false,
+                                             "punkt":  "P-0004"
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M8",
+                           "title":  "Audio",
+                           "description":  "Wasseratmosphäre, Fressen, Treffer, Wachstum, Editoraktionen und Hintergrundmusik (selbst erzeugt oder frei lizenziert), getrennte Lautstärken.",
+                           "estimate":  8,
+                           "tickets":  [
+                                           "T-0140",
+                                           "T-0141",
+                                           "T-0142",
+                                           "T-0143",
+                                           "T-0144",
+                                           "T-0145",
+                                           "T-0146"
+                                       ],
+                           "tasks":  [
+                                         {
+                                             "text":  "Sound und Musik anhören und beurteilen",
+                                             "done":  false,
+                                             "punkt":  "P-0006"
+                                         },
+                                         {
+                                             "text":  "Musik und Klänge anhören: Wasser, Fressen, Treffer, Wachsen, Editor",
+                                             "done":  false,
+                                             "punkt":  "P-0006"
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M12",
+                           "title":  "Schwierigkeitsgrade",
+                           "description":  "Lastenheft „Kann“: Leicht, Normal, Schwer im Einstellungsmenü, gespeichert, bestimmt den Bissschaden anderer Zellen.",
+                           "estimate":  4,
+                           "tickets":  [
+                                           "T-0211",
+                                           "T-0212",
+                                           "T-0213",
+                                           "T-0214"
+                                       ],
+                           "tasks":  [
+                                         {
+                                             "text":  "Ausprobieren: Fühlen sich Leicht und Schwer passend an?",
+                                             "done":  false,
+                                             "punkt":  "P-0005"
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M13",
+                           "title":  "KI-Arten mit wirksamen Teilen",
+                           "description":  "Giftwolken und Blitze sichtbar; Stacheln, Gift und Elektroorgan der KI-Arten wirken gegen die Spielerzelle; eigenes Verhalten je Art (scheu, lauernd, Herde). Bisher waren diese Teile nur gezeichnet.",
+                           "estimate":  12,
+                           "tickets":  [
+                                           "T-0217",
+                                           "T-0218",
+                                           "T-0219",
+                                           "T-0220",
+                                           "T-0221",
+                                           "T-0222",
+                                           "T-0223",
+                                           "T-0224",
+                                           "T-0225",
+                                           "T-0226",
+                                           "T-0227",
+                                           "T-0228"
+                                       ],
+                           "tasks":  [
+                                         {
+                                             "text":  "Probespiel: Sind Stachelkugel, Giftling und Zitterzelle jetzt spürbar gefährlich, aber fair?",
+                                             "done":  false,
+                                             "punkt":  "P-0005"
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M14",
+                           "title":  "Zusätzliche Zellarten",
+                           "description":  "Lastenheft „Kann“: drei neue Arten – Flimmerling (Abschnitt 0, schnelle Beute), Panzerling (Abschnitt 2, Stacheln nach hinten), Schwebqualle (Abschnitt 4, große wehrlose Beute).",
+                           "estimate":  2,
+                           "tickets":  [
+                                           "T-0229",
+                                           "T-0230"
+                                       ],
+                           "tasks":  [
+
+                                     ]
+                       },
+                       {
+                           "id":  "M15",
+                           "title":  "Riesen in der Tiefe",
+                           "description":  "Lastenheft „mehrere Tiefenebenen“: Wie in Spore ziehen riesige Zellen als Schatten tief unter der Spielwelt vorbei.",
+                           "estimate":  3,
+                           "tickets":  [
+                                           "T-0231",
+                                           "T-0232",
+                                           "T-0233"
+                                       ],
+                           "tasks":  [
+
+                                     ]
+                       },
+                       {
+                           "id":  "M16",
+                           "title":  "Ein-Biss-Regel für kleine Beute",
+                           "description":  "Rückmeldung vom 17.10.2026: Zellen mit höchstens halbem Radius (mindestens zwei Abschnitte kleiner) verschluckt die Spielerzelle mit einem Biss ganz.",
+                           "tickets":  [
+                                           "T-0234",
+                                           "T-0235",
+                                           "T-0236"
+                                       ],
+                           "estimate":  3,
+                           "tasks":  [
+                                         {
+                                             "text":  "Vorführszene ansehen (Start mit -- --szene=verschlingen): Der kleine Blasenling wird mit einem Biss verschluckt, der gleich große Panzerling nur verletzt.",
+                                             "done":  false
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M17",
+                           "title":  "Fischphase: Übergang aus der Zellenphase",
+                           "description":  "Erweiterung vom 17.10.2026. Knopf „Weiter zur Fischphase“, die Teile der Zelle bestimmen den ersten Fisch, Übergangsbildschirm. Prüfbar: Tests für die Zuordnung Zelle → Fisch und den Szenenwechsel.",
+                           "tickets":  [
+                                           "T-0237",
+                                           "T-0238",
+                                           "T-0239",
+                                           "T-0240"
+                                       ],
+                           "estimate":  4,
+                           "tasks":  [
+                                         {
+                                             "text":  "Übergang ansehen: Zellenphase beenden, „Weiter zur Fischphase“, passt der erste Fisch zur Zelle?",
+                                             "done":  false
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M18",
+                           "title":  "Fischphase: 3D-Welt und freies Schwimmen",
+                           "description":  "Echte 3D-Unterwasserwelt mit Schwimmen in allen drei Achsen, Auf- und Abtauchen, Verfolgerkamera, Seegras, Felsen und Schwebeteilchen. Grundgerüst der Szene von Claude. Prüfbar: Tests für Bewegung, Tiefengrenzen und Kamera.",
+                           "tickets":  [
+                                           "T-0241",
+                                           "T-0242",
+                                           "T-0243",
+                                           "T-0244",
+                                           "T-0245",
+                                           "T-0246",
+                                           "T-0248",
+                                           "T-0249"
+                                       ],
+                           "estimate":  8,
+                           "tasks":  [
+                                         {
+                                             "text":  "Probeschwimmen in 3D (Start mit -- --fisch): Fühlen sich Auf- und Abtauchen, Drehen und Kamera gut an?",
+                                             "done":  false
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M19",
+                           "title":  "Fischphase: Fressen und Wachsen",
+                           "description":  "Algen am Boden, Krebschen in allen Tiefen, DNA und vier Größen. Prüfbar: Tests für Nahrung je Ernährung und Wachstum.",
+                           "tickets":  [
+                                           "T-0247",
+                                           "T-0250",
+                                           "T-0251",
+                                           "T-0252"
+                                       ],
+                           "estimate":  4,
+                           "tasks":  [
+
+                                     ]
+                       },
+                       {
+                           "id":  "M20",
+                           "title":  "Fischphase: Weiterentwicklung",
+                           "description":  "Entwicklungsmenü: DNA verbessert Schwanzflosse (Tempo), Brustflossen (Wendigkeit, Tauchen), Kiefer (Biss, Fleisch), Stacheln (Abwehr) und Augen (Sicht). Jede Stufe sichtbar und messbar. Prüfbar: Tests je Bauteil.",
+                           "tickets":  [
+
+                                       ],
+                           "estimate":  7,
+                           "tasks":  [
+                                         {
+                                             "text":  "Weiterentwicklung ausprobieren: Sieht und spürt man jede Stufe?",
+                                             "done":  false
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M21",
+                           "title":  "Fischphase: Leben im Meer",
+                           "description":  "Schwarmfische als Beute, Raubfische als Gefahr, Gesundheit, Bisse und Stacheln, Tod und Wiedereinstieg. Prüfbar: Tests für Jagd, Flucht und Kampf.",
+                           "tickets":  [
+
+                                       ],
+                           "estimate":  7,
+                           "tasks":  [
+
+                                     ]
+                       },
+                       {
+                           "id":  "M22",
+                           "title":  "Fischphase: Optik, Klang, Speichern und Abnahme",
+                           "description":  "Schönere Fische und Lichtstimmung, Klänge, Spielstand und Fortsetzen in der Fischphase, Pausemenü, Abnahmetests.",
+                           "tickets":  [
+
+                                       ],
+                           "estimate":  7,
+                           "tasks":  [
+                                         {
+                                             "text":  "Fischphase abnehmen: Übergang, Schwimmen in 3D, Fressen, Wachsen und Weiterentwicklung",
+                                             "done":  false
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M9",
+                           "title":  "Vergleichsliste und Leistung",
+                           "description":  "Vergleichsliste zu Steuerung, Kamera, Nahrung und Kampf, Editor, Optik und Ablauf ausfüllen; Messszene mit 30 KI-Zellen bei 1920 × 1080 und mindestens 60 FPS.",
+                           "estimate":  5,
+                           "tickets":  [
+                                           "T-0156",
+                                           "T-0157",
+                                           "T-0158"
+                                       ],
+                           "tasks":  [
+
+                                     ]
+                       },
+                       {
+                           "id":  "M10",
+                           "title":  "Windows-Paket",
+                           "description":  "Startbare EXE und kurze Bedienungsanleitung. Braucht einmalig die Godot-Exportvorlagen.",
+                           "estimate":  2,
+                           "tickets":  [
+                                           "T-0208"
+                                       ],
+                           "tasks":  [
+                                         {
+                                             "text":  "Download der Godot-Exportvorlagen freigeben",
+                                             "done":  false,
+                                             "punkt":  "P-0001"
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M11",
+                           "title":  "Abnahme",
+                           "description":  "Automatisch prüfbare Abnahmekriterien als Tests, die übrigen prüft der Nutzer.",
+                           "estimate":  5,
+                           "tickets":  [
+                                           "T-0178",
+                                           "T-0179",
+                                           "T-0180",
+                                           "T-0199",
+                                           "T-0200",
+                                           "T-0201",
+                                           "T-0202",
+                                           "T-0203",
+                                           "T-0204",
+                                           "T-0205",
+                                           "T-0206",
+                                           "T-0207",
+                                           "T-0215",
+                                           "T-0216"
+                                       ],
+                           "tasks":  [
+                                         {
+                                             "text":  "Windows-Paket starten: neue Partie, Pause, Fortsetzen, Beenden",
+                                             "done":  false
+                                         },
+                                         {
+                                             "text":  "30 Minuten spielen ohne Absturz oder festhängende Menüs",
+                                             "done":  false
+                                         },
+                                         {
+                                             "text":  "Ruf, Partner, Editor und Rückkehr mindestens dreimal in einer Partie",
+                                             "done":  false
+                                         },
+                                         {
+                                             "text":  "Steuerung, Optik und Spielgefühl mit Spore vergleichen (Vergleichsliste)",
+                                             "done":  false
+                                         },
+                                         {
+                                             "text":  "Vorführszenen ansehen (Start mit -- --szene=jagd, flucht, nahrung, stachel, gift, elektro, tempo, wendigkeit)",
+                                             "done":  false
+                                         },
+                                         {
+                                             "text":  "Endfassung abnehmen",
+                                             "done":  false
+                                         }
+                                     ]
+                       }
+                   ]
+}
