@@ -179,3 +179,14 @@ func test_sichtweite() -> void:
 	a.free()
 	b.free()
 	c.free()
+
+
+func test_lauerer() -> void:
+	var a := AiCell.new()
+	a.setup("riesenschlund", Vector2.ZERO)
+	var b := AiCell.new()
+	b.setup("schnapper", Vector2.ZERO)
+	check(a.brain.lurker, "Riesenschlund hat lurker true")
+	check(!b.brain.lurker, "Schnapper hat lurker false")
+	a.free()
+	b.free()

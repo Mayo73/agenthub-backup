@@ -34,6 +34,7 @@ func setup(id: String, pos: Vector2) -> void:
 	look.color = ColorVariants.vary(look.color, ColorVariants.seed_for(pos))
 	behavior = d["behavior"]
 	brain.sight = AiBrain.sight_for(behavior)
+	brain.lurker = behavior == "lauerer"
 	motion.max_speed = d["speed"]
 	motion.acceleration = d["speed"] * 2.5
 	motion.position = pos
