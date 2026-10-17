@@ -12,6 +12,9 @@ const PARTS := {
 	"weidezelle": [{"id": "filtermaul", "pos": Vector2(1, 0), "angle": 0.0}, {"id": "wimpern", "pos": Vector2(0, 1), "angle": 0.0}, {"id": "wimpern", "pos": Vector2(0, -1), "angle": 0.0}],
 	"hornjaeger": [{"id": "kiefer", "pos": Vector2(1, 0), "angle": 0.0}, {"id": "stachel", "pos": Vector2(0.7, 0.7), "angle": 0.0}, {"id": "stachel", "pos": Vector2(0.7, -0.7), "angle": 0.0}, {"id": "duese", "pos": Vector2(-1, 0), "angle": 0.0}],
 	"riesenschlund": [{"id": "kiefer", "pos": Vector2(1, 0), "angle": 0.0}, {"id": "geissel", "pos": Vector2(-0.7, 0.7), "angle": 0.0}, {"id": "geissel", "pos": Vector2(-0.7, -0.7), "angle": 0.0}],
+	"flimmerling": [{"id": "filtermaul", "pos": Vector2(1, 0), "angle": 0.0}, {"id": "geissel", "pos": Vector2(-1, 0), "angle": 0.0}],
+	"panzerling": [{"id": "filtermaul", "pos": Vector2(1, 0), "angle": 0.0}, {"id": "stachel", "pos": Vector2(-0.7, 0.7), "angle": 0.0}, {"id": "stachel", "pos": Vector2(-0.7, -0.7), "angle": 0.0}],
+	"schwebqualle": [{"id": "filtermaul", "pos": Vector2(1, 0), "angle": 0.0}, {"id": "wimpern", "pos": Vector2(-1, 0), "angle": 0.0}, {"id": "wimpern", "pos": Vector2(0, 1), "angle": 0.0}, {"id": "wimpern", "pos": Vector2(0, -1), "angle": 0.0}],
 }
 
 

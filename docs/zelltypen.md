@@ -1,19 +1,31 @@
 # Zelltypen der Zellenphase
 
-Alle acht Arten nutzen dieselbe KI (`scripts/ai_brain.gd`): Sie fliehen vor Fleisch- und Allesfressern, die mehr als 1,2-mal so groß sind, jagen als Fleisch- oder Allesfresser Zellen, die kleiner als das 0,8-Fache sind, suchen sonst passende Nahrung und treiben, wenn nichts in Sicht ist (Sichtweite 350 Pixel). Das gilt auch gegenüber der Spielerzelle. Ihre Teile (`scripts/species_parts.gd`) sind sichtbar, wirken im Kampf aber nicht; beißen können nur Fleisch- und Allesfresser.
+Alle elf Arten nutzen dieselbe KI (`scripts/ai_brain.gd`): Sie fliehen vor Fleisch- und Allesfressern, die mehr als 1,2-mal so groß sind, jagen als Fleisch- oder Allesfresser Zellen, die kleiner als das 0,8-Fache sind, suchen sonst passende Nahrung und treiben, wenn nichts in Sicht ist (Sichtweite 350 Pixel). Das gilt auch gegenüber der Spielerzelle. Ihre Teile (`scripts/species_parts.gd`) sind sichtbar, wirken im Kampf aber nicht; beißen können nur Fleisch- und Allesfresser.
 
 Größen der Abschnitte (Radius): 0 = 12, 1 = 18, 2 = 27, 3 = 40, 4 = 60 Pixel.
 
 | Art | Abschnitt | Ernährung | Verhalten | Aussehen | Gefahr für den Spieler |
 |-----|-----------|-----------|-----------|----------|------------------------|
 | Blasenling | 0 | Pflanzenfresser | flieht, sucht Pflanzen | hellgrün, ohne Muster, Filtermaul, Wimpern | 0 (harmlos) |
+| Flimmerling | 0 | Pflanzenfresser | flieht, sucht Pflanzen, schnell (140 Pixel/s) | hellblau, Punkte, gestreckt, Filtermaul, Geißel | 0 (harmlos) |
 | Schnapper | 1 | Fleischfresser | jagt, flieht vor Größeren | orange, Streifen, gestreckt, Kiefer, Geißel | 15 |
 | Stachelkugel | 1 | Pflanzenfresser | flieht, sucht Pflanzen, langsam | gelblich, Punkte, rundlich, acht Stacheln, Filtermaul | 0 (beißt nicht) |
 | Giftling | 2 | Allesfresser | jagt Kleinere, frisst Pflanzen und Fleisch | lila, Flecken, Rüssel, zwei Giftdrüsen | 8 |
 | Zitterzelle | 2 | Fleischfresser | jagt, flieht vor Größeren | gelb, Streifen, stark gestreckt, Kiefer, leuchtendes Elektroorgan, Geißel | 12 |
+| Panzerling | 2 | Pflanzenfresser | flieht, sucht Pflanzen, langsam, 110 Gesundheit | braun, Flecken, Filtermaul, zwei Stacheln nach hinten | 0 (beißt nicht) |
 | Weidezelle | 3 | Pflanzenfresser | flieht, sucht Pflanzen | türkis, Flecken, Filtermaul, Wimpern an beiden Seiten | 0 (harmlos) |
 | Hornjäger | 3 | Fleischfresser | jagt, sehr schnell (170 Pixel/s) | rotbraun, Punkte, gestreckt, Kiefer, zwei Hornstacheln, Düse | 25 |
 | Riesenschlund | 4 | Fleischfresser | jagt, langsam (80 Pixel/s), 300 Gesundheit | dunkellila, Flecken, gedrungen, Kiefer, zwei Geißeln | 40 |
+| Schwebqualle | 4 | Pflanzenfresser | flieht, sucht Pflanzen, sehr langsam (50 Pixel/s), 250 Gesundheit | blassrosa, ohne Muster, gedrungen, Filtermaul, Wimpern rundum | 0 (harmlos) |
+
+## Flimmerling
+Schnelle hellblaue Zelle mit Punkten und gestrecktem Körper. Sie nutzt ein Filtermaul zur Nahrungsaufnahme und eine Geißel zum Vortrieb. Schon ab Abschnitt 1 ist die Spielerzelle groß genug, dass der Flimmerling vor ihr flieht; er gilt als agile Beute für größere Zellen.
+
+## Panzerling
+Braune Zelle mit Flecken und einer robusten Struktur. Sie besitzt zwei Stacheln im hinteren Bereich, die jedoch nicht beißen – sie sind rein dekorativ. Mit 110 Gesundheit ist sie widerstandsfähiger als viele andere Arten in Abschnitt 2.
+
+## Schwebqualle
+Große, blassrosa Zelle ohne Muster und mit gedrungenem Körper. Sie bewegt sich mit Wimpern rundum fort und ist eine große, aber wehrlose Beute für die Spielerzelle im Abschnitt 4. Mit 250 Gesundheit verfügt sie über viel Lebenskraft, doch sie kann nicht aktiv verteidigen.
 
 ## Blasenling
 Kleine hellgrüne Zelle ohne Muster mit Filtermaul und schlagenden Wimpern. Sie frisst Pflanzen und flieht vor jedem Fleisch- oder Allesfresser, der deutlich größer ist. Schon ab Abschnitt 1 ist die Spielerzelle groß genug, dass der Blasenling vor ihr flieht und leichte Beute wird.
