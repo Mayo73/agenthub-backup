@@ -27,6 +27,7 @@ func setup(id: String, pos: Vector2) -> void:
 	damage = d["damage"]
 	color = d["color"]
 	look = SpeciesCatalog.look_of(id)
+	look.color = ColorVariants.vary(look.color, ColorVariants.seed_for(pos))
 	behavior = d["behavior"]
 	motion.max_speed = d["speed"]
 	motion.acceleration = d["speed"] * 2.5
