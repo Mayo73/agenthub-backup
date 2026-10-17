@@ -37,7 +37,7 @@ func test_kamera_zoom() -> void:
 func test_nahrung_angelegt() -> void:
 	check_eq(main.food.items.size(), 60, "main.food.items.size() ist 60")
 	check(main.food_view.field == main.food, "main.food_view.field == main.food ist wahr")
-	check_eq(main.food_view.get_index(), 1, "main.food_view.get_index() ist 1 (direkt über dem Hintergrund)")
+	check_eq(main.food_view.get_index(), 2, "main.food_view.get_index() ist 2 (Riesen-Schatten dazwischen)")
 
 
 func test_pflanze_fressen() -> void:

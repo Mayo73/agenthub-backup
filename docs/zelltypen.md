@@ -51,6 +51,9 @@ Gestreckte rotbraune Zelle mit Punkten, Kiefer, zwei Hornstacheln und einer Düs
 ## Riesenschlund
 Gedrungene dunkellila Zelle mit Flecken, Kiefer und zwei Geißeln. Er ist langsam, hat 300 Gesundheit und beißt mit 40 am stärksten. Keine Art ist groß genug, um ihn in die Flucht zu schlagen, auch die Spielerzelle im Abschnitt 4 nicht (gleiche Größe); besiegen lässt er sich nur im Kampf.
 
+## Ein-Biss-Regel
+Eine Zelle gilt als deutlich kleiner, wenn ihr Radius höchstens halb so groß ist wie der Radius der Spielerzelle (`CombatRules.SWALLOW_RATIO` = 0,5). Bei den Größenabschnitten (Radius 12, 18, 27, 40 und 60 Pixel) heißt das: mindestens zwei Abschnitte kleiner. Beißt die Spielerzelle mit einem Mundwerkzeug für Fleisch (Fleisch- oder Allesfresser) eine solche Zelle, verschluckt sie sie mit einem Biss ganz, auch bei voller Gesundheit. Sie bekommt dann sofort so viel Nahrung, DNA und Wachstum wie die Fleischbrocken einer besiegten Zelle zusammen (`CombatRules.swallow_value()`, 3 × 2 = 6), und ein Beute-Teil wird wie bei einem Sieg freigeschaltet. Gleich große oder nur wenig kleinere Zellen verletzt ein Biss weiterhin nur. Vorbild ist Spore, wo kleine Zellen ebenfalls im Ganzen gefressen werden.
+
 ## Vorführung
 Die Vorführszenen lassen sich mit folgenden Startbefehlen starten:
 

@@ -18,6 +18,7 @@ var ai_cells: Array[AiCell] = []
 var player_health := CellHealth.new()
 var deaths := 0
 var backdrop: WaterBackdrop
+var giant_view: DeepGiantView
 var unlocks: PartUnlocks = PartUnlocks.new()
 var pickups: PartPickups = PartPickups.new(13)
 var pickup_view: PickupView
@@ -79,6 +80,12 @@ func _ready() -> void:
 	backdrop.camera = camera
 	world.add_child(backdrop)
 	world.move_child(backdrop, 0)
+	giant_view = DeepGiantView.new()
+	giant_view.name = "DeepGiants"
+	giant_view.camera = camera
+	world.add_child(giant_view)
+	world.move_child(giant_view, 1)
+	world.move_child(food_view, 2)
 	pickup_view = PickupView.new()
 	pickup_view.name = "Pickups"
 	pickup_view.pickups = pickups
@@ -170,6 +177,7 @@ func _physics_process(delta: float) -> void:
 	think_ai()
 	feed_ai()
 	resolve_weapons(delta)
+	resolve_ai_weapons(delta)
 	resolve_combat()
 	check_death()
 	update_mate()
@@ -178,19 +186,24 @@ func _physics_process(delta: float) -> void:
 ## Frisst alles, was das Maul der Spielerzelle berührt und zur Ernährung passt.
 func feed_player() -> void:
 	for item in food.take_at(player.mouth_point(), MOUTH_REACH, player.diet):
-		audio.play("fressen_pflanze" if item.kind == Diet.PFLANZE else "fressen_fleisch")
-		stats.food_eaten += 1
-		player.bite()
-		hint("fressen")
-		if progress.eat(item.value):
-			player.set_stage(progress.stage)
-			player.pulse()
-			mate.add_charge()
-			hud.show_message("Neuer Ruf bereit: Taste C oder rechte Maustaste")
-			autosave_now()
-			audio.play("wachsen")
-			stats.record_stage(player.diet)
-			hint("partner")
+		eat_value(item.kind, item.value)
+
+
+## Wirkung eines Bissens Nahrung: Klang, Statistik, Kauen, DNA und Wachstum (mit Aufstieg in den nächsten Abschnitt).
+func eat_value(kind: String, value: int) -> void:
+	audio.play("fressen_pflanze" if kind == Diet.PFLANZE else "fressen_fleisch")
+	stats.food_eaten += 1
+	player.bite()
+	hint("fressen")
+	if progress.eat(value):
+		player.set_stage(progress.stage)
+		player.pulse()
+		mate.add_charge()
+		hud.show_message("Neuer Ruf bereit: Taste C oder rechte Maustaste")
+		autosave_now()
+		audio.play("wachsen")
+		stats.record_stage(player.diet)
+		hint("partner")
 
 
 ## Entfernt weit entfernte Nahrung und streut neue um den Spieler, wenn sie knapp wird.
@@ -257,6 +270,9 @@ func enemy_bite_damage(cell: AiCell) -> float:
 func resolve_combat() -> void:
 	for cell in ai_cells.duplicate():
 		if CombatRules.can_bite(player.diet) and CombatRules.bite_hits(player.motion.position, player.motion.heading, player.radius, cell.motion.position, cell.radius):
+			if CombatRules.can_swallow(player.radius, cell.radius):
+				swallow(cell)
+				continue
 			if cell.health.damage(CombatRules.bite_damage(CombatRules.PLAYER_BITE, player.radius, cell.radius)):
 				cell.motion.knockback(cell.motion.position - player.motion.position, 120.0)
 				cell.flash.trigger()
@@ -277,6 +293,17 @@ func resolve_combat() -> void:
 			for pos in CombatRules.meat_positions(cell.motion.position, cell.radius):
 				food.add_item(Diet.FLEISCH, pos)
 			remove_ai(cell)
+
+
+## Ein-Biss-Regel: Die Spielerzelle verschluckt eine deutlich kleinere Zelle ganz.
+func swallow(cell: AiCell) -> void:
+	stats.cells_defeated += 1
+	burst_view.bursts.add(cell.motion.position, cell.radius, cell.color)
+	var part := PartDrops.drop_for(cell.species_id, unlocks)
+	if part != "" and unlocks.unlock(part):
+		hud.show_message("Teil erbeutet: %s" % PartCatalog.name_of(part))
+	remove_ai(cell)
+	eat_value(Diet.FLEISCH, CombatRules.swallow_value())
 
 
 ## Nach dem Tod schlüpft eine neue Zelle: DNA und Größe bleiben, nahe KI-Zellen verschwinden.
@@ -335,6 +362,35 @@ func resolve_weapons(delta: float) -> void:
 	if zapped:
 		electric.fire()
 		zap_view.show_zaps(pos, zap_targets)
+
+
+## Stacheln, Gift und Elektroorgane der KI-Zellen gegen die Spielerzelle.
+func resolve_ai_weapons(delta: float) -> void:
+	var factor := Difficulty.damage_factor(settings.difficulty)
+	var sources: Array = [poison]
+	for cell in ai_cells:
+		var tips := SpeciesWeapons.spike_tips(cell.species_id, cell.motion.position, cell.motion.heading, cell.radius)
+		if WeaponRules.spike_hits(tips, player.motion.position, player.radius) > 0:
+			if player_health.damage(WeaponRules.SPIKE_DAMAGE * factor):
+				player.motion.knockback(player.motion.position - cell.motion.position, 140.0)
+				player.flash.trigger()
+				audio.play("treffer")
+		if cell.poison != null:
+			sources.append(cell.poison)
+			cell.poison.tick(delta)
+			if cell.motion.speed() > 20.0:
+				cell.poison.emit(PartGeometry.world_point(cell.motion.position, cell.motion.heading, cell.radius, Vector2(-1.2, 0)))
+			player_health.drain(cell.poison.damage_at(player.motion.position, player.radius, delta) * factor)
+		if cell.organ != null:
+			cell.organ.tick(delta)
+			if cell.organ.is_ready() and ElectricOrgan.in_range(cell.motion.position, cell.radius, player.motion.position, player.radius):
+				if player_health.damage(ElectricOrgan.DAMAGE * factor):
+					player.flash.trigger()
+					audio.play("treffer")
+				cell.organ.fire()
+				var target: Array[Vector2] = [player.motion.position]
+				zap_view.show_zaps(cell.motion.position, target)
+	poison_view.sources = sources
 
 
 ## Ruf auslösen, beim Erreichen des Partners den Zelleditor öffnen, Partner zeichnen.
