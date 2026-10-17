@@ -86,3 +86,29 @@ func test_ohne_lauern() -> void:
 	var result := brain.decide(Vector2.ZERO, 60.0, Diet.FLEISCHFRESSER, [{"position": Vector2(200, 0), "radius": 12.0, "diet": Diet.PFLANZENFRESSER}], null)
 	check_eq(result, Vector2(1, 0), "Schwimmrichtung nach rechts ohne Lauerer-Modus")
 	check_eq(brain.state, AiBrain.JAGEN, "state ist JAGEN")
+
+
+func test_zur_herde() -> void:
+	brain.herd = true
+	var result := brain.decide(Vector2.ZERO, 40.0, Diet.PFLANZENFRESSER, [{"position": Vector2(200, 0), "radius": 40.0, "diet": Diet.PFLANZENFRESSER, "herd": true}, {"position": Vector2(200, 100), "radius": 40.0, "diet": Diet.PFLANZENFRESSER, "herd": true}], null)
+	check(result.is_equal_approx(Vector2(200, 50).normalized()), "result ist zur Herdenmitte")
+	check_eq(brain.state, AiBrain.HERDE, "state ist HERDE")
+
+
+func test_herde_nah_genug() -> void:
+	brain.herd = true
+	var result := brain.decide(Vector2.ZERO, 40.0, Diet.PFLANZENFRESSER, [{"position": Vector2(50, 0), "radius": 40.0, "diet": Diet.PFLANZENFRESSER, "herd": true}], null)
+	check_eq(result, Vector2.ZERO, "keine Richtung wenn bereits nah genug")
+	check_eq(brain.state, AiBrain.TREIBEN, "state ist TREIBEN")
+
+
+func test_nahrung_vor_herde() -> void:
+	brain.herd = true
+	var result := brain.decide(Vector2.ZERO, 40.0, Diet.PFLANZENFRESSER, [{"position": Vector2(200, 0), "radius": 40.0, "diet": Diet.PFLANZENFRESSER, "herd": true}], Vector2(0, 100))
+	check_eq(result, Vector2(0, 1), "Schwimmrichtung zur Nahrung statt Herde")
+	check_eq(brain.state, AiBrain.SUCHEN, "state ist SUCHEN")
+
+
+func test_keine_herdenzelle() -> void:
+	var result := brain.decide(Vector2.ZERO, 40.0, Diet.PFLANZENFRESSER, [{"position": Vector2(200, 0), "radius": 40.0, "diet": Diet.PFLANZENFRESSER, "herd": true}], null)
+	check_eq(brain.state, AiBrain.TREIBEN, "state ist TREIBEN bei keiner eigenen Herde")

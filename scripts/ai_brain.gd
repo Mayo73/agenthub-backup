@@ -1,12 +1,13 @@
 class_name AiBrain
 extends RefCounted
-## Entscheidung einer KI-Zelle: fliehen > jagen > Nahrung suchen > treiben. Lauerer warten, bis Beute nah ist.
+## Entscheidung einer KI-Zelle: fliehen > jagen > Nahrung suchen > Herde > treiben. Lauerer warten, bis Beute nah ist.
 
 const SUCHEN := "suchen"
 const JAGEN := "jagen"
 const FLIEHEN := "fliehen"
 const TREIBEN := "treiben"
 const LAUERN := "lauern"
+const HERDE := "herde"
 ## Wer um diesen Faktor größer ist und Fleisch frisst, ist eine Gefahr.
 const THREAT_FACTOR := 1.2
 ## Wer um diesen Faktor kleiner ist, ist Beute (nur für Fleisch- und Allesfresser).
@@ -15,10 +16,13 @@ const PREY_FACTOR := 0.8
 const SIGHT := {"scheu": 450.0, "lauerer": 250.0}
 ## Lauerer stoßen erst zu, wenn Beute näher als so viele Pixel ist.
 const LURK_RANGE := 160.0
+## Herdenzellen bleiben innerhalb so vieler eigener Radien von der Herdenmitte.
+const HERD_DIST := 3.0
 
 var sight := 350.0
 var state := TREIBEN
 var lurker := false
+var herd := false
 
 static func sight_for(behavior: String) -> float:
 	return float(SIGHT.get(behavior, 350.0))
@@ -32,7 +36,7 @@ static func is_prey(own_radius: float, own_diet: String, other_radius: float) ->
 	return own_diet != Diet.PFLANZENFRESSER and other_radius < own_radius * PREY_FACTOR
 
 
-## others: Dictionaries mit "position" (Vector2), "radius" (float), "diet" (String).
+## others: Dictionaries mit "position" (Vector2), "radius" (float), "diet" (String), optional "herd" (bool, Herdenzelle).
 ## Einträge an der eigenen Position werden übersprungen (die Zelle selbst).
 ## food_pos: Lage der nächsten passenden Nahrung oder null.
 ## Gibt die Schwimmrichtung zurück (Länge 1 oder Vector2.ZERO) und setzt state.
@@ -41,11 +45,16 @@ func decide(own_pos: Vector2, own_radius: float, own_diet: String, others: Array
 	var threat_dist := INF
 	var prey_pos := Vector2.ZERO
 	var prey_dist := INF
+	var herd_sum := Vector2.ZERO
+	var herd_count := 0
 	for other in others:
 		var pos: Vector2 = other["position"]
 		var dist := own_pos.distance_to(pos)
 		if dist > sight or dist < 0.001:
 			continue
+		if other.get("herd", false):
+			herd_sum += pos
+			herd_count += 1
 		if is_threat(own_radius, other["radius"], other["diet"]):
 			if dist < threat_dist:
 				threat_dist = dist
@@ -66,5 +75,10 @@ func decide(own_pos: Vector2, own_radius: float, own_diet: String, others: Array
 	if food_pos is Vector2:
 		state = SUCHEN
 		return ((food_pos as Vector2) - own_pos).normalized()
+	if herd and herd_count > 0:
+		var center := herd_sum / herd_count
+		if own_pos.distance_to(center) > own_radius * HERD_DIST:
+			state = HERDE
+			return (center - own_pos).normalized()
 	state = TREIBEN
 	return Vector2.ZERO
