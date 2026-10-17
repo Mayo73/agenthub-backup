@@ -12,8 +12,9 @@ var track: TrackPath
 var input_enabled := true
 var smoke: CPUParticles2D
 var car_id := CarCatalog.DEFAULT_ID
-var engine_player: AudioStreamPlayer2D
-var squeal_player: AudioStreamPlayer2D
+## Eigener Motor ohne Entfernungsdämpfung (die Kamera schaut voraus, der Klang soll trotzdem nah bleiben).
+var engine_player: AudioStreamPlayer
+var squeal_player: AudioStreamPlayer
 var sprite: Sprite2D
 
 
@@ -37,7 +38,7 @@ func _ready() -> void:
 	add_child(smoke)
 	move_child(smoke, 0)
 
-	engine_player = AudioStreamPlayer2D.new()
+	engine_player = AudioStreamPlayer.new()
 	engine_player.name = "Engine"
 	engine_player.stream = SoundBank.engine_loop()
 	engine_player.volume_db = EngineAudio.engine_db(0.0)
@@ -45,7 +46,7 @@ func _ready() -> void:
 	add_child(engine_player)
 	engine_player.play()
 
-	squeal_player = AudioStreamPlayer2D.new()
+	squeal_player = AudioStreamPlayer.new()
 	squeal_player.name = "Squeal"
 	squeal_player.stream = SoundBank.squeal_loop()
 	squeal_player.volume_db = EngineAudio.SILENT_DB
