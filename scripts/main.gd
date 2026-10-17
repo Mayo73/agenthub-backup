@@ -236,6 +236,11 @@ func feed_ai() -> void:
 		food.take_at(cell.mouth_point(), MOUTH_REACH, cell.diet)
 
 
+## Schaden, den der Biss einer KI-Zelle der Spielerzelle zufügt, mit dem Faktor des Schwierigkeitsgrads.
+func enemy_bite_damage(cell: AiCell) -> float:
+	return CombatRules.bite_damage(cell.damage, cell.radius, player.radius) * Difficulty.damage_factor(settings.difficulty)
+
+
 ## Bisse zwischen Spieler und KI-Zellen; besiegte KI-Zellen werden zu Fleisch.
 func resolve_combat() -> void:
 	for cell in ai_cells.duplicate():
@@ -246,7 +251,7 @@ func resolve_combat() -> void:
 				audio.play("treffer")
 				player.bite()
 		if cell.damage > 0.0 and CombatRules.can_bite(cell.diet) and CombatRules.bite_hits(cell.motion.position, cell.motion.heading, cell.radius, player.motion.position, player.radius):
-			if player_health.damage(CombatRules.bite_damage(cell.damage, cell.radius, player.radius)):
+			if player_health.damage(enemy_bite_damage(cell)):
 				player.motion.knockback(player.motion.position - cell.motion.position, 160.0)
 				player.flash.trigger()
 				hint("gefahr")
