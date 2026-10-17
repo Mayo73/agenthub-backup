@@ -31,3 +31,16 @@ func test_fleischbrocken() -> void:
 	check_eq(positions[0], Vector2(10.0, 0.0), "Erster Brocke bei (10, 0)")
 	for pos in positions:
 		check_eq(pos.distance_to(Vector2.ZERO), 10.0, "Abstand zum Ursprung ist 10.0")
+
+
+func test_verschlucken() -> void:
+	check(CombatRules.can_swallow(27.0, 12.0), "27er beißt 12er durch (größer)")
+	check(CombatRules.can_swallow(24.0, 12.0), "24er beißt 12er durch (exakt Hälfte)")
+	check(not CombatRules.can_swallow(18.0, 12.0), "18er beißt 12er nicht durch")
+	check(CombatRules.can_swallow(60.0, 27.0), "60er beißt 27er durch")
+	check(not CombatRules.can_swallow(40.0, 27.0), "40er beißt 27er nicht durch")
+	check(not CombatRules.can_swallow(27.0, 27.0), "Gleiche Größe nicht verschluckbar")
+
+
+func test_verschlucken_wert() -> void:
+	check_eq(CombatRules.swallow_value(), 6, "Verschluckter Wert ist 3x2=6")
