@@ -2,7 +2,7 @@ class_name FishHud
 extends CanvasLayer
 ## Anzeige der Fischphase: Tiefe, DNA, Wachstum, Steuerungshilfe und kurze Meldungen.
 
-const HELP := "W / linke Maustaste: schwimmen · A/D: drehen · Leertaste: auftauchen · Umschalt: abtauchen"
+const HELP := "W / linke Maustaste: schwimmen · A/D: drehen · Leertaste: auftauchen · Umschalt: abtauchen · E: Entwicklung"
 
 var depth_label: Label
 var dna_label: Label
