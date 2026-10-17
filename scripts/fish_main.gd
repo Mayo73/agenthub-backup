@@ -30,6 +30,7 @@ var paused := false
 var progress := FishProgress.new()
 var food := FishFood.new()
 var food_view: FishFoodView
+var save_path := ""
 
 
 func _ready() -> void:
@@ -64,6 +65,10 @@ func _ready() -> void:
 	if FishStart.pending_build != null:
 		player.set_build(FishStart.pending_build)
 	progress.dna = FishStart.pending_dna
+	if not FishStart.pending_fish.is_empty():
+		player.set_build(FishSave.apply(FishStart.pending_fish, progress))
+		player.set_size(progress.size())
+	save_path = FishStart.pending_save_path
 	FishStart.clear()
 	apply_sight()
 
@@ -108,7 +113,6 @@ static func make_environment() -> Environment:
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = FishWorld.WATER_COLOR
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color(0.45, 0.65, 0.75)
 	env.ambient_light_energy = 0.7
 	env.fog_enabled = true
@@ -181,6 +185,7 @@ func eat_value(value: int) -> void:
 	if progress.eat(value):
 		player.set_size(progress.size())
 		hud.show_message("Dein Fisch ist gewachsen!")
+		save_now()
 
 
 ## Entfernt weit entfernte Nahrung und streut neue um den Fisch, wenn sie knapp wird.
@@ -204,6 +209,7 @@ func _on_upgraded(slot: String) -> void:
 	hud.show_progress(progress)
 	hud.show_message("%s verbessert!" % FishBuild.NAMES[slot])
 	apply_sight()
+	save_now()
 
 
 ## Verteilt die KI-Fische um den Spielerfisch.
@@ -272,6 +278,7 @@ func toggle_pause() -> void:
 
 
 func back_to_menu() -> void:
+	save_now()
 	get_tree().change_scene_to_file(MAIN_SCENE)
 
 
@@ -294,3 +301,12 @@ func check_death() -> void:
 	player_health.reset(2.0)
 	hud.show_health(player_health.ratio())
 	hud.show_message("Dein Fisch wurde gefressen und schwimmt neu los.")
+
+
+## Schreibt den Fortschritt der Fischphase in den Spielstand (Schlüssel FishSave.KEY). false ohne Pfad.
+func save_now() -> bool:
+	if save_path == "":
+		return false
+	var data := SaveGame.read_file(save_path)
+	data[FishSave.KEY] = FishSave.to_dict(player.build, progress)
+	return SaveGame.write_file(save_path, data)
