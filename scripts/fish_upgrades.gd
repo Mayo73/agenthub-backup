@@ -24,3 +24,11 @@ static func upgrade(b: FishBuild, progress: FishProgress, slot: String) -> bool:
 	progress.spend(cost(b, slot))
 	b.upgrade(slot)
 	return true
+
+
+## Reicht die DNA für mindestens eine Verbesserung?
+static func any_affordable(b: FishBuild, progress: FishProgress) -> bool:
+	for slot: String in FishBuild.SLOTS:
+		if can_upgrade(b, progress, slot):
+			return true
+	return false
