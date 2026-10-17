@@ -77,3 +77,17 @@ func test_hintergrundbild() -> void:
 	check(image.texture != null, "image.texture sollte nicht null sein")
 	check(image.get_index() < menu.get_node("Items").get_index(), "BackgroundImage sollte vor Items kommen")
 	check(menu.get_node("ItemShade") is ColorRect, "ItemShade ist ColorRect")
+
+
+func test_vollbild_text() -> void:
+	check(menu.fullscreen_label(true) == "Vollbild: An", "fullscreen_label(true) sollte 'Vollbild: An' sein")
+	check(menu.fullscreen_label(false) == "Vollbild: Aus", "fullscreen_label(false) sollte 'Vollbild: Aus' sein")
+	check(menu.fullscreen_box.text == "Vollbild: Aus", "fullscreen_box.text sollte 'Vollbild: Aus' (Startwert) sein")
+
+
+func test_vollbild_umschalten() -> void:
+	menu._on_fullscreen_toggled(true)
+	check(menu.fullscreen_box.text == "Vollbild: An", "fullscreen_box.text sollte 'Vollbild: An' nach true sein")
+	menu._on_fullscreen_toggled(false)
+	check(menu.fullscreen_box.text == "Vollbild: Aus", "fullscreen_box.text sollte 'Vollbild: Aus' nach false sein")
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)

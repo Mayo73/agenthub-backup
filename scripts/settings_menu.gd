@@ -12,6 +12,10 @@ var click_player: AudioStreamPlayer
 @onready var fullscreen_box: CheckBox = $Items/Fullscreen
 @onready var back_button: Button = $Items/Back
 
+## Beschriftung des Vollbild-Kästchens mit Zustand.
+static func fullscreen_label(on: bool) -> String:
+	return "Vollbild: An" if on else "Vollbild: Aus"
+
 func _ready() -> void:
 	click_player = AudioStreamPlayer.new()
 	click_player.name = "Click"
@@ -24,6 +28,7 @@ func _ready() -> void:
 
 	volume_slider.value = settings.volume
 	fullscreen_box.button_pressed = settings.fullscreen
+	fullscreen_box.text = fullscreen_label(settings.fullscreen)
 
 	volume_slider.value_changed.connect(_on_volume_changed)
 	fullscreen_box.toggled.connect(_on_fullscreen_toggled)
@@ -38,6 +43,7 @@ func _on_volume_changed(value: float) -> void:
 
 
 func _on_fullscreen_toggled(on: bool) -> void:
+	fullscreen_box.text = fullscreen_label(on)
 	settings.fullscreen = on
 	settings.apply()
 
