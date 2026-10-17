@@ -47,3 +47,47 @@ func test_groesse() -> void:
 
 func test_maul() -> void:
 	check(fish.mouth_point().is_equal_approx(FishWorld.START + Vector3(0, 0, -0.8)), "mouth_point() ist START + (0,0,-0.8)")
+
+
+# Tests für FishAbilities.apply()
+
+func test_faehigkeiten_anfang() -> void:
+	var player := FishPlayer.new()
+	check_eq(player.motion.max_speed, 8.0, "motion.max_speed am Anfang 8.0")
+	check_eq(player.motion.turn_rate, 1.8, "motion.turn_rate am Anfang 1.8")
+	player.free()
+
+
+func test_faehigkeiten_nach_ausbau() -> void:
+	var player := FishPlayer.new()
+	var b := FishBuild.new()
+	b.upgrade("schwanz")
+	b.upgrade("schwanz")
+	b.upgrade("flossen")
+	player.set_build(b)
+	check_eq(player.motion.max_speed, 12.0, "motion.max_speed nach Ausbau 12.0")
+	check_eq(player.motion.accel, 15.0, "motion.accel nach Ausbau 15.0")
+	check_eq(player.motion.turn_rate, 2.2, "motion.turn_rate nach Ausbau 2.2")
+	player.free()
+
+
+func test_schneller_ausgebaut() -> void:
+	var player1 := FishPlayer.new()
+	var player2 := FishPlayer.new()
+
+	var b1 := FishBuild.new()
+	b1.upgrade("schwanz")
+	b1.upgrade("schwanz")
+	b1.upgrade("schwanz")
+	player1.set_build(b1)
+
+	var b2 := FishBuild.new()
+	player2.set_build(b2)
+
+	for i in range(30):
+		player1.drive(Vector3(1, 0, 0), 0.1)
+		player2.drive(Vector3(1, 0, 0), 0.1)
+
+	check(player1.motion.speed() > player2.motion.speed(), "ausgebauter Spielerfisch ist schneller nach 3s")
+	player1.free()
+	player2.free()
