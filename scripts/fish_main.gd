@@ -18,6 +18,7 @@ var reef: ReefView
 var snow: MarineSnow
 var hud: FishHud
 var intro: FishIntro
+var evolve: EvolveMenu
 var progress := FishProgress.new()
 var food := FishFood.new()
 var food_view: FishFoodView
@@ -56,6 +57,7 @@ func _ready() -> void:
 		player.set_build(FishStart.pending_build)
 	progress.dna = FishStart.pending_dna
 	FishStart.clear()
+	apply_sight()
 
 	reef = ReefView.new()
 	reef.name = "Reef"
@@ -72,6 +74,10 @@ func _ready() -> void:
 	hud.name = "Hud"
 	add_child(hud)
 	hud.show_progress(progress)
+	evolve = EvolveMenu.new()
+	evolve.name = "Evolve"
+	add_child(evolve)
+	evolve.upgraded.connect(_on_upgraded)
 	intro = FishIntro.new()
 	intro.name = "Intro"
 	add_child(intro)
@@ -113,7 +119,21 @@ static func make_plane(node_name: String, y: float, color: Color) -> MeshInstanc
 	return m
 
 
+## Nebeldichte zur Sichtweite: 0,025 bei 25 m (Anfang), dünner bei größerer Sicht.
+static func fog_density_for(sight: float) -> float:
+	return 0.025 * 25.0 / maxf(sight, 1.0)
+
+
+## Stellt den Nebel passend zu den Augen des Fischs ein.
+func apply_sight() -> void:
+	water.environment.fog_density = fog_density_for(FishAbilities.sight(player.build))
+
+
 func _physics_process(delta: float) -> void:
+	if Input.is_action_just_pressed("entwickeln"):
+		toggle_evolve()
+	if evolve.visible:
+		return
 	player.drive(FishInput.read(), delta)
 	hud.show_depth(player.motion.depth())
 	feed_player()
@@ -142,3 +162,19 @@ func refill_food() -> void:
 	food.remove_far(player.motion.position, 90.0)
 	if food.items.size() < 40:
 		food.spawn_around(player.motion.position, 20, 15.0, 70.0, 0.3)
+
+
+## Öffnet oder schließt das Entwicklungsmenü.
+func toggle_evolve() -> void:
+	if evolve.visible:
+		evolve.close()
+	else:
+		evolve.open(player.build, progress)
+
+
+## Nach einer Verbesserung: Aussehen und Fähigkeiten neu, Anzeige aktualisieren.
+func _on_upgraded(slot: String) -> void:
+	player.set_build(player.build)
+	hud.show_progress(progress)
+	hud.show_message("%s verbessert!" % FishBuild.NAMES[slot])
+	apply_sight()
