@@ -62,3 +62,22 @@ func test_schwanzschlag() -> void:
 	check_eq(FishModel.tail_angle(0.0, 3.0), 0.0, "Schwanzwinkel bei t=0")
 	model.animate(0.1, 0.0)
 	check_eq(model.tail_pivot.rotation.y, sin(0.4) * 0.35, "Schwanzschlag nach Animation")
+
+
+func test_haut_textur() -> void:
+	var mat := FishModel.skin_material(Color.RED)
+	check(mat.albedo_texture == FishModel.SKIN_TEXTURE, "albedo_texture ist SKIN_TEXTURE")
+	check(mat.uv1_triplanar == true, "uv1_triplanar ist wahr")
+	check(mat.albedo_color.is_equal_approx(Color.RED), "albedo_color ist Color.RED")
+
+
+func test_haut_am_koerper() -> void:
+	var b := FishBuild.new()
+	model.rebuild(b)
+	check((model.body.material_override as StandardMaterial3D).albedo_texture != null, "Körper-Textur gesetzt")
+	check((model.tail.material_override as StandardMaterial3D).albedo_texture != null, "Schwanz-Textur gesetzt")
+	check((model.eyes[0].material_override as StandardMaterial3D).albedo_texture == null, "Augen keine Textur")
+
+
+func test_textur_geladen() -> void:
+	check(FishModel.SKIN_TEXTURE.get_width() == 256, "Texturbreite ist 256")
