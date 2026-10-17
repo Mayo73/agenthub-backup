@@ -1,18 +1,27 @@
 class_name AiBrain
 extends RefCounted
-## Entscheidung einer KI-Zelle: fliehen > jagen > Nahrung suchen > treiben.
+## Entscheidung einer KI-Zelle: fliehen > jagen > Nahrung suchen > treiben. Lauerer warten, bis Beute nah ist.
 
 const SUCHEN := "suchen"
 const JAGEN := "jagen"
 const FLIEHEN := "fliehen"
 const TREIBEN := "treiben"
+const LAUERN := "lauern"
 ## Wer um diesen Faktor größer ist und Fleisch frisst, ist eine Gefahr.
 const THREAT_FACTOR := 1.2
 ## Wer um diesen Faktor kleiner ist, ist Beute (nur für Fleisch- und Allesfresser).
 const PREY_FACTOR := 0.8
+## Sichtweite je Verhaltensmuster in Pixeln; alle anderen sehen 350.
+const SIGHT := {"scheu": 450.0, "lauerer": 250.0}
+## Lauerer stoßen erst zu, wenn Beute näher als so viele Pixel ist.
+const LURK_RANGE := 160.0
 
 var sight := 350.0
 var state := TREIBEN
+var lurker := false
+
+static func sight_for(behavior: String) -> float:
+	return float(SIGHT.get(behavior, 350.0))
 
 
 static func is_threat(own_radius: float, other_radius: float, other_diet: String) -> bool:
@@ -49,6 +58,9 @@ func decide(own_pos: Vector2, own_radius: float, own_diet: String, others: Array
 		state = FLIEHEN
 		return (own_pos - threat_pos).normalized()
 	if prey_dist < INF:
+		if lurker and prey_dist > LURK_RANGE:
+			state = LAUERN
+			return Vector2.ZERO
 		state = JAGEN
 		return (prey_pos - own_pos).normalized()
 	if food_pos is Vector2:

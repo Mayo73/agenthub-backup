@@ -16,6 +16,10 @@ var behavior := ""
 ## Laufzeit für Animationen in Sekunden.
 var time := 0.0
 var flash := HitFlash.new()
+## Giftwolken der Zelle, nur bei Arten mit Giftdrüse.
+var poison: PoisonClouds = null
+## Elektroorgan, nur bei Arten mit Teil "elektro".
+var organ: ElectricOrgan = null
 
 
 ## Übernimmt die Werte der Art und setzt die Zelle an pos.
@@ -29,11 +33,15 @@ func setup(id: String, pos: Vector2) -> void:
 	look = SpeciesCatalog.look_of(id)
 	look.color = ColorVariants.vary(look.color, ColorVariants.seed_for(pos))
 	behavior = d["behavior"]
+	brain.sight = AiBrain.sight_for(behavior)
+	brain.lurker = behavior == "lauerer"
 	motion.max_speed = d["speed"]
 	motion.acceleration = d["speed"] * 2.5
 	motion.position = pos
 	position = pos
 	health = CellHealth.new(d["hp"])
+	poison = PoisonClouds.new() if SpeciesWeapons.has_poison(id) else null
+	organ = ElectricOrgan.new() if SpeciesWeapons.has_electric(id) else null
 
 
 func think(others: Array, food_pos: Variant) -> void:
