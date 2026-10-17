@@ -93,4 +93,5 @@ func test_gefahr_wird_beute() -> void:
 	cell.position = pos
 	var vorher: float = cell.health.hp
 	main.resolve_combat()
-	check(cell.health.hp < vorher, "Schnapper nimmt Schaden im Kampf")
+	# Entweder nimmt Schaden oder wird ganz verschluckt (Ein-Biss-Regel).
+	check(cell.health.hp < vorher or cell not in main.ai_cells, "Schnapper nimmt Schaden im Kampf oder wird verschluckt")

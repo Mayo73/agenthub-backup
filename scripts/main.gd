@@ -186,19 +186,24 @@ func _physics_process(delta: float) -> void:
 ## Frisst alles, was das Maul der Spielerzelle berührt und zur Ernährung passt.
 func feed_player() -> void:
 	for item in food.take_at(player.mouth_point(), MOUTH_REACH, player.diet):
-		audio.play("fressen_pflanze" if item.kind == Diet.PFLANZE else "fressen_fleisch")
-		stats.food_eaten += 1
-		player.bite()
-		hint("fressen")
-		if progress.eat(item.value):
-			player.set_stage(progress.stage)
-			player.pulse()
-			mate.add_charge()
-			hud.show_message("Neuer Ruf bereit: Taste C oder rechte Maustaste")
-			autosave_now()
-			audio.play("wachsen")
-			stats.record_stage(player.diet)
-			hint("partner")
+		eat_value(item.kind, item.value)
+
+
+## Wirkung eines Bissens Nahrung: Klang, Statistik, Kauen, DNA und Wachstum (mit Aufstieg in den nächsten Abschnitt).
+func eat_value(kind: String, value: int) -> void:
+	audio.play("fressen_pflanze" if kind == Diet.PFLANZE else "fressen_fleisch")
+	stats.food_eaten += 1
+	player.bite()
+	hint("fressen")
+	if progress.eat(value):
+		player.set_stage(progress.stage)
+		player.pulse()
+		mate.add_charge()
+		hud.show_message("Neuer Ruf bereit: Taste C oder rechte Maustaste")
+		autosave_now()
+		audio.play("wachsen")
+		stats.record_stage(player.diet)
+		hint("partner")
 
 
 ## Entfernt weit entfernte Nahrung und streut neue um den Spieler, wenn sie knapp wird.
@@ -265,6 +270,9 @@ func enemy_bite_damage(cell: AiCell) -> float:
 func resolve_combat() -> void:
 	for cell in ai_cells.duplicate():
 		if CombatRules.can_bite(player.diet) and CombatRules.bite_hits(player.motion.position, player.motion.heading, player.radius, cell.motion.position, cell.radius):
+			if CombatRules.can_swallow(player.radius, cell.radius):
+				swallow(cell)
+				continue
 			if cell.health.damage(CombatRules.bite_damage(CombatRules.PLAYER_BITE, player.radius, cell.radius)):
 				cell.motion.knockback(cell.motion.position - player.motion.position, 120.0)
 				cell.flash.trigger()
@@ -285,6 +293,17 @@ func resolve_combat() -> void:
 			for pos in CombatRules.meat_positions(cell.motion.position, cell.radius):
 				food.add_item(Diet.FLEISCH, pos)
 			remove_ai(cell)
+
+
+## Ein-Biss-Regel: Die Spielerzelle verschluckt eine deutlich kleinere Zelle ganz.
+func swallow(cell: AiCell) -> void:
+	stats.cells_defeated += 1
+	burst_view.bursts.add(cell.motion.position, cell.radius, cell.color)
+	var part := PartDrops.drop_for(cell.species_id, unlocks)
+	if part != "" and unlocks.unlock(part):
+		hud.show_message("Teil erbeutet: %s" % PartCatalog.name_of(part))
+	remove_ai(cell)
+	eat_value(Diet.FLEISCH, CombatRules.swallow_value())
 
 
 ## Nach dem Tod schlüpft eine neue Zelle: DNA und Größe bleiben, nahe KI-Zellen verschwinden.
