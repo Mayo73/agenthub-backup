@@ -190,3 +190,16 @@ func test_lauerer() -> void:
 	check(!b.brain.lurker, "Schnapper hat lurker false")
 	a.free()
 	b.free()
+
+
+func test_herde() -> void:
+	var a := AiCell.new()
+	a.setup("weidezelle", Vector2.ZERO)
+	var b := AiCell.new()
+	b.setup("blasenling", Vector2.ZERO)
+	check(a.brain.herd, "Weidezelle hat herd true")
+	check(b.brain.herd == false, "Blasenling hat herd false")
+	check(a.info()["herd"], "info herd wahr für Weidezelle")
+	check(!b.info()["herd"], "info herd falsch für Blasenling")
+	a.free()
+	b.free()

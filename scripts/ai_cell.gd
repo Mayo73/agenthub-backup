@@ -35,6 +35,7 @@ func setup(id: String, pos: Vector2) -> void:
 	behavior = d["behavior"]
 	brain.sight = AiBrain.sight_for(behavior)
 	brain.lurker = behavior == "lauerer"
+	brain.herd = behavior == "herde"
 	motion.max_speed = d["speed"]
 	motion.acceleration = d["speed"] * 2.5
 	motion.position = pos
@@ -68,7 +69,7 @@ func mouth_point() -> Vector2:
 
 ## Daten für die Entscheidungen anderer Zellen (siehe AiBrain.decide).
 func info() -> Dictionary:
-	return {"position": motion.position, "radius": radius, "diet": diet}
+	return {"position": motion.position, "radius": radius, "diet": diet, "herd": brain.herd}
 
 
 ## Blickrichtung der Pupille in Zellkoordinaten (die Zelle ist um motion.heading gedreht).
