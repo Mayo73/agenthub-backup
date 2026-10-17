@@ -69,3 +69,49 @@ func test_tribuene_neben_strecke() -> void:
 
 func test_tribuene_ohne_strecke() -> void:
 	check(TrackDecor.grandstand(null).size() == 0, "null path soll keine Ecken ergeben")
+
+
+func test_abwandlung() -> void:
+	var v0 := TrackDecor.variation(0)
+	check(v0["scale"] == 1.0 and v0["flip"] == false, "variation(0) sollte {scale:1.0, flip:false}")
+	var v1 := TrackDecor.variation(1)
+	check(v1["flip"] == true, "variation(1)['flip'] sollte true sein")
+	var v2 := TrackDecor.variation(2)
+	check(v2["scale"] == 1.18, "variation(2)['scale'] sollte 1.18 sein")
+	var v5 := TrackDecor.variation(5)
+	check(v5["scale"] == 1.0, "variation(5)['scale'] sollte 1.0 sein (wiederholung)")
+	var vn1 := TrackDecor.variation(-1)
+	check(vn1["flip"] == true, "variation(-1)['flip'] sollte true sein")
+
+
+func test_deko_abgewandelt() -> void:
+	var items := TrackDecor.build(square)
+	check(items.size() > 0, "sollte Deko-Elemente haben")
+	for item in items:
+		check(item.has("scale"), "jeder Eintrag hat 'scale'")
+		check(item.has("flip"), "jeder Eintrag hat 'flip'")
+	var first_scale: float = items[0]["scale"]
+	check(first_scale == 1.0, "items[0]['scale'] sollte 1.0 sein")
+	var has_flip := false
+	var scales: Array[float] = []
+	for item in items:
+		if item["flip"]:
+			has_flip = true
+		scales.append(item["scale"])
+	check(has_flip, "mindestens ein Eintrag hat 'flip' wahr")
+	var unique_scales: Array[float] = []
+	for sc in scales:
+		var found: bool = false
+		for existing in unique_scales:
+			if existing == sc:
+				found = true
+				break
+		if not found:
+			unique_scales.append(sc)
+	check(unique_scales.size() >= 2, "mindestens zwei verschiedene 'scale'-Werte kommen vor")
+
+
+func test_gleich_bei_jedem_start() -> void:
+	var items1 := TrackDecor.build(square)
+	var items2 := TrackDecor.build(square)
+	check(items1 == items2, "beide Ergebnisse sind gleich")
