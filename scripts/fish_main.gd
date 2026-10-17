@@ -3,8 +3,10 @@ extends Node3D
 ## Hauptszene der Fischphase (scenes/fish.tscn): eine 3D-Unterwasserwelt. Alle Knoten entstehen im Code.
 ## Koordinaten und Maße stehen in FishWorld (Meter, y nach oben).
 
+const MAIN_SCENE := "res://scenes/main.tscn"
 ## Reichweite des Mauls beim Fressen in Metern (wächst mit der Größe des Fischs).
 const MOUTH_REACH := 0.5
+const SAFE_RADIUS := 25.0 ## Raubfische in diesem Umkreis (Meter) verschwinden beim Wiedereinstieg.
 
 ## Spielwelt: Boden, Oberfläche, Pflanzen, Fische und Nahrung kommen hier hinein.
 var world: Node3D
@@ -20,6 +22,10 @@ var hud: FishHud
 var intro: FishIntro
 var evolve: EvolveMenu
 var fishes: Array[AiFish] = []
+var player_health := CellHealth.new(100.0)
+var deaths := 0
+var pause_menu: PauseMenu
+var paused := false
 var progress := FishProgress.new()
 var food := FishFood.new()
 var food_view: FishFoodView
@@ -80,6 +86,12 @@ func _ready() -> void:
 	evolve.name = "Evolve"
 	add_child(evolve)
 	evolve.upgraded.connect(_on_upgraded)
+	pause_menu = PauseMenu.new()
+	pause_menu.name = "PauseMenu"
+	add_child(pause_menu)
+	pause_menu.resume.connect(toggle_pause)
+	pause_menu.to_main_menu.connect(back_to_menu)
+	pause_menu.quit_game.connect(func() -> void: get_tree().quit())
 	intro = FishIntro.new()
 	intro.name = "Intro"
 	add_child(intro)
@@ -139,6 +151,10 @@ func _physics_process(delta: float) -> void:
 	player.drive(FishInput.read(), delta)
 	think_fish(delta)
 	player_bites()
+	predators_bite()
+	player_health.tick(delta)
+	hud.show_health(player_health.ratio())
+	check_death()
 	hud.show_depth(player.motion.depth())
 	feed_player()
 	refill_food()
@@ -226,3 +242,54 @@ func player_bites() -> void:
 				eat_value(int(FishSpecies.data(f.species_id)["food"]))
 				hud.show_progress(progress)
 				hud.show_message("%s gefressen!" % FishSpecies.data(f.species_id)["name"])
+
+
+## Raubfische beißen, wenn ihr Maul den Spielerfisch berührt; Stacheln wehren ab und verletzen sie.
+func predators_bite() -> void:
+	for f in fishes.duplicate():
+		if not FishSpecies.is_predator(f.species_id):
+			continue
+		if FishCombat.bite_hits(f.mouth_point(), player.motion.position, 0.5 * player.size):
+			var raw := float(FishSpecies.data(f.species_id)["bite"])
+			if player_health.damage(FishCombat.damage_to_player(raw, player.build)):
+				f.health.damage(FishCombat.spike_reflect(player.build))
+				if f.health.is_dead():
+					remove_fish(f)
+
+## Esc: Pause an oder aus. Während das Entwicklungsmenü offen ist, wirkungslos.
+func toggle_pause() -> void:
+	if evolve.visible:
+		return
+	paused = not paused
+	if paused:
+		pause_menu.open()
+	else:
+		pause_menu.close()
+	set_physics_process(not paused)
+	set_process(not paused)
+	world.process_mode = Node.PROCESS_MODE_DISABLED if paused else Node.PROCESS_MODE_INHERIT
+
+
+func back_to_menu() -> void:
+	get_tree().change_scene_to_file(MAIN_SCENE)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("pause"):
+		toggle_pause()
+
+
+## Nach dem Tod taucht der Fisch an der Startstelle wieder auf: DNA, Größe und Ausbau bleiben.
+func check_death() -> void:
+	if not player_health.is_dead():
+		return
+	deaths += 1
+	player.motion.position = FishWorld.START
+	player.motion.velocity = Vector3.ZERO
+	player.sync()
+	for f in fishes.duplicate():
+		if FishSpecies.is_predator(f.species_id) and f.motion.position.distance_to(FishWorld.START) < SAFE_RADIUS:
+			remove_fish(f)
+	player_health.reset(2.0)
+	hud.show_health(player_health.ratio())
+	hud.show_message("Dein Fisch wurde gefressen und schwimmt neu los.")
