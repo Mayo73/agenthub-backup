@@ -62,3 +62,23 @@ func test_weit_weg() -> void:
 
 func test_im_ablauf() -> void:
 	check(FileAccess.get_file_as_string("res://scripts/main.gd").contains("resolve_ai_weapons(delta)"), "main.gd enthält resolve_ai_weapons(delta)")
+
+
+func test_giftling_hinterlaesst_wolke() -> void:
+	var c := _add("giftling", Vector2(200, 0))
+	c.motion.velocity = Vector2(50, 0)
+	main.resolve_ai_weapons(0.1)
+	check_eq(c.poison.clouds.size(), 1, "Giftwolke erzeugt")
+	check(main.poison_view.sources.has(c.poison), "Giftwolke in Quellen der KI-Zelle")
+	check(main.poison_view.sources.has(main.poison), "Giftwolke der Spielerzelle in Quellen")
+	c.free()
+
+
+func test_giftwolke_schadet() -> void:
+	var c := _add("giftling", Vector2(200, 0))
+	c.motion.velocity = Vector2.ZERO
+	c.poison.clouds.append({"pos": main.player.motion.position, "age": 0.0})
+	var vorher: float = main.player_health.hp
+	main.resolve_ai_weapons(0.5)
+	check_eq(vorher - main.player_health.hp, PoisonClouds.DPS * 0.5, "Giftwolke verursacht Schaden")
+	c.free()
