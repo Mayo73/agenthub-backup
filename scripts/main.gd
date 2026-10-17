@@ -55,6 +55,7 @@ var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
 
 var poison_view: PoisonCloudView
+var zap_view: ZapView
 
 
 func _ready() -> void:
@@ -140,6 +141,10 @@ func _ready() -> void:
 	poison_view.name = "PoisonClouds"
 	poison_view.sources = [poison]
 	world.add_child(poison_view)
+
+	zap_view = ZapView.new()
+	zap_view.name = "Zaps"
+	world.add_child(zap_view)
 
 	if Benchmark.requested(OS.get_cmdline_user_args()):
 		start_benchmark()
@@ -316,6 +321,7 @@ func resolve_weapons(delta: float) -> void:
 		poison.emit(PartGeometry.world_point(pos, heading, player.radius, Vector2(-1.2, 0)))
 	var zap := player.build.count("elektro") > 0 and electric.is_ready()
 	var zapped := false
+	var zap_targets: Array[Vector2] = []
 	for cell in ai_cells:
 		if WeaponRules.spike_hits(tips, cell.motion.position, cell.radius) > 0:
 			if cell.health.damage(WeaponRules.SPIKE_DAMAGE):
@@ -325,8 +331,10 @@ func resolve_weapons(delta: float) -> void:
 		if zap and ElectricOrgan.in_range(pos, player.radius, cell.motion.position, cell.radius):
 			cell.health.damage(ElectricOrgan.DAMAGE)
 			zapped = true
+			zap_targets.append(cell.motion.position)
 	if zapped:
 		electric.fire()
+		zap_view.show_zaps(pos, zap_targets)
 
 
 ## Ruf auslösen, beim Erreichen des Partners den Zelleditor öffnen, Partner zeichnen.
