@@ -47,3 +47,17 @@ func test_zurueck() -> void:
 	menu.back_button.pressed.emit()
 	check_eq(got.size(), 1, "closed-Signal wurde gesendet")
 	check(!menu.visible, "Menü ist unsichtbar")
+
+
+func test_schwierigkeit_anzeige() -> void:
+	s.set_difficulty(2)
+	menu.show_settings(s)
+	check_eq(menu.difficulty_option.item_count, 3, "3 Schwierigkeitsstufen")
+	check_eq(menu.difficulty_option.selected, 2, "Schwierigkeit ausgewählt: 2")
+	check_eq(menu.difficulty_option.get_item_text(0), "Leicht", "Erste Option ist Leicht")
+
+
+func test_schwierigkeit_waehlen() -> void:
+	menu.show_settings(s)
+	menu.difficulty_option.item_selected.emit(0)
+	check_eq(s.difficulty, 0, "Schwierigkeit ist 0")
