@@ -16,6 +16,8 @@ var behavior := ""
 ## Laufzeit für Animationen in Sekunden.
 var time := 0.0
 var flash := HitFlash.new()
+## Giftwolken der Zelle, nur bei Arten mit Giftdrüse.
+var poison: PoisonClouds = null
 
 
 ## Übernimmt die Werte der Art und setzt die Zelle an pos.
@@ -34,6 +36,7 @@ func setup(id: String, pos: Vector2) -> void:
 	motion.position = pos
 	position = pos
 	health = CellHealth.new(d["hp"])
+	poison = PoisonClouds.new() if SpeciesWeapons.has_poison(id) else null
 
 
 func think(others: Array, food_pos: Variant) -> void:
