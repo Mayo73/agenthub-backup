@@ -10,9 +10,14 @@ const TREIBEN := "treiben"
 const THREAT_FACTOR := 1.2
 ## Wer um diesen Faktor kleiner ist, ist Beute (nur für Fleisch- und Allesfresser).
 const PREY_FACTOR := 0.8
+## Sichtweite je Verhaltensmuster in Pixeln; alle anderen sehen 350.
+const SIGHT := {"scheu": 450.0, "lauerer": 250.0}
 
 var sight := 350.0
 var state := TREIBEN
+
+static func sight_for(behavior: String) -> float:
+	return float(SIGHT.get(behavior, 350.0))
 
 
 static func is_threat(own_radius: float, other_radius: float, other_diet: String) -> bool:

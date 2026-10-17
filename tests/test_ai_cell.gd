@@ -5,7 +5,6 @@ var cell: AiCell
 func setup() -> void:
 	cell = AiCell.new()
 
-
 func teardown() -> void:
 	cell.free()
 
@@ -164,4 +163,19 @@ func test_blasenling_ohne_organ() -> void:
 	var c := AiCell.new()
 	c.setup("blasenling", Vector2.ZERO)
 	check(c.organ == null, "Blasenling hat kein Elektroorgan")
+	c.free()
+
+
+func test_sichtweite() -> void:
+	var a := AiCell.new()
+	a.setup("blasenling", Vector2.ZERO)
+	var b := AiCell.new()
+	b.setup("riesenschlund", Vector2.ZERO)
+	var c := AiCell.new()
+	c.setup("schnapper", Vector2.ZERO)
+	check_eq(a.brain.sight, 450.0, "blasenling (scheu) sieht 450")
+	check_eq(b.brain.sight, 250.0, "riesenschlund (lauerer) sieht 250")
+	check_eq(c.brain.sight, 350.0, "schnapper (jaeger) sieht Standard 350")
+	a.free()
+	b.free()
 	c.free()
