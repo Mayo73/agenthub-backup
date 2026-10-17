@@ -18,6 +18,7 @@ var ai_cells: Array[AiCell] = []
 var player_health := CellHealth.new()
 var deaths := 0
 var backdrop: WaterBackdrop
+var giant_view: DeepGiantView
 var unlocks: PartUnlocks = PartUnlocks.new()
 var pickups: PartPickups = PartPickups.new(13)
 var pickup_view: PickupView
@@ -79,6 +80,12 @@ func _ready() -> void:
 	backdrop.camera = camera
 	world.add_child(backdrop)
 	world.move_child(backdrop, 0)
+	giant_view = DeepGiantView.new()
+	giant_view.name = "DeepGiants"
+	giant_view.camera = camera
+	world.add_child(giant_view)
+	world.move_child(giant_view, 1)
+	world.move_child(food_view, 2)
 	pickup_view = PickupView.new()
 	pickup_view.name = "Pickups"
 	pickup_view.pickups = pickups
