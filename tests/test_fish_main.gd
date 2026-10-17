@@ -397,3 +397,35 @@ func test_ohne_fischstand() -> void:
 	check_eq(f2.progress.stage, 0, "progress.stage ist 0")
 	check_eq(f2.player.size, 1.0, "player.size ist 1.0")
 	f2.free()
+
+
+## Test: Audio-Knoten vorhanden und enthält Klänge aus FishSounds.
+func test_audio_knoten() -> void:
+	_clear_ai_fishes()
+	check(fish.get_node("Audio") is GameAudio, "fish.get_node('Audio') is GameAudio")
+	check(fish.audio.streams.has("biss"), "fish.audio.streams.has('biss')")
+	check(fish.audio.streams.has("fressen_pflanze"), "fish.audio.streams.has('fressen_pflanze')")
+
+
+## Test: Klang 'verbessern' wird abgespielt bei Upgrade.
+func test_klang_verbessern() -> void:
+	_clear_ai_fishes()
+	fish.progress.dna = 20
+	fish.toggle_evolve()
+	fish.evolve.try_upgrade("schwanz")
+	check_eq(fish.audio.last_played, "verbessern", "fish.audio.last_played ist 'verbessern'")
+
+
+## Test: Klang 'wachsen' wird abgespielt wenn Fisch wächst.
+func test_klang_wachsen() -> void:
+	_clear_ai_fishes()
+	fish.eat_value(FishProgress.GROWTH_NEEDED[0])
+	check_eq(fish.audio.last_played, "wachsen", "fish.audio.last_played ist 'wachsen'")
+
+
+## Test: Klang 'tod' wird abgespielt wenn Fisch stirbt.
+func test_klang_tod() -> void:
+	_clear_ai_fishes()
+	fish.player_health.hp = 0.0
+	fish.check_death()
+	check_eq(fish.audio.last_played, "tod", "fish.audio.last_played ist 'tod'")
