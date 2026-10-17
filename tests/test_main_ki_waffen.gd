@@ -82,3 +82,29 @@ func test_giftwolke_schadet() -> void:
 	main.resolve_ai_weapons(0.5)
 	check_eq(vorher - main.player_health.hp, PoisonClouds.DPS * 0.5, "Giftwolke verursacht Schaden")
 	c.free()
+
+
+func test_zitterzelle_entlaedt_sich() -> void:
+	var c := _add("zitterzelle", Vector2(40, 0))
+	var vorher: float = main.player_health.hp
+	main.resolve_ai_weapons(0.016)
+	check_eq(vorher - main.player_health.hp, ElectricOrgan.DAMAGE, "Zitterzelle verursacht DAMAGE")
+	check(!c.organ.is_ready(), "Zitterzelle ist nach Entladung nicht bereit")
+	check(main.zap_view.is_zap_visible(), "Blitz sichtbar")
+	c.free()
+
+
+func test_zitterzelle_laedt_nach() -> void:
+	_add("zitterzelle", Vector2(40, 0))
+	main.resolve_ai_weapons(0.016)
+	main.player_health.invulnerable = 0.0
+	var vorher: float = main.player_health.hp
+	main.resolve_ai_weapons(0.016)
+	check_eq(main.player_health.hp, vorher, "Zitterzelle lädt nach, kein Schaden")
+
+
+func test_zitterzelle_weit_weg() -> void:
+	var c := _add("zitterzelle", Vector2(300, 0))
+	main.resolve_ai_weapons(0.016)
+	check(c.organ.is_ready(), "Zitterzelle ist bereit wenn weit weg")
+	c.free()

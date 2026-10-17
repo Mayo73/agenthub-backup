@@ -151,3 +151,17 @@ func test_schnapper_ohne_gift() -> void:
 	c.setup("schnapper", Vector2.ZERO)
 	check(c.poison == null, "Schnapper hat keine Giftwolken")
 	c.free()
+
+
+func test_zitterzelle_hat_organ() -> void:
+	var c := AiCell.new()
+	c.setup("zitterzelle", Vector2.ZERO)
+	check(c.organ != null, "Zitterzelle hat Elektroorgan")
+	c.free()
+
+
+func test_blasenling_ohne_organ() -> void:
+	var c := AiCell.new()
+	c.setup("blasenling", Vector2.ZERO)
+	check(c.organ == null, "Blasenling hat kein Elektroorgan")
+	c.free()
