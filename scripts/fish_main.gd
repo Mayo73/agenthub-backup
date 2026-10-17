@@ -57,6 +57,7 @@ func _ready() -> void:
 		player.set_build(FishStart.pending_build)
 	progress.dna = FishStart.pending_dna
 	FishStart.clear()
+	apply_sight()
 
 	reef = ReefView.new()
 	reef.name = "Reef"
@@ -118,6 +119,16 @@ static func make_plane(node_name: String, y: float, color: Color) -> MeshInstanc
 	return m
 
 
+## Nebeldichte zur Sichtweite: 0,025 bei 25 m (Anfang), dünner bei größerer Sicht.
+static func fog_density_for(sight: float) -> float:
+	return 0.025 * 25.0 / maxf(sight, 1.0)
+
+
+## Stellt den Nebel passend zu den Augen des Fischs ein.
+func apply_sight() -> void:
+	water.environment.fog_density = fog_density_for(FishAbilities.sight(player.build))
+
+
 func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("entwickeln"):
 		toggle_evolve()
@@ -166,3 +177,4 @@ func _on_upgraded(slot: String) -> void:
 	player.set_build(player.build)
 	hud.show_progress(progress)
 	hud.show_message("%s verbessert!" % FishBuild.NAMES[slot])
+	apply_sight()
