@@ -2,10 +2,10 @@ extends "res://tests/base_test.gd"
 
 
 func test_ziel() -> void:
-	check_eq(CameraZoom.target_for_radius(12.0), 1.6, "Radius 12.0 ergibt Zoom 1.6")
-	check_eq(CameraZoom.target_for_radius(24.0), 0.8, "Radius 24.0 ergibt Zoom 0.8")
-	check_eq(CameraZoom.target_for_radius(6.0), 2.0, "Radius 6.0 ergibt Zoom 2.0")
-	check_eq(CameraZoom.target_for_radius(100.0), 0.3, "Radius 100.0 ergibt Zoom 0.3")
+	check_eq(CameraZoom.target_for_radius(12.0), 2.6, "Radius 12.0 ergibt Zoom 2.6")
+	check_eq(CameraZoom.target_for_radius(24.0), 1.3, "Radius 24.0 ergibt Zoom 1.3")
+	check_eq(CameraZoom.target_for_radius(6.0), 4.0, "Radius 6.0 ergibt Zoom 4.0 (Obergrenze)")
+	check_eq(CameraZoom.target_for_radius(200.0), 0.3, "Radius 200.0 ergibt Zoom 0.3 (Untergrenze)")
 
 
 func test_gleiten() -> void:

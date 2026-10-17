@@ -39,7 +39,7 @@ Nach der Zellenphase folgt eine Fischphase in einer echten 3D-Unterwasserwelt (W
 | `scripts/fish_world.gd` | `FishWorld`: Maße, Farben, `clamp_to_water()`, `depth_of()` |
 | `scripts/fish_main.gd` | `FishMain`: `world`, `camera`, `sun`, `water`, `floor_mesh`, `surface_mesh` |
 
-Geplante Klassen der Fischphase: `FishBuild`, `FishStart`, `FishIntro`, `FishMotion`, `FishInput`, `ChaseCamera`, `FishModel`, `FishPlayer`, `ReefLayout`, `ReefView`, `MarineSnow`, `FishHud`, `FishFood`, `FishFoodView`, `FishProgress`.
+Klassen der Fischphase: `FishBuild`, `FishStart`, `FishIntro`, `FishMotion`, `FishInput`, `ChaseCamera`, `FishModel`, `FishPlayer`, `ReefLayout`, `ReefView`, `MarineSnow`, `FishHud`, `FishFood`, `FishFoodView`, `FishProgress`. Geplant (Namen genau so verwenden): `FishAbilities`, `FishUpgrades`, `EvolveMenu`, `FishSpecies`, `FishBrain`, `FishCombat`, `AiFish`, `FishSchool`.
 
 ## Regeln
 

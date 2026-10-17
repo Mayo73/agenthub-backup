@@ -28,10 +28,10 @@ func test_spieler() -> void:
 
 
 func test_kamera_zoom() -> void:
-	check_eq(main.camera.zoom.x, 1.6, "Anfangs-Zoom ist 1.6 für Radius 12.0")
+	check_eq(main.camera.zoom.x, 2.6, "Anfangs-Zoom ist 2.6 für Radius 12.0")
 	main.player.radius = 24.0
 	main._process(100.0)
-	check_eq(main.camera.zoom.x, 0.8, "Nach Wachstum auf Radius 24.0 ist Zoom 0.8")
+	check_eq(main.camera.zoom.x, 1.3, "Nach Wachstum auf Radius 24.0 ist Zoom 1.3")
 
 
 func test_nahrung_angelegt() -> void:
