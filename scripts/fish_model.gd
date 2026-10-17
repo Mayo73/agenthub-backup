@@ -2,6 +2,7 @@ class_name FishModel
 extends Node3D
 ## Aussehen des Fischs aus Grundkörpern. Die Maße folgen den Stufen in FishBuild, so ist jede
 ## Entwicklung sichtbar. Vorne ist -z, oben ist +y.
+const SKIN_TEXTURE := preload("res://assets/fish/scales.png")
 
 var build := FishBuild.new()
 var time := 0.0
@@ -36,6 +37,16 @@ static func material(color: Color) -> StandardMaterial3D:
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = color
 	mat.roughness = 0.6
+	return mat
+
+
+## Haut des Fischs: Schuppen-Textur, mit der Fischfarbe eingefärbt, über die ganze Form gelegt (triplanar).
+static func skin_material(color: Color) -> StandardMaterial3D:
+	var mat := material(color)
+	mat.albedo_texture = SKIN_TEXTURE
+	mat.uv1_triplanar = true
+	mat.uv1_scale = Vector3.ONE * 2.5
+	mat.roughness = 0.45
 	return mat
 
 
@@ -75,7 +86,7 @@ func rebuild(b: FishBuild) -> void:
 	spikes.clear()
 	jaw = null
 	var s := shape(b)
-	var skin := material(b.color)
+	var skin := skin_material(b.color)
 	var size: Vector3 = s["body"]
 	body = add_part(self, "Body", sphere(0.5), skin, Vector3.ZERO)
 	body.scale = size
