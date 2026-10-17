@@ -40,3 +40,13 @@ func test_meldung_verschwindet() -> void:
 	check_eq(hud.message_label.text, "Hallo", "message_label zeigt Text direkt nach show_message")
 	hud._process(1.5)
 	check_eq(hud.message_label.text, "", "message_label ist leer nach _process mit Zeit > seconds")
+
+
+func test_beschriftungen() -> void:
+	check_eq(hud.growth_caption.text, "Wachstum", "growth_caption hat Text 'Wachstum'")
+	check_eq(hud.health_caption.text, "Gesundheit", "health_caption hat Text 'Gesundheit'")
+
+
+func test_reihenfolge() -> void:
+	check(hud.growth_caption.get_index() + 1 == hud.growth_bar.get_index(), "GrowthCaption kommt direkt vor Growth_bar")
+	check(hud.health_caption.get_index() + 1 == hud.health_bar.get_index(), "HealthCaption kommt direkt vor Health_bar")
