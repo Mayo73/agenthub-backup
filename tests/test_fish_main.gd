@@ -155,3 +155,27 @@ func test_augen_lichten_nebel() -> void:
 	fish.toggle_evolve()
 	fish.evolve.try_upgrade("augen")
 	check(fish.water.environment.fog_density < 0.025, "Nebel dünner nach Augen-Upgrade")
+
+
+func test_fische_verteilt() -> void:
+	check_eq(fish.fishes.size(), 17, "fishes.size() ist 17")
+	for f in fish.fishes:
+		check(f is AiFish, "jeder Eintrag ist AiFish")
+		check(f.get_parent() == fish.world, "AiFish hat world als Elternknoten")
+
+
+func test_fische_schwimmen() -> void:
+	var f: AiFish = fish.fishes[0]
+	var vorher: Vector3 = f.motion.position
+	for i in 10:
+		fish.think_fish(0.1)
+	check(f.motion.position != vorher, "f.motion.position hat sich geändert")
+
+
+func test_fisch_hinzufuegen_entfernen() -> void:
+	var vorher: int = fish.fishes.size()
+	var f: AiFish = fish.add_fish("grasfisch", Vector3(3, -20, 0))
+	check_eq(fish.fishes.size(), vorher + 1, "fishes.size() ist 18")
+	fish.remove_fish(f)
+	check_eq(fish.fishes.size(), vorher, "fishes.size() ist 17 nach Entfernen")
+	check(not fish.fishes.has(f), "fish.fishes.has(f) falsch")
