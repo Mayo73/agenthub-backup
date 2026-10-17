@@ -68,3 +68,42 @@ func test_kamera() -> void:
 	fish._process(10.0)
 	check(fish.camera.position.is_equal_approx(ChaseCamera.target_position(fish.player.motion.position, fish.player.motion.yaw, fish.player.size)), "camera.position ist target_position")
 	check_eq(fish.snow.position, fish.camera.position, "snow.position ist camera.position")
+
+
+func test_nahrung_da() -> void:
+	check_eq(fish.food.items.size(), 60, "food.items.size() ist 60")
+	check(fish.get_node("World/Food") is FishFoodView, "fish.get_node('World/Food') is FishFoodView")
+
+
+func test_fressen() -> void:
+	fish.food.items.clear()
+	fish.food.add_item(Diet.PFLANZE, FishWorld.START + Vector3(0, 0, -1))
+	fish.feed_player()
+	check_eq(fish.progress.dna, 2, "fish.progress.dna ist 2")
+	check_eq(fish.food.items.size(), 0, "fish.food.items.size() ist 0")
+	check_eq(fish.hud.dna_label.text, "DNA: 2", "fish.hud.dna_label.text ist 'DNA: 2'")
+
+
+func test_falsche_nahrung() -> void:
+	fish.food.items.clear()
+	fish.food.add_item(Diet.FLEISCH, FishWorld.START + Vector3(0, 0, -1))
+	fish.feed_player()
+	check_eq(fish.progress.dna, 0, "fish.progress.dna ist 0")
+	check_eq(fish.food.items.size(), 1, "fish.food.items.size() ist 1")
+
+
+func test_wachsen() -> void:
+	fish.food.items.clear()
+	fish.progress.growth = 19
+	fish.food.add_item(Diet.PFLANZE, FishWorld.START + Vector3(0, 0, -1))
+	fish.feed_player()
+	check_eq(fish.progress.stage, 1, "fish.progress.stage ist 1")
+	check_eq(fish.player.size, 1.4, "fish.player.size ist 1.4")
+	check_eq(fish.player.model.scale, Vector3(1.4, 1.4, 1.4), "fish.player.model.scale ist Vector3(1.4, 1.4, 1.4)")
+	check(fish.hud.message_label.visible, "fish.hud.message_label.visible wahr")
+
+
+func test_nachstreuen() -> void:
+	fish.food.items.clear()
+	fish.refill_food()
+	check_eq(fish.food.items.size(), 20, "fish.food.items.size() ist 20")

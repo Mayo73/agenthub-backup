@@ -3,6 +3,9 @@ extends Node3D
 ## Hauptszene der Fischphase (scenes/fish.tscn): eine 3D-Unterwasserwelt. Alle Knoten entstehen im Code.
 ## Koordinaten und Maße stehen in FishWorld (Meter, y nach oben).
 
+## Reichweite des Mauls beim Fressen in Metern (wächst mit der Größe des Fischs).
+const MOUTH_REACH := 0.5
+
 ## Spielwelt: Boden, Oberfläche, Pflanzen, Fische und Nahrung kommen hier hinein.
 var world: Node3D
 var camera: Camera3D
@@ -16,6 +19,8 @@ var snow: MarineSnow
 var hud: FishHud
 var intro: FishIntro
 var progress := FishProgress.new()
+var food := FishFood.new()
+var food_view: FishFoodView
 
 
 func _ready() -> void:
@@ -55,6 +60,11 @@ func _ready() -> void:
 	reef = ReefView.new()
 	reef.name = "Reef"
 	world.add_child(reef)
+	food.spawn_around(FishWorld.START, 60, 5.0, 60.0, 0.3)
+	food_view = FishFoodView.new()
+	food_view.name = "Food"
+	food_view.field = food
+	world.add_child(food_view)
 	snow = MarineSnow.new()
 	snow.name = "Snow"
 	add_child(snow)
@@ -106,6 +116,8 @@ static func make_plane(node_name: String, y: float, color: Color) -> MeshInstanc
 func _physics_process(delta: float) -> void:
 	player.drive(FishInput.read(), delta)
 	hud.show_depth(player.motion.depth())
+	feed_player()
+	refill_food()
 
 
 ## Kamera folgt weich und schaut auf den Fisch; die Schwebeteilchen bleiben bei der Kamera.
@@ -114,3 +126,19 @@ func _process(delta: float) -> void:
 	camera.position = ChaseCamera.follow(camera.position, target, delta)
 	camera.look_at(player.motion.position)
 	snow.position = camera.position
+
+
+## Frisst, was das Maul berührt und zur Ernährung passt. Wächst der Fisch, wird er größer.
+func feed_player() -> void:
+	for item in food.take_at(player.mouth_point(), MOUTH_REACH * player.size, player.build.diet):
+		if progress.eat(item["value"]):
+			player.set_size(progress.size())
+			hud.show_message("Dein Fisch ist gewachsen!")
+	hud.show_progress(progress)
+
+
+## Entfernt weit entfernte Nahrung und streut neue um den Fisch, wenn sie knapp wird.
+func refill_food() -> void:
+	food.remove_far(player.motion.position, 90.0)
+	if food.items.size() < 40:
+		food.spawn_around(player.motion.position, 20, 15.0, 70.0, 0.3)
