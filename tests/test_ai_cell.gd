@@ -137,3 +137,17 @@ func test_gleiche_lage_gleiche_farbe() -> void:
 	check(a.look.color.is_equal_approx(b.look.color), "gleiche lage gleiche farbe")
 	a.free()
 	b.free()
+
+
+func test_giftling_hat_gift() -> void:
+	var c := AiCell.new()
+	c.setup("giftling", Vector2.ZERO)
+	check(c.poison != null, "Giftling hat Giftwolken")
+	c.free()
+
+
+func test_schnapper_ohne_gift() -> void:
+	var c := AiCell.new()
+	c.setup("schnapper", Vector2.ZERO)
+	check(c.poison == null, "Schnapper hat keine Giftwolken")
+	c.free()

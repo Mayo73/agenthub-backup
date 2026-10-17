@@ -341,6 +341,7 @@ func resolve_weapons(delta: float) -> void:
 ## Stacheln, Gift und Elektroorgane der KI-Zellen gegen die Spielerzelle.
 func resolve_ai_weapons(delta: float) -> void:
 	var factor := Difficulty.damage_factor(settings.difficulty)
+	var sources: Array = [poison]
 	for cell in ai_cells:
 		var tips := SpeciesWeapons.spike_tips(cell.species_id, cell.motion.position, cell.motion.heading, cell.radius)
 		if WeaponRules.spike_hits(tips, player.motion.position, player.radius) > 0:
@@ -348,6 +349,13 @@ func resolve_ai_weapons(delta: float) -> void:
 				player.motion.knockback(player.motion.position - cell.motion.position, 140.0)
 				player.flash.trigger()
 				audio.play("treffer")
+		if cell.poison != null:
+			sources.append(cell.poison)
+			cell.poison.tick(delta)
+			if cell.motion.speed() > 20.0:
+				cell.poison.emit(PartGeometry.world_point(cell.motion.position, cell.motion.heading, cell.radius, Vector2(-1.2, 0)))
+			player_health.drain(cell.poison.damage_at(player.motion.position, player.radius, delta) * factor)
+	poison_view.sources = sources
 
 
 ## Ruf auslösen, beim Erreichen des Partners den Zelleditor öffnen, Partner zeichnen.
