@@ -101,8 +101,14 @@ func _draw_decor() -> void:
 			draw_colored_polygon(PackedVector2Array([a, b, c, d]), [Color(0.8, 0.2, 0.2), Color(0.2, 0.4, 0.85), Color(0.95, 0.8, 0.2)][row])
 	for item in decor:
 		var p: Vector2 = item["position"]
+		var s: float = item.get("scale", 1.0)
+		var sx := -s if item.get("flip", false) else s
 		if item["kind"] == TrackDecor.Kind.TIRES:
-			draw_texture_rect(TIRES_TEXTURE, Rect2(p - TIRES_SIZE * 0.5, TIRES_SIZE), false)
+			draw_set_transform(p, 0.0, Vector2(sx, s))
+			draw_texture_rect(TIRES_TEXTURE, Rect2(-TIRES_SIZE * 0.5, TIRES_SIZE), false)
 		else:
-			draw_circle(p + Vector2(8, 8), 40.0, Color(0, 0, 0, 0.25))
-			draw_texture_rect(TREE_TEXTURE, Rect2(p - TREE_SIZE * 0.5, TREE_SIZE), false)
+			draw_set_transform(p, 0.0, Vector2(s, s))
+			draw_circle(Vector2(8, 8), 40.0, Color(0, 0, 0, 0.25))
+			draw_set_transform(p, 0.0, Vector2(sx, s))
+			draw_texture_rect(TREE_TEXTURE, Rect2(-TREE_SIZE * 0.5, TREE_SIZE), false)
+	draw_set_transform(Vector2.ZERO)

@@ -5,6 +5,16 @@ extends RefCounted
 enum Kind { TIRES, TREE }
 
 
+## Größenfaktoren der Deko, reihum nach Nummer des Elements.
+const SCALES := [1.0, 0.82, 1.18, 0.92, 1.08]
+
+
+## Feste Abwandlung eines Deko-Elements: {"scale": float, "flip": bool}. Gleiche Nummer, gleiche Abwandlung.
+static func variation(index: int) -> Dictionary:
+	var i := absi(index)
+	return {"scale": SCALES[i % SCALES.size()], "flip": i % 3 == 1}
+
+
 ## Punkte im Abstand `spacing` entlang der Strecke, jeweils `offset` links und rechts der Mittellinie.
 ## Punkte, die in engen Kurven zu nah an die Mittellinie geraten (unter offset * 0.9), fallen weg.
 static func side_points(path: TrackPath, spacing: float, offset: float) -> PackedVector2Array:
@@ -25,15 +35,17 @@ static func side_points(path: TrackPath, spacing: float, offset: float) -> Packe
 
 
 ## Deko einer Strecke: Reifenstapel knapp neben dem Rand, Bäume weiter draußen.
-## Jeder Eintrag: {"kind": Kind, "position": Vector2}.
+## Jeder Eintrag: {"kind": Kind, "position": Vector2, "scale": float, "flip": bool}.
 static func build(path: TrackPath) -> Array[Dictionary]:
 	var items: Array[Dictionary] = []
 	if path == null:
 		return items
 	for q in side_points(path, 320.0, path.width * 0.5 + 60.0):
-		items.append({"kind": Kind.TIRES, "position": q})
+		var v := variation(items.size())
+		items.append({"kind": Kind.TIRES, "position": q, "scale": v["scale"], "flip": v["flip"]})
 	for q in side_points(path, 450.0, path.width * 0.5 + 260.0):
-		items.append({"kind": Kind.TREE, "position": q})
+		var v := variation(items.size())
+		items.append({"kind": Kind.TREE, "position": q, "scale": v["scale"], "flip": v["flip"]})
 	return items
 
 
