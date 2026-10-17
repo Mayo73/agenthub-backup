@@ -346,7 +346,7 @@ func open_editor() -> void:
 	editor.name = "Editor"
 	add_child(editor)
 	editor.open(player.build, unlocks, progress, progress.stage)
-	editor.set_look(player.look)
+	editor.set_look(player.look.copy())
 	editor.finished.connect(close_editor)
 	hint("editor")
 	editor.canvas.changed.connect(func() -> void: audio.play("teil_setzen"))
