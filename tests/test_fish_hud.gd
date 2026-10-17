@@ -11,6 +11,18 @@ func teardown() -> void:
 	hud.free()
 
 
+func test_gesundheit_text() -> void:
+	check_eq(FishHud.health_text(1.0), "Gesundheit: 100 %", "health_text(1.0)")
+	check_eq(FishHud.health_text(0.456), "Gesundheit: 46 %", "health_text(0.456)")
+	check_eq(FishHud.health_text(-1.0), "Gesundheit: 0 %", "health_text(-1.0)")
+
+
+func test_gesundheit_label() -> void:
+	var h := FishHud.new()
+	check_eq(h.health_label.text, "Gesundheit: 100 %", "health_label.text ist Gesundheit: 100 %")
+	h.free()
+
+
 func test_start() -> void:
 	check_eq(hud.depth_label.text, "Tiefe: 20 m", "Starttiefe")
 	check_eq(hud.dna_label.text, "DNA: 0", "Start-DNA")
