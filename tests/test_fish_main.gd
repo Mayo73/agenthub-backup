@@ -13,6 +13,12 @@ func teardown() -> void:
 	fish.free()
 
 
+## Vor jedem Test alle KI-Fische entfernen.
+func _clear_ai_fishes() -> void:
+	for f in fish.fishes.duplicate():
+		fish.remove_fish(f)
+
+
 func test_knoten() -> void:
 	check(fish is FishMain, "Wurzel ist FishMain")
 	check(fish.get_node("World") is Node3D, "Knoten World")
@@ -220,3 +226,33 @@ func test_zu_weit() -> void:
 	var f: AiFish = fish.add_fish("silberling", fish.player.mouth_point() + Vector3(5, 0, 0))
 	fish.player_bites()
 	check_eq(f.health.hp, f.health.max_hp, "f.health.hp unverändert wenn zu weit entfernt")
+
+
+func test_raubfisch_beisst() -> void:
+	_clear_ai_fishes()
+	var f: AiFish = fish.add_fish("zackenbarsch", fish.player.motion.position + Vector3(0, 0, 1.5))
+	fish.predators_bite()
+	check_eq(fish.player_health.hp, 85.0, "player_health.hp ist 85.0 nach Biss")
+
+
+func test_stacheln_wehren_ab() -> void:
+	_clear_ai_fishes()
+	fish.player.build.levels["stacheln"] = 2
+	var f: AiFish = fish.add_fish("zackenbarsch", fish.player.motion.position + Vector3(0, 0, 1.5))
+	fish.predators_bite()
+	check(is_equal_approx(fish.player_health.hp, 100.0 - 15.0 * 0.7), "player_health.hp durch Stacheln reduziert")
+	check_eq(f.health.hp, 90.0 - 12.0, "f.health.hp durch Stacheln reflektiert")
+
+
+func test_beute_beisst_nicht() -> void:
+	_clear_ai_fishes()
+	fish.add_fish("grasfisch", fish.player.motion.position + Vector3(0, 0, 1.0))
+	fish.predators_bite()
+	check_eq(fish.player_health.hp, 100.0, "player_health.hp unverändert bei Beute")
+
+
+func test_anzeige() -> void:
+	_clear_ai_fishes()
+	fish.player_health.hp = 50.0
+	fish._physics_process(0.016)
+	check_eq(fish.hud.health_label.text, "Gesundheit: 50 %", "health_label.text nach update")
