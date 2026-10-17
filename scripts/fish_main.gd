@@ -19,6 +19,7 @@ var snow: MarineSnow
 var hud: FishHud
 var intro: FishIntro
 var evolve: EvolveMenu
+var fishes: Array[AiFish] = []
 var progress := FishProgress.new()
 var food := FishFood.new()
 var food_view: FishFoodView
@@ -67,6 +68,7 @@ func _ready() -> void:
 	food_view.name = "Food"
 	food_view.field = food
 	world.add_child(food_view)
+	spawn_fish()
 	snow = MarineSnow.new()
 	snow.name = "Snow"
 	add_child(snow)
@@ -135,6 +137,8 @@ func _physics_process(delta: float) -> void:
 	if evolve.visible:
 		return
 	player.drive(FishInput.read(), delta)
+	think_fish(delta)
+	player_bites()
 	hud.show_depth(player.motion.depth())
 	feed_player()
 	refill_food()
@@ -151,10 +155,15 @@ func _process(delta: float) -> void:
 ## Frisst, was das Maul berührt und zur Ernährung passt. Wächst der Fisch, wird er größer.
 func feed_player() -> void:
 	for item in food.take_at(player.mouth_point(), MOUTH_REACH * player.size, player.build.diet):
-		if progress.eat(item["value"]):
-			player.set_size(progress.size())
-			hud.show_message("Dein Fisch ist gewachsen!")
+		eat_value(item["value"])
 	hud.show_progress(progress)
+
+
+## Rechnet einen Bissen Nahrung an; wächst der Fisch dabei, wird er größer.
+func eat_value(value: int) -> void:
+	if progress.eat(value):
+		player.set_size(progress.size())
+		hud.show_message("Dein Fisch ist gewachsen!")
 
 
 ## Entfernt weit entfernte Nahrung und streut neue um den Fisch, wenn sie knapp wird.
@@ -178,3 +187,42 @@ func _on_upgraded(slot: String) -> void:
 	hud.show_progress(progress)
 	hud.show_message("%s verbessert!" % FishBuild.NAMES[slot])
 	apply_sight()
+
+
+## Verteilt die KI-Fische um den Spielerfisch.
+func spawn_fish() -> void:
+	for entry in FishSchool.spawn_plan(player.motion.position, 7):
+		add_fish(entry["id"], entry["position"])
+
+
+func add_fish(id: String, pos: Vector3) -> AiFish:
+	var f := AiFish.new()
+	f.setup(id, pos)
+	world.add_child(f)
+	fishes.append(f)
+	return f
+
+
+func remove_fish(f: AiFish) -> void:
+	fishes.erase(f)
+	f.queue_free()
+
+
+## Alle KI-Fische entscheiden und schwimmen; Silberlinge halten sich an ihren Schwarm.
+func think_fish(delta: float) -> void:
+	var center: Variant = FishSchool.flock_center(fishes, "silberling")
+	for f in fishes:
+		f.think(delta, player.motion.position, player.size, center if f.species_id == "silberling" else null)
+
+
+## Fleisch- und Allesfresser beißen Fische, die ihr Maul berührt; besiegte Fische werden gefressen.
+func player_bites() -> void:
+	if player.build.diet == Diet.PFLANZENFRESSER:
+		return
+	for f in fishes.duplicate():
+		if FishCombat.bite_hits(player.mouth_point(), f.motion.position, f.radius()):
+			if f.health.damage(FishAbilities.bite_damage(player.build)) and f.health.is_dead():
+				remove_fish(f)
+				eat_value(int(FishSpecies.data(f.species_id)["food"]))
+				hud.show_progress(progress)
+				hud.show_message("%s gefressen!" % FishSpecies.data(f.species_id)["name"])
