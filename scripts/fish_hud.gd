@@ -7,6 +7,7 @@ const HELP := "W / linke Maustaste: schwimmen · A/D: drehen · Leertaste: aufta
 var depth_label: Label
 var dna_label: Label
 var growth_label: Label
+var health_label: Label
 var help_label: Label
 var message_label: Label
 var message_left := 0.0
@@ -17,6 +18,8 @@ func _init() -> void:
 	depth_label = make_label("Depth", Vector2(40, 30), 32)
 	dna_label = make_label("Dna", Vector2(40, 76), 28)
 	growth_label = make_label("Growth", Vector2(40, 116), 28)
+	health_label = make_label("Health", Vector2(40, 156), 28)
+	show_health(1.0)
 	help_label = make_label("Help", Vector2(40, 1010), 22)
 	help_label.text = HELP
 	message_label = make_label("Message", Vector2(560, 140), 30)
@@ -57,6 +60,14 @@ func show_message(text: String, seconds: float = 4.0) -> void:
 	message_label.text = text
 	message_label.visible = true
 	message_left = seconds
+
+
+static func health_text(ratio: float) -> String:
+	return "Gesundheit: %d %%" % roundi(clampf(ratio, 0.0, 1.0) * 100.0)
+
+
+func show_health(ratio: float) -> void:
+	health_label.text = health_text(ratio)
 
 
 func tick(delta: float) -> void:
