@@ -13,7 +13,7 @@ func teardown() -> void:
 
 
 func test_motor_vorhanden() -> void:
-	check(car.get_node("Engine") is AudioStreamPlayer2D, "Engine ist ein AudioStreamPlayer2D")
+	check(car.get_node("Engine") is AudioStreamPlayer, "Engine ist ein AudioStreamPlayer ohne Entfernungsdämpfung")
 	check(car.engine_player.stream is AudioStreamWAV, "engine_player.stream ist AudioStreamWAV")
 	check(absf(car.engine_player.pitch_scale - 0.6) < 0.001, "pitch_scale hat den Startwert 0.6")
 
@@ -27,7 +27,7 @@ func test_motor_folgt_tempo() -> void:
 
 
 func test_quietschen_vorhanden() -> void:
-	check(car.get_node("Squeal") is AudioStreamPlayer2D, "Squeal exists as AudioStreamPlayer2D")
+	check(car.get_node("Squeal") is AudioStreamPlayer, "Squeal ist ein AudioStreamPlayer")
 	check(absf(car.squeal_player.volume_db - (-80.0)) < 0.001, "squeal_player.volume_db initial -80.0")
 
 
@@ -45,3 +45,8 @@ func test_kein_quietschen_ohne_drift() -> void:
 	car.physics.sliding = false
 	car.update_sound()
 	check(absf(car.squeal_player.volume_db - (-80.0)) < 0.001, "squeal ist stumm ohne Drift")
+
+
+func test_nicht_raeumlich() -> void:
+	check(not (car.get_node("Engine") is AudioStreamPlayer2D), "Motor des Spielers ist nicht räumlich")
+	check(not (car.get_node("Squeal") is AudioStreamPlayer2D), "Quietschen ist nicht räumlich")
