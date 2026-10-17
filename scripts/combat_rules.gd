@@ -7,6 +7,10 @@ const BITE_REACH := 4.0
 const PLAYER_BITE := 20.0
 const MEAT_PER_KILL := 3
 
+## Ein-Biss-Regel: Beute mit höchstens SWALLOW_RATIO-mal so großem Radius wie der Angreifer
+## wird mit einem Biss ganz verschluckt (bei den Größenabschnitten: mindestens zwei Abschnitte kleiner).
+const SWALLOW_RATIO := 0.5
+
 
 ## Trifft der Biss? Nur das Maul zählt, nicht die Nähe der Körper.
 static func bite_hits(attacker_pos: Vector2, attacker_heading: float, attacker_radius: float, target_pos: Vector2, target_radius: float) -> bool:
@@ -30,3 +34,13 @@ static func meat_positions(center: Vector2, radius: float, count: int = MEAT_PER
 	for i in count:
 		result.append(center + Vector2.from_angle(TAU * i / count) * radius * 0.5)
 	return result
+
+
+## Ist die Beute deutlich kleiner, sodass ein Biss sie ganz verschluckt?
+static func can_swallow(attacker_radius: float, target_radius: float) -> bool:
+	return target_radius <= attacker_radius * SWALLOW_RATIO
+
+
+## Nahrungswert einer verschluckten Zelle: so viel wie ihre Fleischbrocken zusammen.
+static func swallow_value() -> int:
+	return MEAT_PER_KILL * FoodField.MEAT_VALUE

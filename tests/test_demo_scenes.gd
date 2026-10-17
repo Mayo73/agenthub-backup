@@ -1,7 +1,7 @@
 extends "res://tests/base_test.gd"
 
-func test_acht_szenen() -> void:
-	check_eq(DemoScenes.names().size(), 8, "genau 8 Szenen")
+func test_neun_szenen() -> void:
+	check_eq(DemoScenes.names().size(), 9, "genau 9 Szenen")
 	check(DemoScenes.exists("gift"), "gift existiert")
 	check(not DemoScenes.exists("quatsch"), "quatsch existiert nicht")
 
