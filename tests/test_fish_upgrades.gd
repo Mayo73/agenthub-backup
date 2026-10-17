@@ -46,3 +46,19 @@ func test_hoechste_stufe() -> void:
 	progress.dna = 100
 	check(not FishUpgrades.upgrade(build, progress, "flossen"), "Upgrade bei höchster Stufe sollte scheitern")
 	check_eq(progress.dna, 100, "DNA sollte unverändert bleiben")
+
+
+func test_etwas_bezahlbar() -> void:
+	progress.dna = 9
+	check(not FishUpgrades.any_affordable(build, progress), "dna = 9 sollte nicht bezahlbar sein")
+	progress.dna = 10
+	check(FishUpgrades.any_affordable(build, progress), "dna = 10 sollte mindestens eine Verbesserung ermöglichen")
+
+
+func test_alles_ausgebaut() -> void:
+	for slot: String in FishBuild.SLOTS:
+		build.upgrade(slot)
+		build.upgrade(slot)
+		build.upgrade(slot)
+	progress.dna = 500
+	check(not FishUpgrades.any_affordable(build, progress), "Bei max. Stufe keine bezahlbare Verbesserung")

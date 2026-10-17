@@ -3,11 +3,13 @@ extends CanvasLayer
 ## Anzeige der Fischphase: Tiefe, DNA, Wachstum, Steuerungshilfe und kurze Meldungen.
 
 const HELP := "W / linke Maustaste: schwimmen · A/D: drehen · Leertaste: auftauchen · Umschalt: abtauchen · E: Entwicklung"
+const UPGRADE_HINT := "E: Verbesserung möglich"
 
 var depth_label: Label
 var dna_label: Label
 var growth_label: Label
 var health_label: Label
+var upgrade_label: Label
 var help_label: Label
 var message_label: Label
 var message_left := 0.0
@@ -20,6 +22,10 @@ func _init() -> void:
 	growth_label = make_label("Growth", Vector2(40, 116), 28)
 	health_label = make_label("Health", Vector2(40, 156), 28)
 	show_health(1.0)
+	upgrade_label = make_label("UpgradeHint", Vector2(40, 196), 26)
+	upgrade_label.text = UPGRADE_HINT
+	upgrade_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.45))
+	upgrade_label.visible = false
 	help_label = make_label("Help", Vector2(40, 1010), 22)
 	help_label.text = HELP
 	message_label = make_label("Message", Vector2(560, 140), 30)
@@ -80,3 +86,7 @@ func tick(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	tick(delta)
+
+
+func show_upgrade_hint(value: bool) -> void:
+	upgrade_label.visible = value

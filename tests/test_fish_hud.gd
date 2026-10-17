@@ -68,3 +68,14 @@ func test_schnee() -> void:
 	check(!s.local_coords, "Nicht-lokale Koordination")
 	check(s.mesh is QuadMesh, "Teilchen verwenden QuadMesh")
 	s.free()
+
+
+func test_hinweis_verbesserung() -> void:
+	var hud := FishHud.new()
+	check_eq(hud.upgrade_label.text, "E: Verbesserung möglich", "upgrade_label.text ist korrekt")
+	check(!hud.upgrade_label.visible, "Anfang unsichtbar")
+	hud.show_upgrade_hint(true)
+	check(hud.upgrade_label.visible, "Nach show_upgrade_hint(true) sichtbar")
+	hud.show_upgrade_hint(false)
+	check(!hud.upgrade_label.visible, "Nach show_upgrade_hint(false) unsichtbar")
+	hud.free()
