@@ -138,6 +138,7 @@ func _physics_process(delta: float) -> void:
 		return
 	player.drive(FishInput.read(), delta)
 	think_fish(delta)
+	player_bites()
 	hud.show_depth(player.motion.depth())
 	feed_player()
 	refill_food()
@@ -154,10 +155,15 @@ func _process(delta: float) -> void:
 ## Frisst, was das Maul berührt und zur Ernährung passt. Wächst der Fisch, wird er größer.
 func feed_player() -> void:
 	for item in food.take_at(player.mouth_point(), MOUTH_REACH * player.size, player.build.diet):
-		if progress.eat(item["value"]):
-			player.set_size(progress.size())
-			hud.show_message("Dein Fisch ist gewachsen!")
+		eat_value(item["value"])
 	hud.show_progress(progress)
+
+
+## Rechnet einen Bissen Nahrung an; wächst der Fisch dabei, wird er größer.
+func eat_value(value: int) -> void:
+	if progress.eat(value):
+		player.set_size(progress.size())
+		hud.show_message("Dein Fisch ist gewachsen!")
 
 
 ## Entfernt weit entfernte Nahrung und streut neue um den Fisch, wenn sie knapp wird.
@@ -207,3 +213,16 @@ func think_fish(delta: float) -> void:
 	var center: Variant = FishSchool.flock_center(fishes, "silberling")
 	for f in fishes:
 		f.think(delta, player.motion.position, player.size, center if f.species_id == "silberling" else null)
+
+
+## Fleisch- und Allesfresser beißen Fische, die ihr Maul berührt; besiegte Fische werden gefressen.
+func player_bites() -> void:
+	if player.build.diet == Diet.PFLANZENFRESSER:
+		return
+	for f in fishes.duplicate():
+		if FishCombat.bite_hits(player.mouth_point(), f.motion.position, f.radius()):
+			if f.health.damage(FishAbilities.bite_damage(player.build)) and f.health.is_dead():
+				remove_fish(f)
+				eat_value(int(FishSpecies.data(f.species_id)["food"]))
+				hud.show_progress(progress)
+				hud.show_message("%s gefressen!" % FishSpecies.data(f.species_id)["name"])

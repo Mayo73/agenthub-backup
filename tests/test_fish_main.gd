@@ -179,3 +179,44 @@ func test_fisch_hinzufuegen_entfernen() -> void:
 	fish.remove_fish(f)
 	check_eq(fish.fishes.size(), vorher, "fishes.size() ist 17 nach Entfernen")
 	check(not fish.fishes.has(f), "fish.fishes.has(f) falsch")
+
+
+func test_pflanzenfresser_beisst_nicht() -> void:
+	for f in fish.fishes.duplicate():
+		fish.remove_fish(f)
+	fish.player.build.diet = Diet.PFLANZENFRESSER
+	var f: AiFish = fish.add_fish("silberling", fish.player.mouth_point())
+	var hp_vorher: float = f.health.hp
+	fish.player_bites()
+	check_eq(f.health.hp, hp_vorher, "f.health.hp unverändert bei Pflanzenfresser")
+
+
+func test_biss_verletzt() -> void:
+	for f in fish.fishes.duplicate():
+		fish.remove_fish(f)
+	fish.player.build.diet = Diet.FLEISCHFRESSER
+	var f: AiFish = fish.add_fish("zackenbarsch", fish.player.mouth_point())
+	fish.player_bites()
+	check_eq(f.health.hp, 90.0 - 10.0, "f.health.hp ist 80.0 nach Biss")
+	check(fish.fishes.has(f), "fish.fishes.has(f) wahr")
+
+
+func test_besiegt_und_gefressen() -> void:
+	for f in fish.fishes.duplicate():
+		fish.remove_fish(f)
+	fish.player.build.diet = Diet.FLEISCHFRESSER
+	var dna: int = fish.progress.dna
+	var f: AiFish = fish.add_fish("silberling", fish.player.mouth_point())
+	f.health.hp = 5.0
+	fish.player_bites()
+	check(not fish.fishes.has(f), "fish.fishes.has(f) falsch")
+	check_eq(fish.progress.dna, dna + 4, "fish.progress.dna ist dna + 4")
+
+
+func test_zu_weit() -> void:
+	for f in fish.fishes.duplicate():
+		fish.remove_fish(f)
+	fish.player.build.diet = Diet.FLEISCHFRESSER
+	var f: AiFish = fish.add_fish("silberling", fish.player.mouth_point() + Vector3(5, 0, 0))
+	fish.player_bites()
+	check_eq(f.health.hp, f.health.max_hp, "f.health.hp unverändert wenn zu weit entfernt")
