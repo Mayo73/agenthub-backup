@@ -109,6 +109,8 @@ func _draw() -> void:
 			elif part["id"] == "duese":
 				draw_colored_polygon(jet_points(part), PartLooks.color(part["id"]))
 			else:
+				if PartLooks.outline(part["id"]).a > 0.0:
+					draw_polyline(PartLooks.closed(PartLooks.placed(part, radius)), PartLooks.outline(part["id"]), maxf(1.0, radius * 0.06))
 				draw_colored_polygon(PartLooks.placed(part, radius), PartLooks.color(part["id"]))
 	CellPainter.draw_cell(self, Vector2.ZERO, look, radius, time)
 	if flash.is_active():
@@ -120,6 +122,8 @@ func _draw() -> void:
 		elif category == "maul":
 			draw_colored_polygon(mouth_points(part), PartLooks.color(part["id"]))
 		elif category != "antrieb":
+			if PartLooks.outline(part["id"]).a > 0.0:
+				draw_polyline(PartLooks.closed(PartLooks.placed(part, radius)), PartLooks.outline(part["id"]), maxf(1.0, radius * 0.06))
 			if part["id"] == "elektro":
 				draw_circle((part["pos"] as Vector2) * radius, radius * 0.35, Color(0.5, 0.85, 1.0, glow_alpha()))
 			draw_colored_polygon(PartLooks.placed(part, radius), PartLooks.color(part["id"]))
@@ -172,7 +176,6 @@ func pulse() -> void:
 ## Größenfaktor der Darstellung: steigt während des Pulses bis 1,25 und fällt zurück auf 1.
 func pulse_scale() -> float:
 	return 1.0 + 0.25 * sin(PI * pulse_left / PULSE_TIME)
-
 ## Deckkraft des Scheins um das Elektroorgan; flackert leicht.
 func glow_alpha() -> float:
 	return 0.3 + 0.15 * sin(time * 9.0)
