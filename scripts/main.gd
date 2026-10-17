@@ -54,6 +54,8 @@ var finished := false
 var poison := PoisonClouds.new()
 var electric := ElectricOrgan.new()
 
+var poison_view: PoisonCloudView
+
 
 func _ready() -> void:
 	Controls.setup()
@@ -133,6 +135,11 @@ func _ready() -> void:
 	burst_view = DeathBurstView.new()
 	burst_view.name = "Bursts"
 	world.add_child(burst_view)
+
+	poison_view = PoisonCloudView.new()
+	poison_view.name = "PoisonClouds"
+	poison_view.sources = [poison]
+	world.add_child(poison_view)
 
 	if Benchmark.requested(OS.get_cmdline_user_args()):
 		start_benchmark()
