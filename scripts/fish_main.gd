@@ -10,6 +10,12 @@ var sun: DirectionalLight3D
 var water: WorldEnvironment
 var floor_mesh: MeshInstance3D
 var surface_mesh: MeshInstance3D
+var player: FishPlayer
+var reef: ReefView
+var snow: MarineSnow
+var hud: FishHud
+var intro: FishIntro
+var progress := FishProgress.new()
 
 
 func _ready() -> void:
@@ -38,8 +44,31 @@ func _ready() -> void:
 	camera.name = "Camera"
 	camera.far = 400.0
 	add_child(camera)
-	camera.position = FishWorld.START + Vector3(0.0, 2.0, 8.0)
-	camera.look_at(FishWorld.START)
+	player = FishPlayer.new()
+	player.name = "Player"
+	world.add_child(player)
+	if FishStart.pending_build != null:
+		player.set_build(FishStart.pending_build)
+	progress.dna = FishStart.pending_dna
+	FishStart.clear()
+
+	reef = ReefView.new()
+	reef.name = "Reef"
+	world.add_child(reef)
+	snow = MarineSnow.new()
+	snow.name = "Snow"
+	add_child(snow)
+	hud = FishHud.new()
+	hud.name = "Hud"
+	add_child(hud)
+	hud.show_progress(progress)
+	intro = FishIntro.new()
+	intro.name = "Intro"
+	add_child(intro)
+	intro.open(player.build)
+
+	camera.position = ChaseCamera.target_position(player.motion.position, player.motion.yaw, player.size)
+	camera.look_at(player.motion.position)
 	camera.current = true
 
 
@@ -48,7 +77,7 @@ static func make_environment() -> Environment:
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = FishWorld.WATER_COLOR
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_source = 0
 	env.ambient_light_color = Color(0.45, 0.65, 0.75)
 	env.ambient_light_energy = 0.7
 	env.fog_enabled = true
@@ -59,16 +88,29 @@ static func make_environment() -> Environment:
 
 ## Waagrechte Fläche über die ganze Welt (Boden oder Wasseroberfläche), von beiden Seiten sichtbar.
 static func make_plane(node_name: String, y: float, color: Color) -> MeshInstance3D:
-	var plane := PlaneMesh.new()
-	plane.size = Vector2.ONE * FishWorld.HALF_SIZE * 2.0
+	var box := BoxMesh.new()
+	box.size = Vector3(FishWorld.HALF_SIZE * 2.0, 0.1, FishWorld.HALF_SIZE * 2.0)
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = color
 	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	if color.a < 1.0:
 		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	plane.material = mat
 	var m := MeshInstance3D.new()
 	m.name = node_name
-	m.mesh = plane
+	m.mesh = box
+	m.material_override = mat
 	m.position = Vector3(0.0, y, 0.0)
 	return m
+
+
+func _physics_process(delta: float) -> void:
+	player.drive(FishInput.read(), delta)
+	hud.show_depth(player.motion.depth())
+
+
+## Kamera folgt weich und schaut auf den Fisch; die Schwebeteilchen bleiben bei der Kamera.
+func _process(delta: float) -> void:
+	var target := ChaseCamera.target_position(player.motion.position, player.motion.yaw, player.size)
+	camera.position = ChaseCamera.follow(camera.position, target, delta)
+	camera.look_at(player.motion.position)
+	snow.position = camera.position
