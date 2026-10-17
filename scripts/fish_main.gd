@@ -19,6 +19,7 @@ var snow: MarineSnow
 var hud: FishHud
 var intro: FishIntro
 var evolve: EvolveMenu
+var fishes: Array[AiFish] = []
 var progress := FishProgress.new()
 var food := FishFood.new()
 var food_view: FishFoodView
@@ -67,6 +68,7 @@ func _ready() -> void:
 	food_view.name = "Food"
 	food_view.field = food
 	world.add_child(food_view)
+	spawn_fish()
 	snow = MarineSnow.new()
 	snow.name = "Snow"
 	add_child(snow)
@@ -135,6 +137,7 @@ func _physics_process(delta: float) -> void:
 	if evolve.visible:
 		return
 	player.drive(FishInput.read(), delta)
+	think_fish(delta)
 	hud.show_depth(player.motion.depth())
 	feed_player()
 	refill_food()
@@ -178,3 +181,29 @@ func _on_upgraded(slot: String) -> void:
 	hud.show_progress(progress)
 	hud.show_message("%s verbessert!" % FishBuild.NAMES[slot])
 	apply_sight()
+
+
+## Verteilt die KI-Fische um den Spielerfisch.
+func spawn_fish() -> void:
+	for entry in FishSchool.spawn_plan(player.motion.position, 7):
+		add_fish(entry["id"], entry["position"])
+
+
+func add_fish(id: String, pos: Vector3) -> AiFish:
+	var f := AiFish.new()
+	f.setup(id, pos)
+	world.add_child(f)
+	fishes.append(f)
+	return f
+
+
+func remove_fish(f: AiFish) -> void:
+	fishes.erase(f)
+	f.queue_free()
+
+
+## Alle KI-Fische entscheiden und schwimmen; Silberlinge halten sich an ihren Schwarm.
+func think_fish(delta: float) -> void:
+	var center: Variant = FishSchool.flock_center(fishes, "silberling")
+	for f in fishes:
+		f.think(delta, player.motion.position, player.size, center if f.species_id == "silberling" else null)
