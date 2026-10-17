@@ -4,6 +4,7 @@ extends Node2D
 
 const MOUTH_REACH := 4.0
 const RESPAWN_INVULNERABLE := 2.0
+const FISH_SCENE := "res://scenes/fish.tscn"
 
 @onready var world: Node2D = $World
 @onready var camera: Camera2D = $Camera
@@ -122,6 +123,7 @@ func _ready() -> void:
 	add_child(end_screen)
 	end_screen.to_main_menu.connect(_on_end_to_menu)
 	end_screen.quit_game.connect(quit)
+	end_screen.to_fish_phase.connect(go_to_fish)
 	hud.finish_pressed.connect(finish_phase)
 	add_click_sounds(end_screen)
 	show_menu(true)
@@ -159,6 +161,9 @@ func _ready() -> void:
 	var scene_name := DemoScenes.requested(OS.get_cmdline_user_args())
 	if scene_name != "":
 		start_scene(scene_name)
+
+	if FishStart.requested(OS.get_cmdline_user_args()):
+		go_to_fish.call_deferred()
 
 
 func _physics_process(delta: float) -> void:
@@ -685,3 +690,14 @@ func update_bubbles(delta: float) -> void:
 		bubble_timer = 0.0
 		var back := PartGeometry.world_point(player.motion.position, player.motion.heading, player.radius, Vector2(-1.1, 0))
 		bubbles.emit(back, maxf(1.5, player.radius * 0.15))
+
+
+## Übergang in die Fischphase: den ersten Fisch aus der Zelle berechnen und für FishMain hinterlegen.
+func prepare_fish() -> void:
+	FishStart.pending_build = FishStart.from_cell(player.build, player.look, player.diet)
+	FishStart.pending_dna = progress.dna
+
+
+func go_to_fish() -> void:
+	prepare_fish()
+	get_tree().change_scene_to_file(FISH_SCENE)
