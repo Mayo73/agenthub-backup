@@ -25,3 +25,11 @@ func test_szenen() -> void:
 	var text := FileAccess.get_file_as_string(PATH)
 	for n in DemoScenes.names():
 		check(text.contains(n), "Enthält Szenennamen: %s" % n)
+
+
+func test_fischphase_beschrieben() -> void:
+	var text := FileAccess.get_file_as_string(PATH)
+	check(text.contains("## Fischphase"), "Enthält Abschnitt Fischphase")
+	check(text.contains("Entwicklungsmenü"), "Enthält Entwicklungsmenü")
+	check(text.contains("-- --fisch"), "Enthält Start-Parameter -- --fisch")
+	check(text.find("## Fischphase") < text.find("## Leistungstest und Vorführszenen"), "Abschnitt Fischphase steht vor Leistungstest")

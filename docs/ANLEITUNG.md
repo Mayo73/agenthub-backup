@@ -18,5 +18,8 @@ Partner rufen und erreichen. Teile wählen und platzieren, verschieben, drehen (
 ## Spielstände und Einstellungen
 Drei Plätze. Automatisches Speichern nach Editor und Größenwechsel. Lautstärke Musik und Effekte. Vollbild und Auflösung wählen.
 
+## Fischphase
+Am Ende der Zellenphase führt „Weiter zur Fischphase“ in eine 3D-Unterwasserwelt. Die Teile der Zelle bestimmen den ersten Fisch: Geißel oder Düse werden zur Schwanzflosse, Wimpern zu Brustflossen, Kiefer, Stacheln und Augen bleiben. Steuerung: W oder linke Maustaste schwimmen, A/D drehen, Leertaste auftauchen, Umschalt abtauchen. Algen am Boden und Krebschen bringen DNA und Wachstum, Fleisch- und Allesfresser können auch Silberlinge und Grasfische fressen. Zackenbarsche sind gefährlich. Mit E öffnet sich das Entwicklungsmenü: DNA verbessert Schwanzflosse (Tempo), Brustflossen (Wendigkeit und Tauchen), Kiefer (Biss), Stacheln (Abwehr) und Augen (Sicht im trüben Wasser). Zum Ausprobieren startet `-- --fisch` direkt in der Fischphase.
+
 ## Leistungstest und Vorführszenen
 Start mit `-- --benchmark` (Ergebnis in `leistungstest.txt` im Benutzerordner des Spiels). Mit `-- --szene=<name>` eine Vorführszene starten: jagd, flucht, nahrung, stachel, gift, elektro, tempo, wendigkeit, verschlingen.
