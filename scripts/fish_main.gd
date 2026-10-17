@@ -3,6 +3,7 @@ extends Node3D
 ## Hauptszene der Fischphase (scenes/fish.tscn): eine 3D-Unterwasserwelt. Alle Knoten entstehen im Code.
 ## Koordinaten und Maße stehen in FishWorld (Meter, y nach oben).
 
+const MAIN_SCENE := "res://scenes/main.tscn"
 ## Reichweite des Mauls beim Fressen in Metern (wächst mit der Größe des Fischs).
 const MOUTH_REACH := 0.5
 const SAFE_RADIUS := 25.0 ## Raubfische in diesem Umkreis (Meter) verschwinden beim Wiedereinstieg.
@@ -23,6 +24,8 @@ var evolve: EvolveMenu
 var fishes: Array[AiFish] = []
 var player_health := CellHealth.new(100.0)
 var deaths := 0
+var pause_menu: PauseMenu
+var paused := false
 var progress := FishProgress.new()
 var food := FishFood.new()
 var food_view: FishFoodView
@@ -83,6 +86,12 @@ func _ready() -> void:
 	evolve.name = "Evolve"
 	add_child(evolve)
 	evolve.upgraded.connect(_on_upgraded)
+	pause_menu = PauseMenu.new()
+	pause_menu.name = "PauseMenu"
+	add_child(pause_menu)
+	pause_menu.resume.connect(toggle_pause)
+	pause_menu.to_main_menu.connect(back_to_menu)
+	pause_menu.quit_game.connect(func() -> void: get_tree().quit())
 	intro = FishIntro.new()
 	intro.name = "Intro"
 	add_child(intro)
@@ -246,6 +255,29 @@ func predators_bite() -> void:
 				f.health.damage(FishCombat.spike_reflect(player.build))
 				if f.health.is_dead():
 					remove_fish(f)
+
+## Esc: Pause an oder aus. Während das Entwicklungsmenü offen ist, wirkungslos.
+func toggle_pause() -> void:
+	if evolve.visible:
+		return
+	paused = not paused
+	if paused:
+		pause_menu.open()
+	else:
+		pause_menu.close()
+	set_physics_process(not paused)
+	set_process(not paused)
+	world.process_mode = Node.PROCESS_MODE_DISABLED if paused else Node.PROCESS_MODE_INHERIT
+
+
+func back_to_menu() -> void:
+	get_tree().change_scene_to_file(MAIN_SCENE)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("pause"):
+		toggle_pause()
+
 
 ## Nach dem Tod taucht der Fisch an der Startstelle wieder auf: DNA, Größe und Ausbau bleiben.
 func check_death() -> void:
