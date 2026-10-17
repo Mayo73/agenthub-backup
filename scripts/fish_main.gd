@@ -87,7 +87,7 @@ static func make_environment() -> Environment:
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = FishWorld.WATER_COLOR
-	env.ambient_light_source = 0
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color(0.45, 0.65, 0.75)
 	env.ambient_light_energy = 0.7
 	env.fog_enabled = true
@@ -98,17 +98,17 @@ static func make_environment() -> Environment:
 
 ## Waagrechte Fläche über die ganze Welt (Boden oder Wasseroberfläche), von beiden Seiten sichtbar.
 static func make_plane(node_name: String, y: float, color: Color) -> MeshInstance3D:
-	var box := BoxMesh.new()
-	box.size = Vector3(FishWorld.HALF_SIZE * 2.0, 0.1, FishWorld.HALF_SIZE * 2.0)
+	var plane := PlaneMesh.new()
+	plane.size = Vector2.ONE * FishWorld.HALF_SIZE * 2.0
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = color
 	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	if color.a < 1.0:
 		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	plane.material = mat
 	var m := MeshInstance3D.new()
 	m.name = node_name
-	m.mesh = box
-	m.material_override = mat
+	m.mesh = plane
 	m.position = Vector3(0.0, y, 0.0)
 	return m
 

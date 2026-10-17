@@ -5,6 +5,7 @@ var cell: AiCell
 func setup() -> void:
 	cell = AiCell.new()
 
+
 func teardown() -> void:
 	cell.free()
 

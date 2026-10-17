@@ -86,7 +86,6 @@ func _ready() -> void:
 	giant_view.camera = camera
 	world.add_child(giant_view)
 	world.move_child(giant_view, 1)
-	world.move_child(food_view, 2)
 	pickup_view = PickupView.new()
 	pickup_view.name = "Pickups"
 	pickup_view.pickups = pickups
