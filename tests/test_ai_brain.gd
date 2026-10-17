@@ -66,3 +66,23 @@ func test_scheu_sieht_weiter() -> void:
 	var result := brain.decide(Vector2.ZERO, 12.0, Diet.PFLANZENFRESSER, [{"position": Vector2(400, 0), "radius": 27.0, "diet": Diet.FLEISCHFRESSER}], null)
 	check_eq(result, Vector2(-1, 0), "Schwimmrichtung nach links bei scheuer Zelle")
 	check_eq(brain.state, AiBrain.FLIEHEN, "state ist FLIEHEN")
+
+
+func test_lauern() -> void:
+	brain.lurker = true
+	var result := brain.decide(Vector2.ZERO, 60.0, Diet.FLEISCHFRESSER, [{"position": Vector2(200, 0), "radius": 12.0, "diet": Diet.PFLANZENFRESSER}], null)
+	check_eq(result, Vector2.ZERO, "keine Richtung wenn Beute zu weit")
+	check_eq(brain.state, AiBrain.LAUERN, "state ist LAUERN")
+
+
+func test_lauerer_stoesst_zu() -> void:
+	brain.lurker = true
+	var result := brain.decide(Vector2.ZERO, 60.0, Diet.FLEISCHFRESSER, [{"position": Vector2(100, 0), "radius": 12.0, "diet": Diet.PFLANZENFRESSER}], null)
+	check_eq(result, Vector2(1, 0), "Schwimmrichtung nach rechts wenn Beute nah")
+	check_eq(brain.state, AiBrain.JAGEN, "state ist JAGEN")
+
+
+func test_ohne_lauern() -> void:
+	var result := brain.decide(Vector2.ZERO, 60.0, Diet.FLEISCHFRESSER, [{"position": Vector2(200, 0), "radius": 12.0, "diet": Diet.PFLANZENFRESSER}], null)
+	check_eq(result, Vector2(1, 0), "Schwimmrichtung nach rechts ohne Lauerer-Modus")
+	check_eq(brain.state, AiBrain.JAGEN, "state ist JAGEN")
