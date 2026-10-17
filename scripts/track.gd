@@ -8,8 +8,14 @@ const CURB_DASH := 40.0
 const START_CELL := 20.0
 const TREE_TEXTURE := preload("res://assets/decor/tree.png")
 const TIRES_TEXTURE := preload("res://assets/decor/tires.png")
+const ROAD_TEXTURE := preload("res://assets/track/asphalt.png")
+const GRASS_TEXTURE := preload("res://assets/track/grass.png")
 const TREE_SIZE := Vector2(92, 96)
 const TIRES_SIZE := Vector2(70, 29)
+## Kantenlänge einer Texturkachel in Weltpixeln.
+const TEXTURE_TILE := 256.0
+## So weit reicht der Rasen über die Strecke hinaus.
+const GRASS_MARGIN := 4000.0
 
 ## Kontrollpunkte der Mittellinie (geschlossen). Werden zu einer runden Linie geglättet.
 @export var control_points := PackedVector2Array([
@@ -43,23 +49,48 @@ func load_track(id: String) -> void:
 
 
 func _ready() -> void:
+	texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	load_track(TrackCatalog.DEFAULT_ID)
 
 
 func _draw() -> void:
 	if path == null:
 		return
-	_fill(path.outline(width * 0.5), road_color)
-	_fill(path.outline(-width * 0.5), grass_color)
+	var outer := path.outline(width * 0.5)
+	_fill(grass_rect(outer), grass_color, GRASS_TEXTURE)
+	_fill(outer, road_color, ROAD_TEXTURE)
+	_fill(path.outline(-width * 0.5), grass_color, GRASS_TEXTURE)
 	_draw_curb(path.outline(width * 0.5 + CURB_WIDTH * 0.5))
 	_draw_curb(path.outline(-width * 0.5 - CURB_WIDTH * 0.5))
 	_draw_start_line()
 	_draw_decor()
 
 
-func _fill(polygon: PackedVector2Array, color: Color) -> void:
+## Texturkoordinaten für eine Fläche: eine Kachel je TEXTURE_TILE Weltpixel.
+static func tile_uvs(polygon: PackedVector2Array) -> PackedVector2Array:
+	var uvs := PackedVector2Array()
+	for p in polygon:
+		uvs.append(p / TEXTURE_TILE)
+	return uvs
+
+
+## Rechteck um die Strecke, um GRASS_MARGIN vergrößert (für den Rasen außen).
+static func grass_rect(outline: PackedVector2Array) -> PackedVector2Array:
+	if outline.is_empty():
+		return PackedVector2Array()
+	var box := Rect2(outline[0], Vector2.ZERO)
+	for p in outline:
+		box = box.expand(p)
+	box = box.grow(GRASS_MARGIN)
+	return PackedVector2Array([box.position, Vector2(box.end.x, box.position.y), box.end, Vector2(box.position.x, box.end.y)])
+
+
+func _fill(polygon: PackedVector2Array, color: Color, texture: Texture2D = null) -> void:
 	if polygon.size() >= 3:
-		draw_colored_polygon(polygon, color)
+		if texture != null:
+			draw_colored_polygon(polygon, Color.WHITE, tile_uvs(polygon), texture)
+		else:
+			draw_colored_polygon(polygon, color)
 
 
 ## Rot-weiße Randsteine entlang einer geschlossenen Linie.
