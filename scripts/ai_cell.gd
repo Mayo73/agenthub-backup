@@ -90,12 +90,16 @@ func _draw() -> void:
 		if part["id"] == "geissel":
 			draw_polyline(PartAnimation.place_points(PartAnimation.flagellum(time), part, radius), PartLooks.color("geissel"), maxf(1.5, radius * 0.1))
 		elif PartCatalog.category_of(part["id"]) == "antrieb":
+			if PartLooks.outline(part["id"]).a > 0.0:
+				draw_polyline(PartLooks.closed(PartLooks.placed(part, radius)), PartLooks.outline(part["id"]), maxf(1.0, radius * 0.06))
 			draw_colored_polygon(PartLooks.placed(part, radius), PartLooks.color(part["id"]))
 	CellPainter.draw_cell(self, Vector2.ZERO, look, radius, time)
 	if flash.is_active():
 		draw_circle(Vector2.ZERO, radius * 1.05, flash.overlay_color())
 	for part in visible_parts():
 		if PartCatalog.category_of(part["id"]) != "antrieb":
+			if PartLooks.outline(part["id"]).a > 0.0:
+				draw_polyline(PartLooks.closed(PartLooks.placed(part, radius)), PartLooks.outline(part["id"]), maxf(1.0, radius * 0.06))
 			draw_colored_polygon(PartLooks.placed(part, radius), PartLooks.color(part["id"]))
 	var eye_pos := Vector2(radius * 0.35 * look.stretch, -radius * 0.35)
 	var eye_r := radius * 0.16
