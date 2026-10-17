@@ -12,6 +12,18 @@ var health_bar: ProgressBar
 var message_label: Label
 var message_time := 0.0
 var finish_button: Button
+var growth_caption: Label
+var health_caption: Label
+
+
+## Kleine Beschriftung über einem Balken.
+func make_caption(caption_name: String, text: String) -> Label:
+	var l := Label.new()
+	l.name = caption_name
+	l.text = text
+	l.add_theme_font_size_override("font_size", 18)
+	box.add_child(l)
+	return l
 
 
 func _init() -> void:
@@ -23,6 +35,7 @@ func _init() -> void:
 	dna_label.name = "Dna"
 	dna_label.add_theme_font_size_override("font_size", 28)
 	box.add_child(dna_label)
+	growth_caption = make_caption("GrowthCaption", "Wachstum")
 	growth_bar = ProgressBar.new()
 	growth_bar.name = "Growth"
 	growth_bar.custom_minimum_size = Vector2(260, 18)
@@ -33,6 +46,7 @@ func _init() -> void:
 	stage_label.name = "Stage"
 	stage_label.add_theme_font_size_override("font_size", 22)
 	box.add_child(stage_label)
+	health_caption = make_caption("HealthCaption", "Gesundheit")
 	health_bar = ProgressBar.new()
 	health_bar.name = "Health"
 	health_bar.custom_minimum_size = Vector2(260, 14)
