@@ -11,6 +11,9 @@ const DROPS := {
 	"weidezelle": "wimpern",
 	"hornjaeger": "duese",
 	"riesenschlund": "ruessel",
+	"flimmerling": "geissel",
+	"panzerling": "stachel",
+	"schwebqualle": "wimpern",
 }
 
 
