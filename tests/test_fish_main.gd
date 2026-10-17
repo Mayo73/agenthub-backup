@@ -283,3 +283,41 @@ func test_tod() -> void:
 	check_eq(fish.progress.dna, 30, "dna bleibt 30")
 	check_eq(fish.player_health.hp, 100.0, "player_health.hp ist 100.0 nach reset")
 	check(fish.player_health.invulnerable > 0.0, "invulnerable > 0.0")
+
+
+## Test: PauseMenu wird angelegt und paused ist falsch.
+func test_pausemenue_angelegt() -> void:
+	check(fish.get_node("PauseMenu") is PauseMenu, "fish.get_node('PauseMenu') ist PauseMenu")
+	check(not fish.paused, "fish.paused ist falsch")
+
+
+## Test: toggle_pause() setzt paused wahr und macht Welt still.
+func test_pause() -> void:
+	fish.toggle_pause()
+	check(fish.paused, "fish.paused ist wahr nach erstem Aufruf")
+	check(fish.pause_menu.visible, "fish.pause_menu.visible ist wahr")
+	check(not fish.is_physics_processing(), "is_physics_processing() ist falsch")
+	check(fish.world.process_mode == Node.PROCESS_MODE_DISABLED, "world.process_mode ist DISABLED")
+	fish.toggle_pause()
+	check(not fish.paused, "fish.paused ist falsch nach zweitem Aufruf")
+	check(fish.is_physics_processing(), "is_physics_processing() ist wahr")
+
+
+## Test: 'Weiter'-Knopf setzt Pause auf falsch.
+func test_weiter_knopf() -> void:
+	fish.toggle_pause()
+	check(fish.paused, "fish.paused ist wahr")
+	fish.pause_menu.resume.emit()
+	check(not fish.paused, "fish.paused ist falsch nach resume.emit()")
+
+
+## Test: toggle_pause() wirkt nicht, wenn Entwicklungsmenü offen ist.
+func test_nicht_im_entwicklungsmenue() -> void:
+	fish.toggle_evolve()
+	fish.toggle_pause()
+	check(not fish.paused, "fish.paused bleibt falsch während evolve.visible wahr")
+
+
+## Test: MAIN_SCENE-Datei existiert.
+func test_hauptszene_vorhanden() -> void:
+	check(ResourceLoader.exists(fish.MAIN_SCENE), "MAIN_SCENE existiert")
