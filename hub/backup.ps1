@@ -28,6 +28,21 @@ $git = Resolve-Git
 $problems = @()
 $done = @()
 
+# Nachts (Wächter) nie ein Anmeldefenster öffnen; die Anmeldung speichert der Nutzer einmal mit
+# "git credential-manager github login" oder einem Lauf von Hand.
+if ($WennFaellig) { $env:GCM_INTERACTIVE = 'never'; $env:GIT_TERMINAL_PROMPT = '0' }
+# Zugang einmal vorab prüfen: eine Anmeldung statt einer je Repo.
+$check = & $git ls-remote --heads $url 2>&1
+if ($LASTEXITCODE -ne 0) {
+    $grund = (@($check) -join ' ').Trim()
+    Write-Json $statusFile ([ordered]@{ finished = (Get-Now); ok = $false; message = 'GitHub-Anmeldung fehlt oder Repo nicht erreichbar'; saved = @(); problems = @($grund) })
+    Add-HubLog "Sicherung: GitHub nicht erreichbar oder Anmeldung fehlt – $grund"
+    Write-Host "Sicherung: GitHub nicht erreichbar oder Anmeldung fehlt."
+    Write-Host "  $grund"
+    Send-HubNachricht 'Agent Hub: Sicherung fehlgeschlagen' 'GitHub-Anmeldung fehlt oder das Repo ist nicht erreichbar. Einmal "git credential-manager github login" ausführen.'
+    exit 1
+}
+
 foreach ($name in @($cfg.projects.PSObject.Properties.Name)) {
     $path = $cfg.projects.$name.path
     if (-not (Test-Path -LiteralPath (Join-Path $path '.git'))) { continue }
