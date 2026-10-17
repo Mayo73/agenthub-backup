@@ -5,6 +5,7 @@ extends Node3D
 
 ## Reichweite des Mauls beim Fressen in Metern (wächst mit der Größe des Fischs).
 const MOUTH_REACH := 0.5
+const SAFE_RADIUS := 25.0 ## Raubfische in diesem Umkreis (Meter) verschwinden beim Wiedereinstieg.
 
 ## Spielwelt: Boden, Oberfläche, Pflanzen, Fische und Nahrung kommen hier hinein.
 var world: Node3D
@@ -20,6 +21,8 @@ var hud: FishHud
 var intro: FishIntro
 var evolve: EvolveMenu
 var fishes: Array[AiFish] = []
+var player_health := CellHealth.new(100.0)
+var deaths := 0
 var progress := FishProgress.new()
 var food := FishFood.new()
 var food_view: FishFoodView
@@ -139,6 +142,10 @@ func _physics_process(delta: float) -> void:
 	player.drive(FishInput.read(), delta)
 	think_fish(delta)
 	player_bites()
+	predators_bite()
+	player_health.tick(delta)
+	hud.show_health(player_health.ratio())
+	check_death()
 	hud.show_depth(player.motion.depth())
 	feed_player()
 	refill_food()
@@ -226,3 +233,31 @@ func player_bites() -> void:
 				eat_value(int(FishSpecies.data(f.species_id)["food"]))
 				hud.show_progress(progress)
 				hud.show_message("%s gefressen!" % FishSpecies.data(f.species_id)["name"])
+
+
+## Raubfische beißen, wenn ihr Maul den Spielerfisch berührt; Stacheln wehren ab und verletzen sie.
+func predators_bite() -> void:
+	for f in fishes.duplicate():
+		if not FishSpecies.is_predator(f.species_id):
+			continue
+		if FishCombat.bite_hits(f.mouth_point(), player.motion.position, 0.5 * player.size):
+			var raw := float(FishSpecies.data(f.species_id)["bite"])
+			if player_health.damage(FishCombat.damage_to_player(raw, player.build)):
+				f.health.damage(FishCombat.spike_reflect(player.build))
+				if f.health.is_dead():
+					remove_fish(f)
+
+## Nach dem Tod taucht der Fisch an der Startstelle wieder auf: DNA, Größe und Ausbau bleiben.
+func check_death() -> void:
+	if not player_health.is_dead():
+		return
+	deaths += 1
+	player.motion.position = FishWorld.START
+	player.motion.velocity = Vector3.ZERO
+	player.sync()
+	for f in fishes.duplicate():
+		if FishSpecies.is_predator(f.species_id) and f.motion.position.distance_to(FishWorld.START) < SAFE_RADIUS:
+			remove_fish(f)
+	player_health.reset(2.0)
+	hud.show_health(player_health.ratio())
+	hud.show_message("Dein Fisch wurde gefressen und schwimmt neu los.")
