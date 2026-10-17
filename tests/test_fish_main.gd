@@ -138,3 +138,20 @@ func test_kein_schwimmen_im_menue() -> void:
 	fish.player.motion.velocity = Vector3(0, 0, -5)
 	fish._physics_process(0.5)
 	check_eq(fish.player.motion.position, vorher, "position bleibt unverändert während Menü offen")
+
+
+func test_nebel_formel() -> void:
+	check_eq(FishMain.fog_density_for(25.0), 0.025, "fog_density_for(25.0) ist 0.025")
+	check_eq(FishMain.fog_density_for(50.0), 0.0125, "fog_density_for(50.0) ist 0.0125")
+	check_eq(FishMain.fog_density_for(0.0), 0.625, "fog_density_for(0.0) ist 0.625")
+
+
+func test_nebel_anfang() -> void:
+	check_eq(fish.water.environment.fog_density, 0.025, "fog_density am Anfang ist 0.025")
+
+
+func test_augen_lichten_nebel() -> void:
+	fish.progress.dna = 50
+	fish.toggle_evolve()
+	fish.evolve.try_upgrade("augen")
+	check(fish.water.environment.fog_density < 0.025, "Nebel dünner nach Augen-Upgrade")
