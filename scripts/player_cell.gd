@@ -176,6 +176,8 @@ func pulse() -> void:
 ## Größenfaktor der Darstellung: steigt während des Pulses bis 1,25 und fällt zurück auf 1.
 func pulse_scale() -> float:
 	return 1.0 + 0.25 * sin(PI * pulse_left / PULSE_TIME)
+
+
 ## Deckkraft des Scheins um das Elektroorgan; flackert leicht.
 func glow_alpha() -> float:
 	return 0.3 + 0.15 * sin(time * 9.0)
