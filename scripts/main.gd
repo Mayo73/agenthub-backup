@@ -355,6 +355,15 @@ func resolve_ai_weapons(delta: float) -> void:
 			if cell.motion.speed() > 20.0:
 				cell.poison.emit(PartGeometry.world_point(cell.motion.position, cell.motion.heading, cell.radius, Vector2(-1.2, 0)))
 			player_health.drain(cell.poison.damage_at(player.motion.position, player.radius, delta) * factor)
+		if cell.organ != null:
+			cell.organ.tick(delta)
+			if cell.organ.is_ready() and ElectricOrgan.in_range(cell.motion.position, cell.radius, player.motion.position, player.radius):
+				if player_health.damage(ElectricOrgan.DAMAGE * factor):
+					player.flash.trigger()
+					audio.play("treffer")
+				cell.organ.fire()
+				var target: Array[Vector2] = [player.motion.position]
+				zap_view.show_zaps(cell.motion.position, target)
 	poison_view.sources = sources
 
 
