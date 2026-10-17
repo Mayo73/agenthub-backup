@@ -10,6 +10,7 @@ var music_slider: HSlider
 var sfx_slider: HSlider
 var fullscreen_check: CheckBox
 var resolution_option: OptionButton
+var difficulty_option: OptionButton
 var back_button: Button
 
 
@@ -38,6 +39,11 @@ func _init() -> void:
 	for r in UserSettings.RESOLUTIONS:
 		resolution_option.add_item("%d × %d" % [r.x, r.y])
 	box.add_child(resolution_option)
+	_label("Schwierigkeit")
+	difficulty_option = OptionButton.new()
+	for n: String in Difficulty.NAMES:
+		difficulty_option.add_item(n)
+	box.add_child(difficulty_option)
 	back_button = Button.new()
 	back_button.text = "Zurück"
 	back_button.custom_minimum_size = Vector2(400, 56)
@@ -46,6 +52,7 @@ func _init() -> void:
 	sfx_slider.value_changed.connect(_on_sfx)
 	fullscreen_check.toggled.connect(_on_fullscreen)
 	resolution_option.item_selected.connect(_on_resolution)
+	difficulty_option.item_selected.connect(_on_difficulty)
 	back_button.pressed.connect(close)
 	visible = false
 
@@ -68,6 +75,11 @@ func _on_fullscreen(on: bool) -> void:
 func _on_resolution(i: int) -> void:
 	if settings != null:
 		settings.set_resolution_index(i)
+
+
+func _on_difficulty(i: int) -> void:
+	if settings != null:
+		settings.set_difficulty(i)
 
 
 func _label(text: String) -> void:
@@ -94,6 +106,7 @@ func show_settings(s: UserSettings) -> void:
 	sfx_slider.value = s.sfx_volume
 	fullscreen_check.button_pressed = s.fullscreen
 	resolution_option.select(s.resolution_index)
+	difficulty_option.select(s.difficulty)
 	visible = true
 
 
