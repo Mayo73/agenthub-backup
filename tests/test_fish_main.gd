@@ -256,3 +256,30 @@ func test_anzeige() -> void:
 	fish.player_health.hp = 50.0
 	fish._physics_process(0.016)
 	check_eq(fish.hud.health_label.text, "Gesundheit: 50 %", "health_label.text nach update")
+
+
+## Test: check_death() wird aufgerufen und deaths bleibt 0, wenn Fisch lebt.
+func test_lebt() -> void:
+	_clear_ai_fishes()
+	fish.check_death()
+	check_eq(fish.deaths, 0, "deaths ist 0 nach check_death() bei lebendem Fisch")
+
+
+## Test: Nach Tod taucht Fisch neu auf; nahe Raubfische verschwinden, Beute bleibt.
+func test_tod() -> void:
+	_clear_ai_fishes()
+	fish.progress.dna = 30
+	fish.player.motion.position = FishWorld.START + Vector3(40, 0, 0)
+	var nah: AiFish = fish.add_fish("zackenbarsch", FishWorld.START + Vector3(5, 0, 0))
+	var fern: AiFish = fish.add_fish("zackenbarsch", FishWorld.START + Vector3(60, 0, 0))
+	var beute: AiFish = fish.add_fish("silberling", FishWorld.START + Vector3(3, 0, 0))
+	fish.player_health.hp = 0.0
+	fish.check_death()
+	check_eq(fish.deaths, 1, "deaths ist 1 nach Tod")
+	check(fish.player.motion.position == FishWorld.START, "position ist START nach Tod")
+	check(not fish.fishes.has(nah), "nahe Raubfische verschwunden")
+	check(fish.fishes.has(fern), "ferne Raubfische bleiben")
+	check(fish.fishes.has(beute), "Beute bleibt")
+	check_eq(fish.progress.dna, 30, "dna bleibt 30")
+	check_eq(fish.player_health.hp, 100.0, "player_health.hp ist 100.0 nach reset")
+	check(fish.player_health.invulnerable > 0.0, "invulnerable > 0.0")
