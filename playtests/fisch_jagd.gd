@@ -33,5 +33,5 @@ func run() -> void:
 	var s = scene.add_fish("silberling", scene.player.mouth_point())
 	s.health.hp = 5.0
 	await wait(0.3)
-	check(not scene.fishes.has(s), "Der Silberling vor dem Maul wird gefressen")
+	check(not is_instance_valid(s) or not scene.fishes.has(s), "Der Silberling vor dem Maul wird gefressen")
 	check(scene.progress.dna > dna, "Fressen bringt DNA")

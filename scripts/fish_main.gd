@@ -6,7 +6,8 @@ extends Node3D
 const MAIN_SCENE := "res://scenes/main.tscn"
 ## Reichweite des Mauls beim Fressen in Metern (wächst mit der Größe des Fischs).
 const MOUTH_REACH := 0.5
-const SAFE_RADIUS := 25.0 ## Raubfische in diesem Umkreis (Meter) verschwinden beim Wiedereinstieg.
+## Raubfische in diesem Umkreis (Meter) verschwinden beim Wiedereinstieg.
+const SAFE_RADIUS := 25.0
 
 ## Spielwelt: Boden, Oberfläche, Pflanzen, Fische und Nahrung kommen hier hinein.
 var world: Node3D
