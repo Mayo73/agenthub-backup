@@ -3,7 +3,7 @@ extends RefCounted
 ## Tastatur- und Mausbelegung. Wird beim Start einmal angelegt (statt in project.godot),
 ## damit sie im Code lesbar bleibt. Tasten zählen nach ihrer Lage, passen also auch auf QWERTZ.
 
-const ACTIONS := ["hoch", "runter", "links", "rechts", "schwimmen", "pause", "rufen", "auftauchen", "abtauchen"]
+const ACTIONS := ["hoch", "runter", "links", "rechts", "schwimmen", "pause", "rufen", "auftauchen", "abtauchen", "entwickeln"]
 
 
 static func setup() -> void:
@@ -16,6 +16,7 @@ static func setup() -> void:
 	_add("rufen", [KEY_C], [MOUSE_BUTTON_RIGHT])
 	_add("auftauchen", [KEY_SPACE], [])
 	_add("abtauchen", [KEY_SHIFT, KEY_CTRL], [])
+	_add("entwickeln", [KEY_E], [])
 
 
 ## Hängt für eine Taste zwei Ereignisse an: nach Lage (physical_keycode, passt auf QWERTZ)

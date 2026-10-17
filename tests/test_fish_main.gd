@@ -107,3 +107,34 @@ func test_nachstreuen() -> void:
 	fish.food.items.clear()
 	fish.refill_food()
 	check_eq(fish.food.items.size(), 20, "fish.food.items.size() ist 20")
+
+
+func test_entwicklung_knoten() -> void:
+	check(fish.get_node("Evolve") is EvolveMenu, "fish.get_node('Evolve') is EvolveMenu")
+	check(not fish.evolve.visible, "fish.evolve.visible ist falsch")
+	check(InputMap.has_action("entwickeln"), "InputMap hat Aktion 'entwickeln'")
+
+
+func test_umschalten() -> void:
+	fish.toggle_evolve()
+	check(fish.evolve.visible, "fish.evolve.visible ist wahr nach erstem Aufruf")
+	fish.toggle_evolve()
+	check(not fish.evolve.visible, "fish.evolve.visible ist falsch nach zweitem Aufruf")
+
+
+func test_verbessern_wirkt() -> void:
+	fish.progress.dna = 20
+	fish.toggle_evolve()
+	fish.evolve.try_upgrade("schwanz")
+	check_eq(fish.player.build.level("schwanz"), 1, "build level('schwanz') ist 1")
+	check_eq(fish.player.motion.max_speed, 10.0, "player.motion.max_speed ist 10.0")
+	check_eq(fish.progress.dna, 10, "progress.dna ist 10 nach Upgrade")
+	check_eq(fish.hud.dna_label.text, "DNA: 10", "hud.dna_label.text ist 'DNA: 10'")
+
+
+func test_kein_schwimmen_im_menue() -> void:
+	fish.toggle_evolve()
+	var vorher: Vector3 = fish.player.motion.position
+	fish.player.motion.velocity = Vector3(0, 0, -5)
+	fish._physics_process(0.5)
+	check_eq(fish.player.motion.position, vorher, "position bleibt unverändert während Menü offen")
