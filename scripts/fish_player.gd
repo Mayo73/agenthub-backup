@@ -14,6 +14,7 @@ func _init() -> void:
 	model.name = "Model"
 	add_child(model)
 	model.rebuild(build)
+	FishAbilities.apply(build, motion)
 	sync()
 
 
@@ -21,6 +22,7 @@ func _init() -> void:
 func set_build(b: FishBuild) -> void:
 	build = b
 	model.rebuild(b)
+	FishAbilities.apply(b, motion)
 
 
 func set_size(s: float) -> void:
