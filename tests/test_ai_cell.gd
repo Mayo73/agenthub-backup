@@ -110,3 +110,30 @@ func test_giftling_teile() -> void:
 func test_kein_maulkreis() -> void:
 	var content := FileAccess.get_file_as_string("res://scripts/ai_cell.gd")
 	check(!content.contains("radius * 0.22"), "keine zeile mit radius * 0.22 mehr")
+
+
+func test_farbe_bei_null() -> void:
+	var c := AiCell.new()
+	c.setup("schnapper", Vector2.ZERO)
+	check(c.look.color.is_equal_approx(SpeciesCatalog.look_of("schnapper").color), "farbe bei null")
+	c.free()
+
+
+func test_farbvariante() -> void:
+	var c := AiCell.new()
+	c.setup("schnapper", Vector2(100, 0))
+	var art := SpeciesCatalog.look_of("schnapper").color
+	check(c.look.color.is_equal_approx(ColorVariants.vary(art, ColorVariants.seed_for(Vector2(100, 0)))), "farbvariante")
+	check(!c.look.color.is_equal_approx(art), "farbe unterscheidet sich von art")
+	check(c.color.is_equal_approx(SpeciesCatalog.data("schnapper")["color"]), "zelle color bleibt art farbe")
+	c.free()
+
+
+func test_gleiche_lage_gleiche_farbe() -> void:
+	var a := AiCell.new()
+	a.setup("blasenling", Vector2(250, 40))
+	var b := AiCell.new()
+	b.setup("blasenling", Vector2(250, 40))
+	check(a.look.color.is_equal_approx(b.look.color), "gleiche lage gleiche farbe")
+	a.free()
+	b.free()
