@@ -39,8 +39,8 @@ func test_taste_aendern() -> void:
 	for event in events:
 		if event is InputEventKey:
 			key_count += 1
-	check_eq(key_count, 1, "es gibt genau einen InputEventKey bei 'gas'")
-	check(events.size() == 2, "es gibt zwei Ereignisse insgesamt bei 'gas'")
+	check_eq(key_count, 2, "zwei InputEventKey bei 'gas' (Lage und logisch)")
+	check(events.size() == 3, "drei Ereignisse insgesamt bei 'gas'")
 	var non_key_events := 0
 	for event in events:
 		if not (event is InputEventKey):
@@ -66,3 +66,47 @@ func test_namen() -> void:
 	check_eq(Controls.LABELS.size(), Controls.ACTIONS.size(), "LABELS sollte genauso viele Einträge wie ACTIONS haben")
 	check_eq(Controls.key_name(KEY_W), "W", "key_name(KEY_W) sollte 'W' sein")
 	check_eq(Controls.key_name(0), "–", "key_name(0) sollte '–' sein")
+
+
+func test_logischer_tastencode() -> void:
+	Controls.setup()
+	var events := InputMap.action_get_events("pause")
+	var logical_esc := 0
+	var physical_esc := 0
+	for event in events:
+		if event is InputEventKey:
+			if event.keycode == KEY_ESCAPE and event.physical_keycode == 0:
+				logical_esc += 1
+			if event.physical_keycode == KEY_ESCAPE:
+				physical_esc += 1
+	check_eq(logical_esc, 1, "ein logischer ESC mit keycode == KEY_ESCAPE und physical_keycode == 0")
+	check_eq(physical_esc, 1, "ein physischer ESC mit physical_keycode == KEY_ESCAPE")
+
+
+func test_logisch_nach_aendern() -> void:
+	Controls.setup()
+	Controls.rebind_key("gas", KEY_I)
+	var events := InputMap.action_get_events("gas")
+	var has_i := false
+	var has_w_logical := false
+	var has_w_physical := false
+	for event in events:
+		if event is InputEventKey:
+			if event.keycode == KEY_I:
+				has_i = true
+			if event.keycode == KEY_W:
+				has_w_logical = true
+			if event.physical_keycode == KEY_W:
+				has_w_physical = true
+	check(has_i, "es gibt ein InputEventKey mit keycode == KEY_I")
+	check(not has_w_logical, "kein InputEventKey mit keycode == KEY_W")
+	check(not has_w_physical, "kein InputEventKey mit physical_keycode == KEY_W")
+	check_eq(Controls.key_for("gas"), KEY_I, "key_for('gas') ist KEY_I")
+
+
+func test_logische_taste_loest_aus() -> void:
+	Controls.setup()
+	var e := InputEventKey.new()
+	e.keycode = KEY_ESCAPE
+	e.pressed = true
+	check(e.is_action("pause"), "tastenschlag mit keycode == KEY_ESCAPE löst 'pause' aus")

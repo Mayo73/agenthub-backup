@@ -22,14 +22,23 @@ static func setup() -> void:
 	_add("pause", [KEY_ESCAPE], [JOY_BUTTON_BACK], [])
 
 
+## Hängt für eine Taste zwei Ereignisse an: nach Lage (physical_keycode, passt auf QWERTZ)
+## und nach logischem Tastencode (keycode), wie ihn Fernsteuerungen schicken.
+static func _add_key(action: String, key: int) -> void:
+	var physical := InputEventKey.new()
+	physical.physical_keycode = key
+	InputMap.action_add_event(action, physical)
+	var logical := InputEventKey.new()
+	logical.keycode = key
+	InputMap.action_add_event(action, logical)
+
+
 static func _add(action: String, keys: Array, buttons: Array, axes: Array) -> void:
 	if InputMap.has_action(action):
 		return
 	InputMap.add_action(action, 0.2)
 	for key in keys:
-		var key_event := InputEventKey.new()
-		key_event.physical_keycode = key
-		InputMap.action_add_event(action, key_event)
+		_add_key(action, key)
 	for button in buttons:
 		var button_event := InputEventJoypadButton.new()
 		button_event.button_index = button
@@ -46,7 +55,7 @@ static func key_for(action: String) -> int:
 	if not InputMap.has_action(action):
 		return 0
 	for event in InputMap.action_get_events(action):
-		if event is InputEventKey:
+		if event is InputEventKey and event.physical_keycode != 0:
 			return event.physical_keycode
 	return 0
 
@@ -58,9 +67,7 @@ static func rebind_key(action: String, keycode: int) -> void:
 	for event in InputMap.action_get_events(action):
 		if event is InputEventKey:
 			InputMap.action_erase_event(action, event)
-	var key_event := InputEventKey.new()
-	key_event.physical_keycode = keycode
-	InputMap.action_add_event(action, key_event)
+	_add_key(action, keycode)
 
 
 ## Übernimmt geänderte Tasten (Aktion → Tastencode). Unbekannte Aktionen und Codes <= 0 werden ignoriert.
