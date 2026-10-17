@@ -33,6 +33,7 @@ func setup(id: String, pos: Vector2) -> void:
 	look = SpeciesCatalog.look_of(id)
 	look.color = ColorVariants.vary(look.color, ColorVariants.seed_for(pos))
 	behavior = d["behavior"]
+	brain.sight = AiBrain.sight_for(behavior)
 	motion.max_speed = d["speed"]
 	motion.acceleration = d["speed"] * 2.5
 	motion.position = pos
