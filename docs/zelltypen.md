@@ -1,43 +1,47 @@
 # Zelltypen der Zellenphase
 
+Alle acht Arten nutzen dieselbe KI (`scripts/ai_brain.gd`): Sie fliehen vor Fleisch- und Allesfressern, die mehr als 1,2-mal so groß sind, jagen als Fleisch- oder Allesfresser Zellen, die kleiner als das 0,8-Fache sind, suchen sonst passende Nahrung und treiben, wenn nichts in Sicht ist (Sichtweite 350 Pixel). Das gilt auch gegenüber der Spielerzelle. Ihre Teile (`scripts/species_parts.gd`) sind sichtbar, wirken im Kampf aber nicht; beißen können nur Fleisch- und Allesfresser.
+
+Größen der Abschnitte (Radius): 0 = 12, 1 = 18, 2 = 27, 3 = 40, 4 = 60 Pixel.
+
 | Art | Abschnitt | Ernährung | Verhalten | Aussehen | Gefahr für den Spieler |
 |-----|-----------|-----------|-----------|----------|------------------------|
-| Blasenling | 0 (sehr klein) | Pflanzenfresser | scheu | hellgrün, kein Muster | 0 (harmlos) |
-| Schnapper | 1 (klein) | Fleischfresser | jaeger | orange mit Streifen | 15 |
-| Stachelkugel | 1 (klein) | Pflanzenfresser | stachel | gelblich mit Punkten, hat Stacheln | 10 |
-| Giftling | 2 (mittel) | Allesfresser | gift | lila mit Flecken, hinterlässt Giftwolken | 8 |
-| Zitterzelle | 2 (mittel) | Fleischfresser | elektro | gelb mit Streifen, entlädt sich bei Gefahr | 12 |
-| Weidezelle | 3 (groß) | Pflanzenfresser | herde | türkis mit Flecken, bildet Gruppen | 0 (harmlos) |
-| Hornjäger | 3 (groß) | Fleischfresser | jaeger | rotbraun mit Punkten, sehr schnell | 25 |
-| Riesenschlund | 4 (riesig) | Fleischfresser | laurer | dunkellila mit Flecken, träge aber kräftig | 40 |
+| Blasenling | 0 | Pflanzenfresser | flieht, sucht Pflanzen | hellgrün, ohne Muster, Filtermaul, Wimpern | 0 (harmlos) |
+| Schnapper | 1 | Fleischfresser | jagt, flieht vor Größeren | orange, Streifen, gestreckt, Kiefer, Geißel | 15 |
+| Stachelkugel | 1 | Pflanzenfresser | flieht, sucht Pflanzen, langsam | gelblich, Punkte, rundlich, acht Stacheln, Filtermaul | 0 (beißt nicht) |
+| Giftling | 2 | Allesfresser | jagt Kleinere, frisst Pflanzen und Fleisch | lila, Flecken, Rüssel, zwei Giftdrüsen | 8 |
+| Zitterzelle | 2 | Fleischfresser | jagt, flieht vor Größeren | gelb, Streifen, stark gestreckt, Kiefer, leuchtendes Elektroorgan, Geißel | 12 |
+| Weidezelle | 3 | Pflanzenfresser | flieht, sucht Pflanzen | türkis, Flecken, Filtermaul, Wimpern an beiden Seiten | 0 (harmlos) |
+| Hornjäger | 3 | Fleischfresser | jagt, sehr schnell (170 Pixel/s) | rotbraun, Punkte, gestreckt, Kiefer, zwei Hornstacheln, Düse | 25 |
+| Riesenschlund | 4 | Fleischfresser | jagt, langsam (80 Pixel/s), 300 Gesundheit | dunkellila, Flecken, gedrungen, Kiefer, zwei Geißeln | 40 |
 
 ## Blasenling
-Der Blasenling ist eine kleine hellgrüne Zelle ohne Muster und gehört zum Größenabschnitt 0. Sie verhält sich scheu und flieht vor größeren Fleischfressern. Blasenlinge sind Pflanzenfresser und ernähren sich von Pflanzennahrung. Ab Abschnitt 1 kann der Spieler sie fressen.
+Kleine hellgrüne Zelle ohne Muster mit Filtermaul und schlagenden Wimpern. Sie frisst Pflanzen und flieht vor jedem Fleisch- oder Allesfresser, der deutlich größer ist. Schon ab Abschnitt 1 ist die Spielerzelle groß genug, dass der Blasenling vor ihr flieht und leichte Beute wird.
 
 ## Schnapper
-Der Schnapper ist eine kleine orange Zelle mit Streifenmuster aus Abschnitt 1. Sie ist ein aggressiver Jäger, der nach Beute Ausschau hält und kleinere Zellen angreift. Schnapper fliehen vor größeren Fleischfressern. Ab Abschnitt 2 kann der Spieler sie fressen.
+Gestreckte orange Zelle mit Streifen, Kiefer und Geißel. Als Fleischfresser jagt er kleinere Zellen, auch die Spielerzelle im Abschnitt 0, und flieht vor größeren Fleischfressern. Ab Abschnitt 2 dreht sich das Verhältnis um: Er flieht vor der Spielerzelle und wird zur Beute.
 
 ## Stachelkugel
-Die Stachelkugel ist eine kleine gelbliche Zelle mit Punkte-Muster aus Abschnitt 1, gekennzeichnet durch acht Stacheln um den Körper. Sie verhält sich defensiv und rollt bei Gefahr zu einer Kugel zusammen, wobei die Stacheln Angreifer verletzen. Als Pflanzenfresser sucht sie nach Pflanzennahrung. Ab Abschnitt 2 kann der Spieler sie fressen.
+Rundliche gelbliche Zelle mit Punkten und acht Stacheln um den Körper. Sie ist ein langsamer Pflanzenfresser, beißt nicht und flieht vor größeren Fleischfressern; die Stacheln sind nur Aussehen. Ab Abschnitt 2 flieht sie vor der Spielerzelle.
 
 ## Giftling
-Der Giftling ist eine mittelgroße lila Zelle mit Flecken-Muster aus Abschnitt 2, die bei Bewegung Giftwolken hinterlässt. Sie ist ein Allesfresser und folgt einem gemischten Verhalten. Giftlinge sind relativ scheu und fliehen vor größeren Tieren. Ab Abschnitt 3 kann der Spieler sie fressen.
+Lila Zelle mit Flecken, Rüssel und zwei Giftdrüsen. Als Allesfresser frisst er Pflanzen und Fleisch und jagt kleinere Zellen; er hinterlässt keine Giftwolken (das kann nur die Spielerzelle mit dem Giftteil). Ab Abschnitt 3 flieht er vor der Spielerzelle.
 
 ## Zitterzelle
-Die Zitterzelle ist eine mittelgroße gelbe Zelle mit Streifen aus Abschnitt 2, die ein Elektroorgan besitzt. Sie verhält sich als Fleischfresser aggressiv, entlädt sich jedoch bei nahen Gegnern elektrisch zur Verteidigung. Zitterzellen fliehen vor noch größeren Fleischfressern. Ab Abschnitt 4 kann der Spieler sie fressen.
+Stark gestreckte gelbe Zelle mit Streifen, Kiefer, Geißel und einem leuchtenden Elektroorgan. Sie jagt als Fleischfresser kleinere Zellen und flieht vor größeren; das Elektroorgan ist sichtbar, entlädt sich aber nicht. Ab Abschnitt 3 flieht sie vor der Spielerzelle.
 
 ## Weidezelle
-Die Weidezelle ist eine große türkisfarbene Zelle mit Flecken-Muster aus Abschnitt 3, die Herdenbildung zeigt. Als Pflanzenfresser schwimmt sie gerne in Gruppen und sucht nach Pflanzennahrung. Sie flieht vor großen Fleischfressern, kann aber durch ihre Größe und Häufigkeit überleben. Riesenschlünde können sie fressen.
+Große türkise Zelle mit Flecken, Filtermaul und Wimpern an beiden Seiten. Sie frisst Pflanzen und flieht vor größeren Fleischfressern, vor allem vor dem Riesenschlund. Erst im Abschnitt 4 ist die Spielerzelle groß genug, dass die Weidezelle vor ihr flieht.
 
 ## Hornjäger
-Der Hornjäger ist eine große rotbraune Zelle mit Punkte-Muster aus Abschnitt 3, die extrem schnell schwimmt (170 Pixel/Sekunde). Als Fleischfresser ist er ein aggressiver Jäger, der seine Beute verfolgt. Er flieht nur vor noch größeren Gegnern wie dem Riesenschlund. Riesenschlünde können ihn fressen.
+Gestreckte rotbraune Zelle mit Punkten, Kiefer, zwei Hornstacheln und einer Düse; mit 170 Pixeln pro Sekunde die schnellste Art. Er jagt alle deutlich kleineren Zellen und flieht nur vor dem Riesenschlund. Ab Abschnitt 4 flieht er vor der Spielerzelle; vorher ist er die gefährlichste Bedrohung.
 
 ## Riesenschlund
-Der Riesenschlund ist eine riesige dunkellila Zelle mit Flecken aus Abschnitt 4, die sich langsam aber träge bewegt und auf Beute lauert. Er ist der oberste Räuber des Ökosystems, ein Fleischfresser ohne natürliche Feinde. Sein Biss verursacht den höchsten Schaden (40). Keine andere Art kann ihn fressen.
+Gedrungene dunkellila Zelle mit Flecken, Kiefer und zwei Geißeln. Er ist langsam, hat 300 Gesundheit und beißt mit 40 am stärksten. Keine Art ist groß genug, um ihn in die Flucht zu schlagen, auch die Spielerzelle im Abschnitt 4 nicht (gleiche Größe); besiegen lässt er sich nur im Kampf.
 
 ## Vorführung
 Die Vorführszenen lassen sich mit folgenden Startbefehlen starten:
 
-- `-- --szene=jagd`: Ein Schnapper jagt die kleine Spielerzelle. Zeigt Jagdverhalten von Fleischfressern.
-- `-- --szene=flucht`: Ein Blasenling flieht vor der großen Spielerzelle. Zeigt Fluchtverhalten von Pflanzenfressern.
-- `-- --szene=nahrung`: Ein Blasenling schwimmt zur Pflanzennahrung. Zeigt Nahrungssuche bei Pflanzenfressern.
+- `-- --szene=jagd`: Ein Schnapper jagt die kleine Spielerzelle. Zeigt das Jagdverhalten von Fleischfressern.
+- `-- --szene=flucht`: Ein Blasenling flieht vor der großen Spielerzelle. Zeigt das Fluchtverhalten.
+- `-- --szene=nahrung`: Ein Blasenling schwimmt zur Pflanzennahrung. Zeigt die Nahrungssuche.

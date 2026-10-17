@@ -7,7 +7,7 @@ EXE starten. Pflanzen- oder Fleischfresser wählen. Einen der drei Spielstandpl�
 Linke Maustaste gedrückt halten (schwimmt zum Zeiger), alternativ WASD oder Pfeiltasten. Taste C oder rechte Maustaste für den Partnerruf. Esc für die Pause.
 
 ## Ziel
-Nahrung fressen, DNA sammeln, in fünf Größenabschnitten wachsen. Teile finden, zum Schluss „An Land gehen".
+Nahrung fressen, DNA sammeln, in fünf Größenabschnitten wachsen. Teile finden, zum Schluss „An Land gehen“.
 
 ## Nahrung und Mundwerkzeuge
 Filtermaul frisst Pflanzen. Kiefer frisst Fleisch. Rüssel frisst beides.
