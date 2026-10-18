@@ -28,3 +28,28 @@ func test_reiter_wechselt_bildschirm() -> void:
 	check_eq(main.current_screen, "profil", "nach Klick auf Profil")
 	check_eq(main.content.get_child_count(), 1, "genau ein Bildschirm im Inhaltsbereich")
 	check(not main.tab_buttons["entdecken"].disabled, "Entdecken wieder klickbar")
+
+
+const TEST_PATH := "user://test_main.json"
+
+
+func test_entdecken_ist_echt() -> void:
+	main.use_store(TEST_PATH)
+	check(main.screen is DiscoverScreen, "Entdecken zeigt den echten Bildschirm")
+	DirAccess.remove_absolute(TEST_PATH)
+
+
+func test_wechsel_speichert() -> void:
+	main.use_store(TEST_PATH)
+	main._on_switched("p02")
+	check_eq(main.state.active_id, "p02", "aktive Person")
+	check_eq(StateStore.load_state(TEST_PATH).active_id, "p02", "gespeicherte aktive Person")
+	check(main.screen is DiscoverScreen, "Entdecken nach dem Wechsel")
+	DirAccess.remove_absolute(TEST_PATH)
+
+
+func test_interesse_wird_gespeichert() -> void:
+	main.use_store(TEST_PATH)
+	(main.screen as DiscoverScreen).like_button.pressed.emit()
+	check(StateStore.load_state(TEST_PATH).book.likes.has("p01>p02"), "Interesse gespeichert")
+	DirAccess.remove_absolute(TEST_PATH)

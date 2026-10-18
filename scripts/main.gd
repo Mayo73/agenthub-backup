@@ -15,9 +15,15 @@ var tab_buttons: Dictionary = {}
 var current_screen := ""
 ## Der aktuell angezeigte Bildschirm (Kind von content).
 var screen: Control = null
+## Gesamter Zustand der App, beim Start aus store_path geladen.
+var state: AppState
+var store_path := StateStore.DEFAULT_PATH
+## Demo-Leiste zum Wechseln der Testperson.
+var perspective: PerspectiveBar
 
 
 func _ready() -> void:
+	state = StateStore.load_state(store_path)
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	var bg := ColorRect.new()
 	bg.color = UiStyle.BG
@@ -34,6 +40,11 @@ func _ready() -> void:
 	banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	banner_box.add_child(banner)
 	layout.add_child(banner_box)
+
+	perspective = PerspectiveBar.new()
+	perspective.set_state(state)
+	perspective.switched.connect(_on_switched)
+	layout.add_child(perspective)
 
 	content = Control.new()
 	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -65,9 +76,32 @@ func show_screen(screen_name: String) -> void:
 		(tab_buttons[n] as Button).disabled = n == screen_name
 
 
-## Baut den Bildschirm zu einem Namen. Bis die echten Bildschirme per Ticket entstehen,
-## zeigt er nur den Titel.
+## Wechselt die Testperson, speichert und baut den aktuellen Bildschirm neu auf.
+func _on_switched(id: String) -> void:
+	state.switch_to(id)
+	save()
+	perspective.set_state(state)
+	show_screen(current_screen)
+
+
+func save() -> void:
+	StateStore.save(state, store_path)
+
+
+## Für Tests und Spieltests: eigene Speicherdatei verwenden und daraus neu laden.
+func use_store(path: String) -> void:
+	store_path = path
+	state = StateStore.load_state(path)
+	perspective.set_state(state)
+	show_screen(current_screen)
+
+
+## Baut den Bildschirm zu einem Namen. Noch nicht umgesetzte Bildschirme zeigen nur den Titel.
 func _make_screen(screen_name: String) -> Control:
+	if screen_name == "entdecken":
+		var discover := DiscoverScreen.new(state)
+		discover.changed.connect(save)
+		return discover
 	var l := UiStyle.label(TAB_TITLES.get(screen_name, screen_name), UiStyle.SIZE_TITLE)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER

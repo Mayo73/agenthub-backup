@@ -130,18 +130,14 @@ func decide_like() -> void:
 
 
 func decide_pass() -> void:
-	print("[DEBUG] decide_pass called")
 	var profile := current()
 	if profile == null:
-		print("[DEBUG] decide_pass: profile is null, returning")
 		return
 
 	state.pass_on(profile.id)
 	_reset_card_position()
 	match_label.visible = false
-	print("[DEBUG] Emitting changed signal in decide_pass")
 	changed.emit()
-	print("[DEBUG] Refreshing...")
 	refresh()
 
 
