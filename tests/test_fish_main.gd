@@ -618,3 +618,21 @@ func test_nachschub_ausser_sicht() -> void:
 	check_eq(gezählt, zielsumme, "Anzahl neuer Fische gleich Summe von target_counts()")
 	for f in fish.fishes:
 		check(f.motion.position.distance_to(fish.player.motion.position) >= FishSchool.MIN_DIST, "jeder Fisch mindestens MIN_DIST vom Spieler entfernt")
+
+
+## Test: Schwierigkeitsgrad Normal - Schaden ist Basis-Schaden.
+func test_schaden_normal() -> void:
+	fish.settings.difficulty = Difficulty.NORMAL
+	check_eq(fish.predator_damage(15.0), FishCombat.damage_to_player(15.0, fish.player.build), "Schaden bei Normal")
+
+
+## Test: Schwierigkeitsgrad Leicht - Schaden ist 60% des Basis-Schadens.
+func test_schaden_leicht() -> void:
+	fish.settings.difficulty = 0
+	check_eq(fish.predator_damage(15.0), FishCombat.damage_to_player(15.0, fish.player.build) * 0.6, "Schaden bei Leicht")
+
+
+## Test: Schwierigkeitsgrad Schwer - Schaden ist größer als Basis-Schaden.
+func test_schaden_schwer() -> void:
+	fish.settings.difficulty = 2
+	check(fish.predator_damage(10.0) > FishCombat.damage_to_player(10.0, fish.player.build), "Schaden bei Schwer größer als Basis")
