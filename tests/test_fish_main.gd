@@ -578,3 +578,9 @@ func test_statistik_in_pause() -> void:
 	check(fish.hud.message_label.visible, "message_label.visible wahr nach toggle_pause")
 	check_eq(fish.hud.message_label.text, fish.stats.summary(), "message_text ist summary()")
 	fish.toggle_pause()
+
+
+## Test: Der Boden hat die Sandtextur, die Oberfläche keine.
+func test_sandboden() -> void:
+	check(((fish.floor_mesh.mesh as PlaneMesh).material as StandardMaterial3D).albedo_texture == FishTextures.SAND, "Boden hat SAND-Textur")
+	check((fish.surface_mesh.mesh as PlaneMesh).material.albedo_texture == null, "Oberfläche hat keine Textur")

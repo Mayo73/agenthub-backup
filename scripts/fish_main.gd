@@ -58,6 +58,7 @@ func _ready() -> void:
 	add_child(sun)
 
 	floor_mesh = make_plane("Floor", -FishWorld.DEPTH, FishWorld.FLOOR_COLOR)
+	(floor_mesh.mesh as PlaneMesh).material = FishTextures.floor_material()
 	world.add_child(floor_mesh)
 	surface_mesh = make_plane("Surface", 0.0, FishWorld.SURFACE_COLOR)
 	world.add_child(surface_mesh)
