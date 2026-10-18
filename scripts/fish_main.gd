@@ -22,6 +22,7 @@ var snow: MarineSnow
 var hud: FishHud
 var intro: FishIntro
 var evolve: EvolveMenu
+var audio: GameAudio
 var fishes: Array[AiFish] = []
 var player_health := CellHealth.new(100.0)
 var deaths := 0
@@ -35,6 +36,10 @@ var save_path := ""
 
 func _ready() -> void:
 	Controls.setup()
+	audio = GameAudio.new()
+	audio.name = "Audio"
+	audio.streams.merge(FishSounds.all())
+	add_child(audio)
 	world = Node3D.new()
 	world.name = "World"
 	add_child(world)
@@ -176,6 +181,7 @@ func _process(delta: float) -> void:
 ## Frisst, was das Maul berührt und zur Ernährung passt. Wächst der Fisch, wird er größer.
 func feed_player() -> void:
 	for item in food.take_at(player.mouth_point(), MOUTH_REACH * player.size, player.build.diet):
+		audio.play("fressen_pflanze")
 		eat_value(item["value"])
 	hud.show_progress(progress)
 
@@ -185,6 +191,7 @@ func eat_value(value: int) -> void:
 	if progress.eat(value):
 		player.set_size(progress.size())
 		hud.show_message("Dein Fisch ist gewachsen!")
+		audio.play("wachsen")
 		save_now()
 
 
@@ -205,6 +212,7 @@ func toggle_evolve() -> void:
 
 ## Nach einer Verbesserung: Aussehen und Fähigkeiten neu, Anzeige aktualisieren.
 func _on_upgraded(slot: String) -> void:
+	audio.play("verbessern")
 	player.set_build(player.build)
 	hud.show_progress(progress)
 	hud.show_message("%s verbessert!" % FishBuild.NAMES[slot])
@@ -244,6 +252,7 @@ func player_bites() -> void:
 		return
 	for f in fishes.duplicate():
 		if FishCombat.bite_hits(player.mouth_point(), f.motion.position, f.radius()):
+			audio.play("biss")
 			if f.health.damage(FishAbilities.bite_damage(player.build)) and f.health.is_dead():
 				remove_fish(f)
 				eat_value(int(FishSpecies.data(f.species_id)["food"]))
@@ -259,9 +268,11 @@ func predators_bite() -> void:
 		if FishCombat.bite_hits(f.mouth_point(), player.motion.position, 0.5 * player.size):
 			var raw := float(FishSpecies.data(f.species_id)["bite"])
 			if player_health.damage(FishCombat.damage_to_player(raw, player.build)):
+				audio.play("treffer")
 				f.health.damage(FishCombat.spike_reflect(player.build))
 				if f.health.is_dead():
 					remove_fish(f)
+
 
 ## Esc: Pause an oder aus. Während das Entwicklungsmenü offen ist, wirkungslos.
 func toggle_pause() -> void:
@@ -292,6 +303,7 @@ func check_death() -> void:
 	if not player_health.is_dead():
 		return
 	deaths += 1
+	audio.play("tod")
 	player.motion.position = FishWorld.START
 	player.motion.velocity = Vector3.ZERO
 	player.sync()
