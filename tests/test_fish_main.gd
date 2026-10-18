@@ -448,3 +448,27 @@ func test_lichtstrahlen_folgen() -> void:
 func test_lichtstrahlen_in_process() -> void:
 	fish._process(0.1)
 	check_eq(fish.rays.position.x, fish.camera.position.x, "fish.rays.position.x entspricht fish.camera.position.x")
+
+
+## Test: Der Hinweis ist am Anfang unsichtbar (dna=0).
+func test_hinweis_anfang() -> void:
+	fish.progress.dna = 0
+	fish.update_upgrade_hint()
+	check(not fish.hud.upgrade_label.visible, "upgrade_label.visible ist falsch bei dna=0")
+
+
+## Test: Der Hinweis wird angezeigt, wenn DNA für Verbesserung reicht.
+func test_hinweis_genug_dna() -> void:
+	fish.progress.dna = 10
+	fish.feed_player()
+	check(fish.hud.upgrade_label.visible, "upgrade_label.visible ist wahr bei dna=10")
+
+
+## Test: Nach einem Upgrade verschwindet der Hinweis.
+func test_hinweis_nach_kauf() -> void:
+	fish.progress.dna = 10
+	fish.update_upgrade_hint()
+	fish.toggle_evolve()
+	fish.evolve.try_upgrade("augen")
+	check_eq(fish.progress.dna, 0, "progress.dna ist 0 nach Upgrade")
+	check(not fish.hud.upgrade_label.visible, "upgrade_label.visible ist falsch nach Upgrade")
