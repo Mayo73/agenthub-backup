@@ -8,20 +8,23 @@ func setup() -> void:
 
 
 func test_anzahl() -> void:
-	check(plan.size() == 19, "Plan hat 19 Einträge")
+	check(plan.size() == 22, "Plan hat 22 Einträge")
 	var silberling := 0
 	var grasfisch := 0
 	var kugelfisch := 0
+	var laternenfisch := 0
 	var zackenbarsch := 0
 	for entry in plan:
 		match entry["id"]:
 			"silberling": silberling += 1
 			"grasfisch": grasfisch += 1
 			"kugelfisch": kugelfisch += 1
+			"laternenfisch": laternenfisch += 1
 			"zackenbarsch": zackenbarsch += 1
 	check_eq(silberling, 12, "12 silberling")
 	check_eq(grasfisch, 3, "3 grasfisch")
 	check_eq(kugelfisch, 2, "2 kugelfisch")
+	check_eq(laternenfisch, 3, "3 laternenfisch")
 	check_eq(zackenbarsch, 2, "2 zackenbarsch")
 
 
@@ -31,6 +34,22 @@ func test_kugelfische() -> void:
 		if entry["id"] == "kugelfisch":
 			count += 1
 	check(count == 2, "Genau 2 Kugelfische im Spawn-Plan")
+
+
+func test_laternenfische_tief() -> void:
+	var count := 0
+	for entry in plan:
+		if entry["id"] == "laternenfisch":
+			count += 1
+	check(count == 3, "Genau 3 Laternenfische im Spawn-Plan")
+	for entry in plan:
+		if entry["id"] == "laternenfisch":
+			var depth := FishWorld.depth_of(entry["position"])
+			check(depth >= 45.0, "Laternenfisch liegt mindestens 45m tief")
+
+
+func test_laternenfische_im_soll() -> void:
+	check_eq(FishSchool.target_counts()["laternenfisch"], 3, "Ziel-Laternenfisch ist 3")
 
 
 func test_abstand() -> void:
@@ -102,13 +121,16 @@ func test_fehlende() -> void:
 		stubs.append(stub("grasfisch"))
 	for i in 2:
 		stubs.append(stub("kugelfisch"))
+	for i in 0:
+		stubs.append(stub("laternenfisch"))
 	stubs.append(stub("zackenbarsch"))
 	var miss := FishSchool.missing(stubs)
-	check_eq(miss.size(), 3, "drei Fische fehlen")
+	check_eq(miss.size(), 6, "sechs Fische fehlen")
 	check("silberling" in miss, "silberling fehlt")
+	check("laternenfisch" in miss, "laternenfisch fehlt")
 	check("zackenbarsch" in miss, "zackenbarsch fehlt")
 	miss.sort()
-	check_eq(miss, ["silberling", "silberling", "zackenbarsch"], "Fehlende Fische korrekt ermittelt")
+	check_eq(miss, ["laternenfisch", "laternenfisch", "laternenfisch", "silberling", "silberling", "zackenbarsch"], "Fehlende Fische korrekt ermittelt")
 
 
 func test_zu_viele() -> void:

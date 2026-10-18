@@ -11,6 +11,9 @@ Der Grasfisch erreicht eine Größe von 1,0, also die gleiche Größe wie der Sp
 ## Kugelfisch
 Der Kugelfisch hat eine Größe von 0,8 und liegt damit zwischen Silberling und Grasfisch. Er verhält sich scheu und flieht einzeln vor Bedrohungen, beißt nicht und ist somit ungefährlich. Mit einem Nahrungswert von 6 bietet er dem Spielerfisch eine moderate Nahrungsquelle.
 
+## Laternenfisch
+Der Laternenfisch hat eine Größe von 0,7 und lebt ausschließlich in der Tiefe zwischen 45 und 58 Metern. Er verhält sich scheu, beißt nicht und ist somit ungefährlich. Seine besondere Eigenschaft: Laternenfische leuchten und sind ein wertvoller Nahrungsbringer mit einem Nahrungswert von 10.
+
 ## Zackenbarsch
 Der Zackenbarsch ist mit einer Größe von 1,8 deutlich größer als der Spielerfisch am Anfang und gehört zum Verhaltensmuster der Jäger. Er jagt aktiv kleinere Fische wie Silberlinge und Grasfische und verteidigt sich durch Beißen mit 15 Schadenseinheiten. Sein hoher Nahrungswert von 12 macht ihn zu einem lohnenden, aber gefährlichen Beutetier.
 
