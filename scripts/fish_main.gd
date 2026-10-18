@@ -123,6 +123,7 @@ static func make_environment() -> Environment:
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
 	env.background_color = FishWorld.WATER_COLOR
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color(0.45, 0.65, 0.75)
 	env.ambient_light_energy = 0.7
 	env.fog_enabled = true

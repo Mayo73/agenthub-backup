@@ -332,7 +332,7 @@ func test_ohne_pfad() -> void:
 ## Test: save_now() speichert FishSave.KEY und behält dna=12 bei.
 func test_speichern() -> void:
 	var test_path := "user://test_save.godot"
-	SaveGame.write_file(test_path, {})
+	SaveGame.write_file(test_path, {"version": 1, "dna": 5})
 	fish.save_path = test_path
 	fish.progress.dna = 12
 	check(fish.save_now(), "save_now() gibt true bei vorhandenem Pfad")
@@ -340,6 +340,8 @@ func test_speichern() -> void:
 	check(FishSave.KEY in data, "FishSave.KEY ist in der Datei")
 	var fish_data = data[FishSave.KEY]
 	check(fish_data["dna"] == 12, "dna=12 wurde gespeichert")
+	check_eq(data["dna"], 5, "DNA der Zellenphase bleibt erhalten")
+	_remove_save(test_path)
 
 
 ## Test: pending_save_path wird korrekt von main.gd übertragen.
@@ -350,7 +352,9 @@ func test_pfad_uebergabe() -> void:
 	var f2: Node3D = load("res://scenes/fish.tscn").instantiate()
 	(Engine.get_main_loop() as SceneTree).root.add_child(f2)
 	check_eq(f2.save_path, test_path, "save_path wurde übertragen")
+	check_eq(FishStart.pending_save_path, "", "pending_save_path ist nach dem Laden leer")
 	f2.free()
+	_remove_save(test_path)
 
 
 ## Test: save_now() speichert verbesserte Levels korrekt.
@@ -365,6 +369,13 @@ func test_speichern_nach_verbessern() -> void:
 	var data := SaveGame.read_file(test_path)
 	var fish_data = data[FishSave.KEY]
 	check(fish_data["build"]["levels"]["schwanz"] == 1, "Level schwanz=1 gespeichert")
+	_remove_save(test_path)
+
+
+## Löscht eine Test-Spielstanddatei, falls sie existiert.
+func _remove_save(path: String) -> void:
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 
 
 ## Test: Fortsetzen übernimmt gespeicherten Fischstand.

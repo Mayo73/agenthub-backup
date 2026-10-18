@@ -59,3 +59,4 @@ func test_fortsetzen_mit_fischteil() -> void:
 	check(result, "prepare_fish_continue ist wahr mit Fischteil")
 	check_eq(FishStart.pending_fish["dna"], 9, "FishStart.pending_fish.dna ist 9")
 	check_eq(FishStart.pending_save_path, P, "FishStart.pending_save_path ist P")
+	FishStart.clear()
