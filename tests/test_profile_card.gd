@@ -43,3 +43,30 @@ func test_avatar() -> void:
 
 	card.set_profile(sam)
 	check(card.avatar.profile == sam, "avatar.profile ist das gesetzte Profil")
+
+
+func test_merkmale_sam() -> void:
+	var profiles := DemoData.profiles()
+	var sam := profiles[1]  # Sam, 33, MMA, Erfahren, 7 Jahre
+
+	card.set_profile(sam)
+
+	check(card.facts_label.text == "Gewicht: Schwer (über 84 kg)\nVerfügbar: Mo, Mi, Fr\nAusrüstung: Handschuhe, Schienbeinschoner, Mundschutz", "facts_label zeigt Gewicht, Verfügbarkeit und Ausrüstung für Sam")
+
+
+func test_merkmale_jonas() -> void:
+	var profiles := DemoData.profiles()
+	var jonas := profiles[3]  # Jonas, 22, Kickboxen, Einsteiger, 1 Jahr
+
+	card.set_profile(jonas)
+
+	check(card.facts_label.text.ends_with("Ausrüstung: keine eigene"), "facts_label endet mit 'Ausrüstung: keine eigene' für Jonas")
+
+
+func test_merkmale_reihenfolge() -> void:
+	var profiles := DemoData.profiles()
+	var sam := profiles[1]
+
+	card.set_profile(sam)
+
+	check(card.facts_label.get_index() > card.bio_label.get_index(), "facts_label kommt nach bio_label in der VBoxContainer")
