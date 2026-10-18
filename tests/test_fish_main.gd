@@ -645,3 +645,22 @@ func test_fischmusik() -> void:
 	var cell_stream: AudioStreamWAV = CellMusic.theme()
 	check_eq(fish_stream.data.size(), FishMusic.theme().data.size(), "Stream-Größe entspricht FishMusic.theme()")
 	check(fish_stream.data.size() != cell_stream.data.size(), "Stream-Größe ungleich CellMusic.theme()")
+
+
+## Test: Wächst der Fisch, ohne ausgewachsen zu sein, kommt die normale Meldung.
+func test_gewachsen_meldung() -> void:
+	_clear_ai_fishes()
+	fish.progress.stage = 0
+	fish.progress.growth = 0
+	fish.eat_value(FishProgress.GROWTH_NEEDED[0])
+	check_eq(fish.hud.message_label.text, "Dein Fisch ist gewachsen!", "normale Wachstumsmeldung")
+
+
+## Test: Erreicht der Fisch die letzte Größe, kommt GROWN_MESSAGE.
+func test_ausgewachsen_meldung() -> void:
+	_clear_ai_fishes()
+	fish.progress.stage = 2
+	fish.progress.growth = 0
+	fish.eat_value(FishProgress.GROWTH_NEEDED[2])
+	check(fish.progress.is_final_stage(), "Fisch ist ausgewachsen")
+	check_eq(fish.hud.message_label.text, fish.GROWN_MESSAGE, "Meldung ist GROWN_MESSAGE")

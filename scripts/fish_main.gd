@@ -11,6 +11,7 @@ const SAFE_RADIUS := 25.0
 
 ## Alle so vielen Sekunden kommen fehlende Fische nach.
 const RESPAWN_INTERVAL := 10.0
+const GROWN_MESSAGE := "Dein Fisch ist ausgewachsen! Jetzt fliehen sogar die Zackenbarsche vor dir."
 
 ## Spielwelt: Boden, Oberfläche, Pflanzen, Fische und Nahrung kommen hier hinein.
 var world: Node3D
@@ -211,7 +212,10 @@ func feed_player() -> void:
 func eat_value(value: int) -> void:
 	if progress.eat(value):
 		player.set_size(progress.size())
-		hud.show_message("Dein Fisch ist gewachsen!")
+		if progress.is_final_stage():
+			hud.show_message(GROWN_MESSAGE, 6.0)
+		else:
+			hud.show_message("Dein Fisch ist gewachsen!")
 		audio.play("wachsen")
 		save_now()
 
