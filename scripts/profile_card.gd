@@ -7,6 +7,7 @@ var name_label: Label
 var art_label: Label
 var level_label: Label
 var bio_label: Label
+var facts_label: Label
 
 var profile: SparProfile = null
 
@@ -44,6 +45,9 @@ func _init():
 	bio_label = UiStyle.label("", UiStyle.SIZE_NORMAL)
 	vbox.add_child(bio_label)
 
+	facts_label = UiStyle.label("", UiStyle.SIZE_SMALL, UiStyle.MUTED)
+	vbox.add_child(facts_label)
+
 
 func set_profile(p: SparProfile) -> void:
 	profile = p
@@ -60,4 +64,5 @@ func set_profile(p: SparProfile) -> void:
 	level_label.text = "%s · %d %s" % [p.level_name(), p.years, years_text]
 
 	bio_label.text = p.bio
+	facts_label.text = ProfileFacts.all_text(p)
 	avatar.set_profile(p)
