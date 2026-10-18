@@ -59,3 +59,75 @@ func test_fehlende_schluessel() -> void:
 	check_eq(p.age, 18, "age Standardwert 18")
 	check_eq(p.name, "", "name Standardwert leer")
 	check_eq(p.level, 0, "level Standardwert 0")
+
+
+func test_merkmale_standard() -> void:
+	var p: SparProfile = SparProfile.new()
+	check_eq(p.weight_class, -1, "weight_class initial -1")
+	check_eq(p.weight_name(), "keine Angabe", "weight_name bei -1 → 'keine Angabe'")
+	check(p.days.is_empty(), "days initial leer")
+	check(p.equipment.is_empty(), "equipment initial leer")
+
+
+func test_merkmale_speichern_laden() -> void:
+	var p: SparProfile = SparProfile.new()
+	p.weight_class = 2
+	p.days = ["Sa", "Mo"]
+	p.equipment = ["Matte"]
+
+	var saved_dict := p.to_dict()
+	var restored: SparProfile = SparProfile.from_dict(saved_dict)
+
+	check_eq(restored.weight_class, 2, "weight_class 2")
+	check(typeof(restored.weight_class) == TYPE_INT, "weight_class ist INT")
+	# Sortierte Reihenfolge aus DAYS
+	check_eq(restored.days, ["Mo", "Sa"], "days sortiert und ohne Doppelte")
+	check_eq(restored.equipment, ["Matte"], "equipment korrekt übernommen")
+	check_eq(restored.weight_name(), "Schwer (über 84 kg)", "weight_name → 'Schwer (über 84 kg)'")
+
+
+func test_alte_daten() -> void:
+	var d: Dictionary = {
+		"id": "p09",
+		"name": "Test",
+		"art": "Boxen",
+		"level": 0,
+		"years": 1,
+		"age": 20,
+		"bio": ""
+	}
+	var p: SparProfile = SparProfile.from_dict(d)
+
+	check_eq(p.weight_class, -1, "alte Daten: weight_class -1")
+	check(p.days.is_empty(), "alte Daten: days leer")
+	check(p.equipment.is_empty(), "alte Daten: equipment leer")
+
+
+func test_unbekannte_werte() -> void:
+	var d: Dictionary = {
+		"id": "p10",
+		"name": "Test",
+		"art": "Boxen",
+		"level": 0,
+		"years": 1,
+		"age": 20,
+		"bio": "",
+		"weight_class": 7,
+		"days": ["Mo", "Montag", "Mo"],
+		"equipment": ["Helm", "Pratzen"]
+	}
+	var p: SparProfile = SparProfile.from_dict(d)
+
+	check_eq(p.weight_class, -1, "ungültiger weight_class 7 → -1")
+	check_eq(p.days, ["Mo"], "days nur bekannte Werte ohne Doppelte")
+	check_eq(p.equipment, ["Pratzen"], "equipment nur bekannte Werte")
+
+
+func test_kopie_unabhaengig() -> void:
+	var p: SparProfile = SparProfile.new()
+	p.days = ["Mo"]
+
+	var q: SparProfile = p.duplicate_profile()
+	q.days.append("Di")
+
+	check_eq(p.days.size(), 1, "p.days bleibt unverändert (Größe 1)")
