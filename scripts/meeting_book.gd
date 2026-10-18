@@ -39,6 +39,11 @@ static func _matches_pattern(value: String, pattern: String) -> bool:
 	return re.search(value) != null
 
 
+## Prüfen, ob ein Treffvorschlag existiert.
+func has_meeting(match_id: String) -> bool:
+	return meetings.has(match_id)
+
+
 ## Erstellt einen Treffvorschlag für ein Match.
 ## Falls etwas fehlt, passiert nichts und die Fehlerliste wird zurückgegeben.
 ## Andernfalls wird der Vorschlag gespeichert (ersetzt bestehenden), approved = [by_id], cancelled_by = "".
