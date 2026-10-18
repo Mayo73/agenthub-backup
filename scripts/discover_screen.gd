@@ -13,6 +13,10 @@ var match_label: Label
 var pass_button: Button
 var like_button: Button
 
+# Filter-OptionButtons
+var art_filter: OptionButton
+var level_filter: OptionButton
+
 
 func _init(app_state: AppState) -> void:
 	state = app_state
@@ -22,6 +26,24 @@ func _init(app_state: AppState) -> void:
 	var vbox := VBoxContainer.new()
 	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(vbox)
+
+	# Filterleiste als erstes Kind der VBoxContainer
+	var filter_hbox := HBoxContainer.new()
+	filter_hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vbox.add_child(filter_hbox)
+
+	art_filter = OptionButton.new()
+	art_filter.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	art_filter.item_selected.connect(func(index: int) -> void: set_filter(art_filter.get_selected_id(), level_filter.get_selected_id()))
+	filter_hbox.add_child(art_filter)
+
+	level_filter = OptionButton.new()
+	level_filter.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	level_filter.item_selected.connect(func(index: int) -> void: set_filter(art_filter.get_selected_id(), level_filter.get_selected_id()))
+	filter_hbox.add_child(level_filter)
+
+	# Auswahl beim Aufbau aus state.filter übernehmen
+	_initialize_filters()
 
 	# Karte, die vertikal wächst
 	card = ProfileCard.new()
@@ -59,6 +81,74 @@ func _init(app_state: AppState) -> void:
 	refresh()
 
 
+func _initialize_filters() -> void:
+	# Sportarten einfügen
+	art_filter.add_item("Alle Sportarten")
+	for art in DemoData.ARTS:
+		art_filter.add_item(art)
+
+	# Erfahrung einfügen
+	level_filter.add_item("Jede Erfahrung")
+	for level_name in SparProfile.LEVELS:
+		level_filter.add_item(level_name)
+
+	# Auswahl aus state.filter übernehmen
+	var art_index := 0
+	if not state.filter.art.is_empty():
+		art_index = DemoData.ARTS.find(state.filter.art) + 1
+	art_filter.select(art_index)
+
+	var level_index := 0
+	if state.filter.level != -1:
+		level_index = state.filter.level + 1
+	level_filter.select(level_index)
+
+
+func set_filter(art_index: int, level_index: int) -> void:
+	# state.filter.art = "" bei Index 0, sonst DemoData.ARTS[art_index - 1]
+	if art_index == 0:
+		state.filter.art = ""
+	else:
+		state.filter.art = DemoData.ARTS[art_index - 1]
+
+	# state.filter.level = level_index - 1
+	state.filter.level = level_index - 1
+
+	# beide OptionButton entsprechend select(...)
+	art_filter.select(art_index)
+	level_filter.select(level_index)
+
+	# match_label unsichtbar
+	match_label.visible = false
+
+	# changed.emit() und refresh()
+	changed.emit()
+	refresh()
+
+
+func refresh() -> void:
+	var profile := current()
+
+	if profile == null:
+		card.visible = false
+		pass_button.disabled = true
+		like_button.disabled = true
+		match_label.visible = false
+
+		# Leerzustandstext prüfen
+		if state.filter.is_active():
+			empty_label.text = "Keine Testprofile für „%s“. Ändere den Filter." % state.filter.describe()
+		else:
+			empty_label.text = "Keine weiteren Testprofile. Wechsle die Testperson oder setze die Demo im Profil zurück."
+		empty_label.visible = true
+	else:
+		card.visible = true
+		empty_label.visible = false
+		pass_button.disabled = false
+		like_button.disabled = false
+		card.set_profile(profile)
+
+
 func _on_card_gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
 		if event.pressed:
@@ -90,23 +180,6 @@ func current() -> SparProfile:
 	if not candidates.is_empty():
 		return candidates[0]
 	return null
-
-
-func refresh() -> void:
-	var profile := current()
-
-	if profile == null:
-		card.visible = false
-		empty_label.visible = true
-		match_label.visible = false
-		pass_button.disabled = true
-		like_button.disabled = true
-	else:
-		card.visible = true
-		empty_label.visible = false
-		pass_button.disabled = false
-		like_button.disabled = false
-		card.set_profile(profile)
 
 
 func decide_like() -> void:
