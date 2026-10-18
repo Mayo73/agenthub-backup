@@ -695,6 +695,7 @@ func update_bubbles(delta: float) -> void:
 func prepare_fish() -> void:
 	FishStart.pending_build = FishStart.from_cell(player.build, player.look, player.diet)
 	FishStart.pending_dna = progress.dna
+	FishStart.pending_save_path = save_path
 
 
 func go_to_fish() -> void:
