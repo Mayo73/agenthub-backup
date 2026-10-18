@@ -9,6 +9,9 @@ const MOUTH_REACH := 0.5
 ## Raubfische in diesem Umkreis (Meter) verschwinden beim Wiedereinstieg.
 const SAFE_RADIUS := 25.0
 
+## Alle so vielen Sekunden kommen fehlende Fische nach.
+const RESPAWN_INTERVAL := 10.0
+
 ## Spielwelt: Boden, Oberfläche, Pflanzen, Fische und Nahrung kommen hier hinein.
 var world: Node3D
 var camera: Camera3D
@@ -34,6 +37,7 @@ var progress := FishProgress.new()
 var food := FishFood.new()
 var food_view: FishFoodView
 var save_path := ""
+var respawn_timer := 0.0
 
 
 func _ready() -> void:
@@ -178,6 +182,7 @@ func _physics_process(delta: float) -> void:
 	stats.record_depth(player.motion.depth())
 	feed_player()
 	refill_food()
+	refill_fish(delta)
 
 
 ## Kamera folgt weich und schaut auf den Fisch; die Schwebeteilchen bleiben bei der Kamera.
@@ -251,6 +256,18 @@ func add_fish(id: String, pos: Vector3) -> AiFish:
 func remove_fish(f: AiFish) -> void:
 	fishes.erase(f)
 	f.queue_free()
+
+
+## Ergänzt fehlende Fische außer Sicht, sobald RESPAWN_INTERVAL Sekunden vergangen sind. Gibt die Zahl neuer Fische zurück.
+func refill_fish(delta: float) -> int:
+	respawn_timer += delta
+	if respawn_timer < RESPAWN_INTERVAL:
+		return 0
+	respawn_timer = 0.0
+	var ids := FishSchool.missing(fishes)
+	for i in ids.size():
+		add_fish(ids[i], FishSchool.respawn_position(player.motion.position, randi() + i))
+	return ids.size()
 
 
 ## Alle KI-Fische entscheiden und schwimmen; Silberlinge halten sich an ihren Schwarm.
