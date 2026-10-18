@@ -12,7 +12,7 @@ func teardown() -> void:
 
 
 func test_grundform() -> void:
-	check_eq(model.get_child_count(), 6, "6 Kinder (Body, TailPivot, FinL, FinR, EyeL, EyeR)")
+	check_eq(model.get_child_count(), 8, "8 Kinder (Body, Belly, Dorsal, TailPivot, FinL, FinR, EyeL, EyeR)")
 	check(model.jaw == null, "kein Kiefer bei start")
 	check_eq(model.spikes.size(), 0, "keine Stacheln bei start")
 	check_eq(model.body.scale, Vector3(0.5, 0.6, 1.6), "Körpergröße entspricht Basis")
@@ -40,7 +40,7 @@ func test_kiefer_und_stacheln() -> void:
 	model.rebuild(b)
 	check(model.jaw != null, "Kiefer vorhanden")
 	check_eq(model.spikes.size(), 4, "4 Stacheln")
-	check_eq(model.get_child_count(), 11, "11 Kinder")
+	check_eq(model.get_child_count(), 13, "13 Kinder (mit Belly und Dorsal)")
 	check(model.build == b, "build entspricht b")
 
 
@@ -81,3 +81,49 @@ func test_haut_am_koerper() -> void:
 
 func test_textur_geladen() -> void:
 	check(FishModel.SKIN_TEXTURE.get_width() == 256, "Texturbreite ist 256")
+
+
+func test_rueckenflosse() -> void:
+	var b := FishBuild.new()
+	var s := FishModel.shape(b)
+	check_eq(s["dorsal"], 0.25, "Rückenflosse Basiswert")
+	b.upgrade("flossen")
+	b.upgrade("flossen")
+	s = FishModel.shape(b)
+	check_eq(s["dorsal"], 0.41, "Rückenflosse bei Stufe 2")
+	model.rebuild(FishBuild.new())
+	check(model.has_node("Dorsal"), "Modell hat Kind Dorsal")
+	check(model.has_node("Belly"), "Modell hat Kind Belly")
+
+
+func test_rueckenflosse_waechst() -> void:
+	var b := FishBuild.new()
+	model.rebuild(b)
+	var h1 := (model.dorsal.mesh as BoxMesh).size.y
+	b.upgrade("flossen")
+	b.upgrade("flossen")
+	b.upgrade("flossen")
+	model.rebuild(b)
+	var h2 := (model.dorsal.mesh as BoxMesh).size.y
+	check(h2 > h1, "Rückenflosse wächst bei höherer Flossenstufe")
+
+
+func test_bauch_heller() -> void:
+	var original := Color(0.2, 0.4, 0.3)
+	var belly := FishModel.belly_color(original)
+	check(belly.get_luminance() > original.get_luminance(), "Bauchfarbe ist heller als Original")
+
+
+func test_neu_bauen_ohne_doppelte() -> void:
+	model.rebuild(FishBuild.new())
+	model.rebuild(FishBuild.new())
+	var belly_count := 0
+	for child in model.get_children():
+		if child.name == "Belly":
+			belly_count += 1
+	check_eq(belly_count, 1, "Genau ein Belly-Kind nach zwei rebuild()")
+	var dorsal_count := 0
+	for child in model.get_children():
+		if child.name == "Dorsal":
+			dorsal_count += 1
+	check_eq(dorsal_count, 1, "Genau ein Dorsal-Kind nach zwei rebuild()")

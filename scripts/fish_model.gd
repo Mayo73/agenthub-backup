@@ -10,6 +10,8 @@ var body: MeshInstance3D
 var tail_pivot: Node3D
 var tail: MeshInstance3D
 var jaw: MeshInstance3D
+var dorsal: MeshInstance3D
+var belly: MeshInstance3D
 var fins: Array[MeshInstance3D] = []
 var eyes: Array[MeshInstance3D] = []
 var spikes: Array[MeshInstance3D] = []
@@ -17,10 +19,16 @@ var spikes: Array[MeshInstance3D] = []
 
 ## Maße in Metern je Stufe: body = Breite, Höhe, Länge des Körpers; tail = Höhe der Schwanzflosse;
 ## fins = Länge der Brustflossen; jaw = Länge des Kiefers (0 = kein Kiefer); spikes = Anzahl; eyes = Augenradius.
+## Farbe des Bauchs: deutlich heller als der Rücken.
+static func belly_color(color: Color) -> Color:
+	return color.lightened(0.45)
+
+
 static func shape(b: FishBuild) -> Dictionary:
 	return {
 		"body": Vector3(0.5, 0.6, 1.6),
 		"tail": 0.5 + 0.25 * b.level("schwanz"),
+		"dorsal": 0.25 + 0.08 * b.level("flossen"),
 		"fins": 0.3 + 0.2 * b.level("flossen"),
 		"jaw": 0.15 * b.level("kiefer"),
 		"spikes": 2 * b.level("stacheln"),
@@ -85,11 +93,17 @@ func rebuild(b: FishBuild) -> void:
 	eyes.clear()
 	spikes.clear()
 	jaw = null
+	dorsal = null
+	belly = null
 	var s := shape(b)
 	var skin := skin_material(b.color)
 	var size: Vector3 = s["body"]
 	body = add_part(self, "Body", sphere(0.5), skin, Vector3.ZERO)
 	body.scale = size
+	belly = add_part(self, "Belly", sphere(0.5), material(belly_color(b.color)), Vector3(0.0, -size.y * 0.12, 0.0))
+	belly.scale = Vector3(size.x * 0.92, size.y * 0.8, size.z * 0.9)
+	var d: float = s["dorsal"]
+	dorsal = add_part(self, "Dorsal", box(Vector3(0.04, d, size.z * 0.35)), skin, Vector3(0.0, size.y * 0.5 + d * 0.35, size.z * 0.05))
 	tail_pivot = Node3D.new()
 	tail_pivot.name = "TailPivot"
 	tail_pivot.position = Vector3(0.0, 0.0, size.z * 0.45)
