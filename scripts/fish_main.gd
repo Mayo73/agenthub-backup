@@ -38,10 +38,12 @@ var food := FishFood.new()
 var food_view: FishFoodView
 var save_path := ""
 var respawn_timer := 0.0
+var settings := UserSettings.new()
 
 
 func _ready() -> void:
 	Controls.setup()
+	settings.load_from(UserSettings.DEFAULT_PATH)
 	audio = GameAudio.new()
 	audio.name = "Audio"
 	audio.streams.merge(FishSounds.all())
@@ -293,6 +295,11 @@ func player_bites() -> void:
 				hud.show_message("%s gefressen!" % FishSpecies.data(id)["name"])
 
 
+## Schaden eines Raubfischbisses am Spielerfisch: Stacheln schützen, der Schwierigkeitsgrad verstärkt oder schwächt.
+func predator_damage(raw: float) -> float:
+	return FishCombat.damage_to_player(raw, player.build) * Difficulty.damage_factor(settings.difficulty)
+
+
 ## Raubfische beißen, wenn ihr Maul den Spielerfisch berührt; Stacheln wehren ab und verletzen sie.
 func predators_bite() -> void:
 	for f in fishes.duplicate():
@@ -300,7 +307,7 @@ func predators_bite() -> void:
 			continue
 		if FishCombat.bite_hits(f.mouth_point(), player.motion.position, 0.5 * player.size):
 			var raw := float(FishSpecies.data(f.species_id)["bite"])
-			if player_health.damage(FishCombat.damage_to_player(raw, player.build)):
+			if player_health.damage(predator_damage(raw)):
 				hud.flash()
 				audio.play("treffer")
 				f.health.damage(FishCombat.spike_reflect(player.build))
