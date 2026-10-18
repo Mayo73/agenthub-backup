@@ -28,7 +28,7 @@ Android-Prototyp in Godot 4.7 mit GDScript: Kampfsportpartner finden sich über 
 | `scripts/main.gd` | `Main`: Kopfzeile `banner` (Prototyp-Hinweis), Inhaltsbereich `content` mit dem aktuellen Bildschirm `screen`, Reiterleiste `tab_bar`/`tab_buttons`; `show_screen(name)` für „entdecken“, „matches“, „profil“ |
 | `scripts/ui_style.gd` | `UiStyle`: Farben, Schriftgrößen, Bausteine |
 
-Geplante Klassen (entstehen durch Tickets, Namen genau so verwenden): `SparProfile`, `DemoData`, `MatchBook`, `ChatLog`, `MeetingBook`, `AppState`, `StateStore`, `AvatarView`, `SwipeGesture`, `ProfileCard`, `DiscoverScreen`, `PerspectiveBar`, `MatchesScreen`, `ChatScreen`, `MeetingScreen`, `ProfileScreen`, `ConfirmDialog`.
+Geplante Klassen (entstehen durch Tickets, Namen genau so verwenden): `SparProfile`, `DemoData`, `MatchBook`, `ChatLog`, `MeetingBook`, `AppState`, `StateStore`, `AvatarView`, `SwipeGesture`, `ProfileCard`, `DiscoverScreen`, `PerspectiveBar`, `MatchesScreen`, `ChatScreen`, `MeetingScreen`, `ProfileScreen`, `ConfirmDialog`, `PlaceSketch`.
 
 ## Regeln
 
