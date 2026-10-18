@@ -27,6 +27,7 @@ var audio: GameAudio
 var fishes: Array[AiFish] = []
 var player_health := CellHealth.new(100.0)
 var deaths := 0
+var stats := FishStats.new()
 var pause_menu: PauseMenu
 var paused := false
 var progress := FishProgress.new()
@@ -173,6 +174,7 @@ func _physics_process(delta: float) -> void:
 	check_death()
 	update_warning()
 	hud.show_depth(player.motion.depth())
+	stats.record_depth(player.motion.depth())
 	feed_player()
 	refill_food()
 
@@ -265,10 +267,12 @@ func player_bites() -> void:
 		if FishCombat.bite_hits(player.mouth_point(), f.motion.position, f.radius()):
 			audio.play("biss")
 			if f.health.damage(FishAbilities.bite_damage(player.build)) and f.health.is_dead():
+				var id: String = f.species_id
 				remove_fish(f)
-				eat_value(int(FishSpecies.data(f.species_id)["food"]))
+				stats.record_eaten(id)
+				eat_value(int(FishSpecies.data(id)["food"]))
 				hud.show_progress(progress)
-				hud.show_message("%s gefressen!" % FishSpecies.data(f.species_id)["name"])
+				hud.show_message("%s gefressen!" % FishSpecies.data(id)["name"])
 
 
 ## Raubfische beißen, wenn ihr Maul den Spielerfisch berührt; Stacheln wehren ab und verletzen sie.
@@ -292,6 +296,7 @@ func toggle_pause() -> void:
 	paused = not paused
 	if paused:
 		pause_menu.open()
+		hud.show_message(stats.summary(), 6.0)
 	else:
 		pause_menu.close()
 	set_physics_process(not paused)
@@ -314,6 +319,7 @@ func check_death() -> void:
 	if not player_health.is_dead():
 		return
 	deaths += 1
+	stats.record_death()
 	audio.play("tod")
 	player.motion.position = FishWorld.START
 	player.motion.velocity = Vector3.ZERO

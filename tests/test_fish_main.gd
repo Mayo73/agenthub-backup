@@ -533,3 +533,41 @@ func test_keine_warnung_bei_beute() -> void:
 	fish.add_fish("grasfisch", fish.player.motion.position + Vector3(5, 0, 0))
 	fish.update_warning()
 	check(!fish.hud.warning_label.visible, "warning_label.visible ist falsch bei Beute")
+
+
+## Test: Statistik fressen wird gezählt.
+func test_statistik_fressen() -> void:
+	_clear_ai_fishes()
+	fish.player.build.diet = Diet.FLEISCHFRESSER
+	var f: AiFish = fish.add_fish("silberling", fish.player.mouth_point())
+	f.health.hp = 1.0
+	fish.player_bites()
+	check_eq(fish.stats.total_eaten(), 1, "total_eaten ist 1")
+	check_eq(fish.stats.eaten["silberling"], 1, "eaten['silberling'] ist 1")
+
+
+## Test: Statistik Tod wird gezählt.
+func test_statistik_tod() -> void:
+	_clear_ai_fishes()
+	fish.player_health.hp = 0.0
+	fish.check_death()
+	check_eq(fish.stats.deaths, 1, "deaths ist 1 nach check_death()")
+
+
+## Test: Statistik Tiefe wird gezählt.
+func test_statistik_tiefe() -> void:
+	_clear_ai_fishes()
+	fish.player.motion.position = Vector3(0, -35, 0)
+	fish._physics_process(0.016)
+	check(fish.stats.max_depth >= 34.0, "max_depth ist mindestens 34.0")
+
+
+## Test: Statistik in Pause wird angezeigt.
+func test_statistik_in_pause() -> void:
+	_clear_ai_fishes()
+	fish.stats.record_death()
+	var vorherige_sichtbarkeit = fish.hud.message_label.visible
+	fish.toggle_pause()
+	check(fish.hud.message_label.visible, "message_label.visible wahr nach toggle_pause")
+	check_eq(fish.hud.message_label.text, fish.stats.summary(), "message_text ist summary()")
+	fish.toggle_pause()
