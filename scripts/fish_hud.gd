@@ -4,6 +4,7 @@ extends CanvasLayer
 
 const HELP := "W / linke Maustaste: schwimmen · A/D: drehen · Leertaste: auftauchen · Umschalt: abtauchen · E: Entwicklung"
 const UPGRADE_HINT := "E: Verbesserung möglich"
+const FLASH_TIME := 0.4
 
 var depth_label: Label
 var dna_label: Label
@@ -15,10 +16,18 @@ var size_label: Label
 var help_label: Label
 var message_label: Label
 var message_left := 0.0
+var flash_rect: ColorRect
+var flash_left := 0.0
 
 
 func _init() -> void:
 	layer = 5
+	flash_rect = ColorRect.new()
+	flash_rect.name = "Flash"
+	flash_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	flash_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	flash_rect.color = Color(0.85, 0.1, 0.1, 0.0)
+	add_child(flash_rect)
 	depth_label = make_label("Depth", Vector2(40, 30), 32)
 	dna_label = make_label("Dna", Vector2(40, 76), 28)
 	growth_label = make_label("Growth", Vector2(40, 116), 28)
@@ -87,6 +96,12 @@ func show_health(ratio: float) -> void:
 	health_label.text = health_text(ratio)
 
 
+## Lässt den Bildschirm kurz rot aufleuchten (Biss eines Raubfischs).
+func flash() -> void:
+	flash_left = FLASH_TIME
+	flash_rect.color.a = 0.35
+
+
 ## Zeigt die Warnung vor Raubfischen; ein leerer Text blendet sie aus.
 func show_warning(text: String) -> void:
 	warning_label.text = text
@@ -94,6 +109,9 @@ func show_warning(text: String) -> void:
 
 
 func tick(delta: float) -> void:
+	if flash_left > 0.0:
+		flash_left = maxf(0.0, flash_left - delta)
+		flash_rect.color.a = 0.35 * flash_left / FLASH_TIME
 	if message_left <= 0.0:
 		return
 	message_left -= delta
