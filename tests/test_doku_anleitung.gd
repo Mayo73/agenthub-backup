@@ -33,3 +33,15 @@ func test_fischphase_beschrieben() -> void:
 	check(text.contains("Entwicklungsmenü"), "Enthält Entwicklungsmenü")
 	check(text.contains("-- --fisch"), "Enthält Start-Parameter -- --fisch")
 	check(text.find("## Fischphase") < text.find("## Leistungstest und Vorführszenen"), "Abschnitt Fischphase steht vor Leistungstest")
+
+
+func test_fischphase_fortsetzen() -> void:
+	var text := FileAccess.get_file_as_string(PATH)
+	var fisch_start := text.find("## Fischphase")
+	var leistung_start := text.find("## Leistungstest und Vorführszenen")
+	check(fisch_start >= 0, "Abschnitt Fischphase gefunden")
+	check(leistung_start > fisch_start, "Abschnitt Leistungstest nach Fischphase")
+	var fischphase := text.substr(fisch_start, leistung_start - fisch_start)
+	check(fischphase.contains("Pausemenü"), "Fischphase enthält 'Pausemenü'")
+	check(fischphase.contains("Fortsetzen"), "Fischphase enthält 'Fortsetzen'")
+	check(fischphase.contains("E: Verbesserung möglich"), "Fischphase enthält 'E: Verbesserung möglich'")
