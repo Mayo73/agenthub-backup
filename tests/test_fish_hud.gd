@@ -79,3 +79,44 @@ func test_hinweis_verbesserung() -> void:
 	hud.show_upgrade_hint(false)
 	check(!hud.upgrade_label.visible, "Nach show_upgrade_hint(false) unsichtbar")
 	hud.free()
+
+
+func test_groesse_text() -> void:
+	var p := FishProgress.new()
+	check_eq(FishHud.size_text(p), "Größe: 1 / 4", "size_text(stage=0)")
+	p.stage = 3
+	check_eq(FishHud.size_text(p), "Größe: 4 / 4", "size_text(stage=3)")
+
+
+func test_groesse_anzeige() -> void:
+	check_eq(hud.size_label.text, "Größe: 1 / 4", "size_label.text initial")
+	var p := FishProgress.new()
+	p.stage = 1
+	hud.show_progress(p)
+	check_eq(hud.size_label.text, "Größe: 2 / 4", "size_label.text nach show_progress(stage=1)")
+
+
+func test_warnung_anfangs_aus() -> void:
+	check(!hud.warning_label.visible, "warning_label ist initial unsichtbar")
+
+
+func test_warnung_zeigen() -> void:
+	hud.show_warning("Vorsicht: Raubfisch in 8 m!")
+	check(hud.warning_label.visible, "Nach show_warning mit Text sichtbar")
+	check_eq(hud.warning_label.text, "Vorsicht: Raubfisch in 8 m!", "Text korrekt")
+	hud.show_warning("")
+	check(!hud.warning_label.visible, "Nach leerem Text unsichtbar")
+
+
+func test_blitz_anfangs_aus() -> void:
+	check_eq(hud.flash_rect.color.a, 0.0, "flash_rect.color.a ist 0.0 am Anfang")
+
+
+func test_blitz() -> void:
+	hud.flash()
+	check_eq(hud.flash_rect.color.a, 0.35, "nach flash() color.a = 0.35")
+	hud.tick(0.2)
+	var expected_after_02 := 0.35 * 0.2 / 0.4
+	check(is_equal_approx(hud.flash_rect.color.a, expected_after_02), "after tick(0.2)")
+	hud.tick(1.0)
+	check_eq(hud.flash_rect.color.a, 0.0, "nach langem Warten color.a = 0.0")

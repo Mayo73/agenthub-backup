@@ -483,3 +483,104 @@ func test_hinweis_nach_kauf() -> void:
 	fish.evolve.try_upgrade("augen")
 	check_eq(fish.progress.dna, 0, "progress.dna ist 0 nach Upgrade")
 	check(not fish.hud.upgrade_label.visible, "upgrade_label.visible ist falsch nach Upgrade")
+
+
+## Test: Tiefenlicht setzt Farben für Wasseroberfläche.
+func test_tiefenlicht() -> void:
+	fish.apply_depth_light(0.0)
+	check(fish.water.environment.background_color.r == FishWorld.WATER_COLOR.r && fish.water.environment.background_color.g == FishWorld.WATER_COLOR.g && fish.water.environment.background_color.b == FishWorld.WATER_COLOR.b, "background_color bei Oberfläche ist WATER_COLOR")
+
+	fish.apply_depth_light(FishWorld.DEPTH)
+	check(is_equal_approx(fish.water.environment.background_color.r, 0.01), "background_color am Boden r = 0.01")
+	check(is_equal_approx(fish.water.environment.background_color.g, 0.06), "background_color am Boden g = 0.06")
+	check(is_equal_approx(fish.water.environment.background_color.b, 0.13), "background_color am Boden b = 0.13")
+	check(is_equal_approx(fish.water.environment.fog_light_color.r, 0.01), "fog_light_color am Boden r = 0.01")
+	check(is_equal_approx(fish.water.environment.fog_light_color.g, 0.06), "fog_light_color am Boden g = 0.06")
+	check(is_equal_approx(fish.water.environment.fog_light_color.b, 0.13), "fog_light_color am Boden b = 0.13")
+	check_eq(fish.water.environment.ambient_light_energy, 0.35, "ambient_light_energy am Boden ist 0.35")
+
+
+## Test: Tiefenlicht ändert nicht die Nebeldichte.
+func test_tiefenlicht_nebel_bleibt() -> void:
+	var dichte: float = fish.water.environment.fog_density
+	fish.apply_depth_light(40.0)
+	check_eq(fish.water.environment.fog_density, dichte, "fog_density bleibt unverändert nach apply_depth_light")
+
+
+## Test: _process ruft apply_depth_light mit der richtigen Tiefe.
+func test_tiefenlicht_in_process() -> void:
+	fish._process(0.1)
+	check_eq(fish.water.environment.ambient_light_energy, FishWorld.ambient_energy_at(FishWorld.depth_of(fish.camera.position)), "ambient_light_energy im _process ist ambient_energy_at(depth_of(camera.position))")
+
+
+func test_warnung_nah() -> void:
+	_clear_ai_fishes()
+	fish.add_fish("zackenbarsch", fish.player.motion.position + Vector3(8, 0, 0))
+	fish.update_warning()
+	check(fish.hud.warning_label.visible, "warning_label.visible ist wahr bei 8 m")
+	check_eq(fish.hud.warning_label.text, "Vorsicht: Raubfisch in 8 m!", "Text korrekt bei 8 m")
+
+
+func test_warnung_fern() -> void:
+	_clear_ai_fishes()
+	fish.add_fish("zackenbarsch", fish.player.motion.position + Vector3(40, 0, 0))
+	fish.update_warning()
+	check(!fish.hud.warning_label.visible, "warning_label.visible ist falsch bei 40 m")
+
+
+func test_keine_warnung_bei_beute() -> void:
+	_clear_ai_fishes()
+	fish.add_fish("grasfisch", fish.player.motion.position + Vector3(5, 0, 0))
+	fish.update_warning()
+	check(!fish.hud.warning_label.visible, "warning_label.visible ist falsch bei Beute")
+
+
+func test_biss_blitzt() -> void:
+	_clear_ai_fishes()
+	var f: AiFish = fish.add_fish("zackenbarsch", fish.player.motion.position + Vector3(0, 0, 1.5))
+	fish.predators_bite()
+	check(fish.hud.flash_rect.color.a > 0.0, "fish.hud.flash_rect.color.a > 0.0 nach Biss")
+
+
+## Test: Statistik fressen wird gezählt.
+func test_statistik_fressen() -> void:
+	_clear_ai_fishes()
+	fish.player.build.diet = Diet.FLEISCHFRESSER
+	var f: AiFish = fish.add_fish("silberling", fish.player.mouth_point())
+	f.health.hp = 1.0
+	fish.player_bites()
+	check_eq(fish.stats.total_eaten(), 1, "total_eaten ist 1")
+	check_eq(fish.stats.eaten["silberling"], 1, "eaten['silberling'] ist 1")
+
+
+## Test: Statistik Tod wird gezählt.
+func test_statistik_tod() -> void:
+	_clear_ai_fishes()
+	fish.player_health.hp = 0.0
+	fish.check_death()
+	check_eq(fish.stats.deaths, 1, "deaths ist 1 nach check_death()")
+
+
+## Test: Statistik Tiefe wird gezählt.
+func test_statistik_tiefe() -> void:
+	_clear_ai_fishes()
+	fish.player.motion.position = Vector3(0, -35, 0)
+	fish._physics_process(0.016)
+	check(fish.stats.max_depth >= 34.0, "max_depth ist mindestens 34.0")
+
+
+## Test: Statistik in Pause wird angezeigt.
+func test_statistik_in_pause() -> void:
+	_clear_ai_fishes()
+	fish.stats.record_death()
+	var vorherige_sichtbarkeit = fish.hud.message_label.visible
+	fish.toggle_pause()
+	check(fish.hud.message_label.visible, "message_label.visible wahr nach toggle_pause")
+	check_eq(fish.hud.message_label.text, fish.stats.summary(), "message_text ist summary()")
+	fish.toggle_pause()
+
+
+## Test: Der Boden hat die Sandtextur, die Oberfläche keine.
+func test_sandboden() -> void:
+	check(((fish.floor_mesh.mesh as PlaneMesh).material as StandardMaterial3D).albedo_texture == FishTextures.SAND, "Boden hat SAND-Textur")
+	check((fish.surface_mesh.mesh as PlaneMesh).material.albedo_texture == null, "Oberfläche hat keine Textur")

@@ -9,7 +9,7 @@ var time := 0.0
 
 func _init() -> void:
 	var weed_mat := FishModel.material(Color(0.25, 0.55, 0.3))
-	var rock_mat := FishModel.material(Color(0.42, 0.4, 0.38))
+	var rock_mat := FishTextures.rock_material()
 	for item: Dictionary in layout.items:
 		var m := MeshInstance3D.new()
 		var h: float = item["height"]

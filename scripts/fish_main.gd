@@ -27,6 +27,7 @@ var audio: GameAudio
 var fishes: Array[AiFish] = []
 var player_health := CellHealth.new(100.0)
 var deaths := 0
+var stats := FishStats.new()
 var pause_menu: PauseMenu
 var paused := false
 var progress := FishProgress.new()
@@ -57,6 +58,7 @@ func _ready() -> void:
 	add_child(sun)
 
 	floor_mesh = make_plane("Floor", -FishWorld.DEPTH, FishWorld.FLOOR_COLOR)
+	(floor_mesh.mesh as PlaneMesh).material = FishTextures.floor_material()
 	world.add_child(floor_mesh)
 	surface_mesh = make_plane("Surface", 0.0, FishWorld.SURFACE_COLOR)
 	world.add_child(surface_mesh)
@@ -171,7 +173,9 @@ func _physics_process(delta: float) -> void:
 	player_health.tick(delta)
 	hud.show_health(player_health.ratio())
 	check_death()
+	update_warning()
 	hud.show_depth(player.motion.depth())
+	stats.record_depth(player.motion.depth())
 	feed_player()
 	refill_food()
 
@@ -183,6 +187,7 @@ func _process(delta: float) -> void:
 	camera.look_at(player.motion.position)
 	snow.position = camera.position
 	rays.update(camera.position, delta)
+	apply_depth_light(FishWorld.depth_of(camera.position))
 
 
 ## Frisst, was das Maul berührt und zur Ernährung passt. Wächst der Fisch, wird er größer.
@@ -263,10 +268,12 @@ func player_bites() -> void:
 		if FishCombat.bite_hits(player.mouth_point(), f.motion.position, f.radius()):
 			audio.play("biss")
 			if f.health.damage(FishAbilities.bite_damage(player.build)) and f.health.is_dead():
+				var id: String = f.species_id
 				remove_fish(f)
-				eat_value(int(FishSpecies.data(f.species_id)["food"]))
+				stats.record_eaten(id)
+				eat_value(int(FishSpecies.data(id)["food"]))
 				hud.show_progress(progress)
-				hud.show_message("%s gefressen!" % FishSpecies.data(f.species_id)["name"])
+				hud.show_message("%s gefressen!" % FishSpecies.data(id)["name"])
 
 
 ## Raubfische beißen, wenn ihr Maul den Spielerfisch berührt; Stacheln wehren ab und verletzen sie.
@@ -277,6 +284,7 @@ func predators_bite() -> void:
 		if FishCombat.bite_hits(f.mouth_point(), player.motion.position, 0.5 * player.size):
 			var raw := float(FishSpecies.data(f.species_id)["bite"])
 			if player_health.damage(FishCombat.damage_to_player(raw, player.build)):
+				hud.flash()
 				audio.play("treffer")
 				f.health.damage(FishCombat.spike_reflect(player.build))
 				if f.health.is_dead():
@@ -290,6 +298,7 @@ func toggle_pause() -> void:
 	paused = not paused
 	if paused:
 		pause_menu.open()
+		hud.show_message(stats.summary(), 6.0)
 	else:
 		pause_menu.close()
 	set_physics_process(not paused)
@@ -312,6 +321,7 @@ func check_death() -> void:
 	if not player_health.is_dead():
 		return
 	deaths += 1
+	stats.record_death()
 	audio.play("tod")
 	player.motion.position = FishWorld.START
 	player.motion.velocity = Vector3.ZERO
@@ -333,6 +343,19 @@ func save_now() -> bool:
 	return SaveGame.write_file(save_path, data)
 
 
-## Zeigt „E: Verbesserung möglich“, solange die DNA für mindestens eine Verbesserung reicht.
+## Zeigt „E: Verbesserung möglich", solange die DNA für mindestens eine Verbesserung reicht.
 func update_upgrade_hint() -> void:
 	hud.show_upgrade_hint(FishUpgrades.any_affordable(player.build, progress))
+
+
+## Wasserfarbe, Nebelfarbe und Umgebungslicht passend zur Tiefe der Kamera.
+func apply_depth_light(depth: float) -> void:
+	var env := water.environment
+	env.background_color = FishWorld.water_color_at(depth)
+	env.fog_light_color = env.background_color
+	env.ambient_light_energy = FishWorld.ambient_energy_at(depth)
+
+
+## Warnt, wenn ein Raubfisch nahe am Spielerfisch ist.
+func update_warning() -> void:
+	hud.show_warning(FishThreat.warning_text(FishThreat.nearest_predator(player.motion.position, fishes)))
