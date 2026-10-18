@@ -19,6 +19,7 @@ var surface_mesh: MeshInstance3D
 var player: FishPlayer
 var reef: ReefView
 var snow: MarineSnow
+var rays: LightRays
 var hud: FishHud
 var intro: FishIntro
 var evolve: EvolveMenu
@@ -89,6 +90,9 @@ func _ready() -> void:
 	snow = MarineSnow.new()
 	snow.name = "Snow"
 	add_child(snow)
+	rays = LightRays.new()
+	rays.name = "Rays"
+	world.add_child(rays)
 	hud = FishHud.new()
 	hud.name = "Hud"
 	add_child(hud)
@@ -176,6 +180,7 @@ func _process(delta: float) -> void:
 	camera.position = ChaseCamera.follow(camera.position, target, delta)
 	camera.look_at(player.motion.position)
 	snow.position = camera.position
+	rays.update(camera.position, delta)
 
 
 ## Frisst, was das Maul berührt und zur Ernährung passt. Wächst der Fisch, wird er größer.

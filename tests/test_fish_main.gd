@@ -429,3 +429,22 @@ func test_klang_tod() -> void:
 	fish.player_health.hp = 0.0
 	fish.check_death()
 	check_eq(fish.audio.last_played, "tod", "fish.audio.last_played ist 'tod'")
+
+
+## Test: Lichtstrahlen-Knoten existiert und ist vom Typ LightRays.
+func test_lichtstrahlen_knoten() -> void:
+	check(fish.get_node("World/Rays") is LightRays, "fish.get_node('World/Rays') is LightRays")
+
+
+## Test: Lichtstrahlen folgen der Kamera (Position wird übernommen).
+func test_lichtstrahlen_folgen() -> void:
+	fish.camera.position = Vector3(12.0, -10.0, 4.0)
+	fish.rays.update(fish.camera.position, 0.1)
+	check_eq(fish.rays.position.x, 12.0, "fish.rays.position.x ist 12.0")
+	check_eq(fish.rays.position.z, 4.0, "fish.rays.position.z ist 4.0")
+
+
+## Test: Lichtstrahlen werden im _process()-Schritt aktualisiert.
+func test_lichtstrahlen_in_process() -> void:
+	fish._process(0.1)
+	check_eq(fish.rays.position.x, fish.camera.position.x, "fish.rays.position.x entspricht fish.camera.position.x")
