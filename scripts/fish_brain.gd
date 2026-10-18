@@ -4,6 +4,8 @@ extends RefCounted
 
 ## Beutefische fliehen, wenn der Spieler mindestens so groß ist (Anteil der eigenen Größe).
 const FLEE_FACTOR := 0.8
+## Raubfische fliehen, wenn der Spieler mindestens so viel größer ist (Vielfaches der eigenen Größe).
+const HUNTER_FLEE_FACTOR := 1.2
 ## Schwarmfische bleiben innerhalb so vieler Meter um die Schwarmmitte.
 const FLOCK_DIST := 3.0
 ## Schub ohne Ziel (gemächliches Umherschwimmen).
@@ -17,6 +19,8 @@ static func decide(behavior: String, own_pos: Vector3, own_size: float, sight: f
 		if behavior == "jaeger":
 			if player_size < own_size:
 				return (player_pos - own_pos).normalized()
+			if player_size >= own_size * HUNTER_FLEE_FACTOR:
+				return (own_pos - player_pos).normalized()
 		elif player_size >= own_size * FLEE_FACTOR:
 			return (own_pos - player_pos).normalized()
 	if behavior == "schwarm" and flock_center is Vector3:
