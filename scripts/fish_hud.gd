@@ -5,6 +5,16 @@ extends CanvasLayer
 const HELP := "W / linke Maustaste: schwimmen · A/D: drehen · Leertaste: auftauchen · Umschalt: abtauchen · E: Entwicklung"
 const UPGRADE_HINT := "E: Verbesserung möglich"
 const FLASH_TIME := 0.4
+const BITE_MESSAGE := "Ein Raubfisch hat dich gebissen!"
+## Färbt nur den Bildrand: Die Mitte bleibt frei, damit Fisch und Umgebung sichtbar bleiben.
+const VIGNETTE_SHADER := """
+shader_type canvas_item;
+void fragment() {
+	vec2 d = abs(UV - vec2(0.5)) * 2.0;
+	float edge = smoothstep(0.55, 1.0, max(d.x, d.y));
+	COLOR = vec4(COLOR.rgb, clamp(COLOR.a * edge * 2.4, 0.0, 1.0));
+}
+"""
 
 var depth_label: Label
 var dna_label: Label
@@ -16,6 +26,8 @@ var size_label: Label
 var help_label: Label
 var message_label: Label
 var message_left := 0.0
+## Wichtigere Meldungen (z. B. ein Biss) werden nicht von gewöhnlichen überschrieben.
+var message_priority := 0
 var flash_rect: ColorRect
 var flash_left := 0.0
 
@@ -27,6 +39,11 @@ func _init() -> void:
 	flash_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
 	flash_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	flash_rect.color = Color(0.85, 0.1, 0.1, 0.0)
+	var shader := Shader.new()
+	shader.code = VIGNETTE_SHADER
+	var material := ShaderMaterial.new()
+	material.shader = shader
+	flash_rect.material = material
 	add_child(flash_rect)
 	depth_label = make_label("Depth", Vector2(40, 30), 32)
 	dna_label = make_label("Dna", Vector2(40, 76), 28)
@@ -40,6 +57,12 @@ func _init() -> void:
 	size_label = make_label("Size", Vector2(320, 116), 28)
 	help_label = make_label("Help", Vector2(40, 1010), 22)
 	help_label.text = HELP
+	## Dunkle Unterlage, damit die Hilfe auch auf hellem Sand lesbar bleibt
+	var backing := StyleBoxFlat.new()
+	backing.bg_color = Color(0.0, 0.03, 0.06, 0.55)
+	backing.set_content_margin_all(8)
+	backing.set_corner_radius_all(6)
+	help_label.add_theme_stylebox_override("normal", backing)
 	warning_label = make_label("Warning", Vector2(560, 200), 30)
 	warning_label.add_theme_color_override("font_color", Color(1.0, 0.55, 0.15))
 	warning_label.visible = false
@@ -82,10 +105,20 @@ func show_progress(progress: FishProgress) -> void:
 	size_label.text = size_text(progress)
 
 
-func show_message(text: String, seconds: float = 4.0) -> void:
+func show_message(text: String, seconds: float = 4.0, priority: int = 0) -> void:
+	if message_left > 0.0 and priority < message_priority:
+		return
 	message_label.text = text
 	message_label.visible = true
 	message_left = seconds
+	message_priority = priority
+
+
+## Blendet die aktuelle Meldung sofort aus (z. B. beim Öffnen eines Menüs).
+func clear_message() -> void:
+	message_left = 0.0
+	message_priority = 0
+	message_label.visible = false
 
 
 static func health_text(ratio: float) -> String:
@@ -96,10 +129,11 @@ func show_health(ratio: float) -> void:
 	health_label.text = health_text(ratio)
 
 
-## Lässt den Bildschirm kurz rot aufleuchten (Biss eines Raubfischs).
+## Lässt den Bildrand kurz rot aufleuchten und meldet den Biss vorrangig.
 func flash() -> void:
 	flash_left = FLASH_TIME
 	flash_rect.color.a = 0.35
+	show_message(BITE_MESSAGE, 2.0, 1)
 
 
 ## Zeigt die Warnung vor Raubfischen; ein leerer Text blendet sie aus.
@@ -117,6 +151,7 @@ func tick(delta: float) -> void:
 	message_left -= delta
 	if message_left <= 0.0:
 		message_label.visible = false
+		message_priority = 0
 
 
 func _process(delta: float) -> void:

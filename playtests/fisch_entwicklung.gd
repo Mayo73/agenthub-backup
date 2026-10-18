@@ -45,11 +45,17 @@ func run() -> void:
 	measure("tempo_nachher", nachher)
 	check(nachher > vorher + 2.0, "Mit ausgebauter Schwanzflosse deutlich schneller")
 
-	# Bessere Augen lichten den Nebel
+	# Bessere Augen lichten den Nebel: Vorher-Nachher-Paar von derselben Stelle, ohne Meldungen
+	await wait(2.0)  # ausrollen, damit beide Bilder dieselbe Ansicht zeigen
+	scene.hud.clear_message()
+	await wait(0.1)
+	shot("trueb")
 	var nebel: float = scene.water.environment.fog_density
 	scene.progress.dna = 10
 	scene.evolve.open(scene.player.build, scene.progress)
 	scene.evolve.buttons["augen"].pressed.emit()
 	scene.evolve.close()
+	scene.hud.clear_message()
 	check(scene.water.environment.fog_density < nebel, "Bessere Augen lichten den Nebel")
+	await wait(0.1)
 	shot("klare_sicht")

@@ -30,7 +30,7 @@ func _init() -> void:
 	## Halbdurchsichtiger dunkler Hintergrund über das ganze Bild
 	var background := ColorRect.new()
 	background.name = "Background"
-	background.color = Color(0.02, 0.12, 0.18, 0.88)
+	background.color = Color(0.02, 0.12, 0.18, 0.96)
 	background.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(background)
 	## Hauptcontainer mit den Elementen
@@ -68,6 +68,8 @@ func _init() -> void:
 		var btn := Button.new()
 		btn.name = "%s_btn" % slot
 		btn.text = "Verbessern"
+		btn.custom_minimum_size = Vector2(220, 52)
+		btn.add_theme_font_size_override("font_size", 26)
 		btn.pressed.connect(try_upgrade.bind(slot))
 		hbox.add_child(btn)
 		slot_rows.add_child(hbox)
@@ -77,7 +79,8 @@ func _init() -> void:
 	close_button = Button.new()
 	close_button.name = "Close"
 	close_button.text = "Weiterschwimmen"
-	close_button.custom_minimum_size = Vector2(400, 56)
+	close_button.custom_minimum_size = Vector2(400, 60)
+	close_button.add_theme_font_size_override("font_size", 28)
 	close_button.pressed.connect(close)
 	rows.add_child(close_button)
 	## Am Ende unsichtbar
@@ -98,6 +101,7 @@ func refresh() -> void:
 	for slot: String in FishBuild.SLOTS:
 		labels[slot].text = row_text(build, slot)
 		buttons[slot].disabled = not FishUpgrades.can_upgrade(build, progress, slot)
+		buttons[slot].text = "Maximal" if FishUpgrades.cost(build, slot) < 0 else "Verbessern"
 
 
 ## Versucht, das Bauteil zu verbessern. Gibt true bei Erfolg zurück.

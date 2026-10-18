@@ -232,6 +232,7 @@ func toggle_evolve() -> void:
 	if evolve.visible:
 		evolve.close()
 	else:
+		hud.clear_message()
 		evolve.open(player.build, progress)
 
 
@@ -240,7 +241,9 @@ func _on_upgraded(slot: String) -> void:
 	audio.play("verbessern")
 	player.set_build(player.build)
 	hud.show_progress(progress)
-	hud.show_message("%s verbessert!" % FishBuild.NAMES[slot])
+	# Bei offenem Menü zeigt die Zeile selbst die neue Stufe; die Meldung schiene nur durch.
+	if not evolve.visible:
+		hud.show_message("%s verbessert!" % FishBuild.NAMES[slot])
 	apply_sight()
 	save_now()
 	update_upgrade_hint()

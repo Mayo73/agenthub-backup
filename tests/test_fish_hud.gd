@@ -120,3 +120,23 @@ func test_blitz() -> void:
 	check(is_equal_approx(hud.flash_rect.color.a, expected_after_02), "after tick(0.2)")
 	hud.tick(1.0)
 	check_eq(hud.flash_rect.color.a, 0.0, "nach langem Warten color.a = 0.0")
+
+
+func test_biss_meldung_hat_vorrang() -> void:
+	hud.flash()
+	check_eq(hud.message_label.text, FishHud.BITE_MESSAGE, "Biss wird gemeldet")
+	hud.show_message("Silberling gefressen!")
+	check_eq(hud.message_label.text, FishHud.BITE_MESSAGE, "gewöhnliche Meldung überschreibt den Biss nicht")
+	hud.tick(2.5)
+	hud.show_message("Silberling gefressen!")
+	check_eq(hud.message_label.text, "Silberling gefressen!", "nach Ablauf wieder normale Meldungen")
+
+
+func test_blitz_nur_am_rand() -> void:
+	check(hud.flash_rect.material is ShaderMaterial, "Blitz als Randvignette (Shader)")
+
+
+func test_meldung_ausblenden() -> void:
+	hud.show_message("Hallo")
+	hud.clear_message()
+	check(not hud.message_label.visible, "clear_message blendet aus")

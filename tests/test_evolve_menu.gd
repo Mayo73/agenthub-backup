@@ -85,3 +85,19 @@ func test_schliessen() -> void:
 	menu.close()
 	## Sollte weiterhin nur einmal sein (kein Duplikat)
 	check_eq(counter[0], 1, "Signal closed weiterhin einmal nach erneutem close()")
+
+
+func test_hoechste_stufe_heisst_maximal() -> void:
+	b.upgrade("augen")
+	b.upgrade("augen")
+	b.upgrade("augen")
+	menu.open(b, p)
+	check_eq(menu.buttons["augen"].text, "Maximal", "Knopf bei höchster Stufe")
+	check_eq(menu.buttons["schwanz"].text, "Verbessern", "Knopf bei ausbaubarem Teil")
+	check(menu.buttons["augen"].disabled, "Knopf bei höchster Stufe gesperrt")
+
+
+func test_knoepfe_gut_lesbar() -> void:
+	check_eq(menu.buttons["schwanz"].get_theme_font_size("font_size"), 26, "Knopfschrift so groß wie die Zeilen")
+	check_eq(menu.close_button.get_theme_font_size("font_size"), 28, "Weiterschwimmen gut lesbar")
+	check(menu.buttons["schwanz"].custom_minimum_size.y >= 52, "Knopf hoch genug")
