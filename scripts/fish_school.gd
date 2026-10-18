@@ -8,6 +8,7 @@ const MAX_DIST := 60.0
 const SWARMS := 2
 const SWARM_SIZE := 6
 const GRAZERS := 3
+const PUFFERS := 2
 const PREDATORS := 2
 
 
@@ -23,6 +24,8 @@ static func spawn_plan(center: Vector3, seed_value: int) -> Array[Dictionary]:
 			plan.append({"id": "silberling", "position": FishWorld.clamp_to_water(mid + offset)})
 	for i in GRAZERS:
 		plan.append({"id": "grasfisch", "position": _around(center, rng)})
+	for i in PUFFERS:
+		plan.append({"id": "kugelfisch", "position": _around(center, rng)})
 	for i in PREDATORS:
 		plan.append({"id": "zackenbarsch", "position": _around(center, rng)})
 	return plan
