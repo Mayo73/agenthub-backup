@@ -171,6 +171,7 @@ func _physics_process(delta: float) -> void:
 	player_health.tick(delta)
 	hud.show_health(player_health.ratio())
 	check_death()
+	update_warning()
 	hud.show_depth(player.motion.depth())
 	feed_player()
 	refill_food()
@@ -334,7 +335,7 @@ func save_now() -> bool:
 	return SaveGame.write_file(save_path, data)
 
 
-## Zeigt „E: Verbesserung möglich“, solange die DNA für mindestens eine Verbesserung reicht.
+## Zeigt „E: Verbesserung möglich", solange die DNA für mindestens eine Verbesserung reicht.
 func update_upgrade_hint() -> void:
 	hud.show_upgrade_hint(FishUpgrades.any_affordable(player.build, progress))
 
@@ -345,3 +346,8 @@ func apply_depth_light(depth: float) -> void:
 	env.background_color = FishWorld.water_color_at(depth)
 	env.fog_light_color = env.background_color
 	env.ambient_light_energy = FishWorld.ambient_energy_at(depth)
+
+
+## Warnt, wenn ein Raubfisch nahe am Spielerfisch ist.
+func update_warning() -> void:
+	hud.show_warning(FishThreat.warning_text(FishThreat.nearest_predator(player.motion.position, fishes)))
