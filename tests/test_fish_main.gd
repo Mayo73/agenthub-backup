@@ -535,6 +535,13 @@ func test_keine_warnung_bei_beute() -> void:
 	check(!fish.hud.warning_label.visible, "warning_label.visible ist falsch bei Beute")
 
 
+func test_biss_blitzt() -> void:
+	_clear_ai_fishes()
+	var f: AiFish = fish.add_fish("zackenbarsch", fish.player.motion.position + Vector3(0, 0, 1.5))
+	fish.predators_bite()
+	check(fish.hud.flash_rect.color.a > 0.0, "fish.hud.flash_rect.color.a > 0.0 nach Biss")
+
+
 ## Test: Statistik fressen wird gezählt.
 func test_statistik_fressen() -> void:
 	_clear_ai_fishes()

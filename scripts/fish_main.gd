@@ -283,6 +283,7 @@ func predators_bite() -> void:
 		if FishCombat.bite_hits(f.mouth_point(), player.motion.position, 0.5 * player.size):
 			var raw := float(FishSpecies.data(f.species_id)["bite"])
 			if player_health.damage(FishCombat.damage_to_player(raw, player.build)):
+				hud.flash()
 				audio.play("treffer")
 				f.health.damage(FishCombat.spike_reflect(player.build))
 				if f.health.is_dead():
