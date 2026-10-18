@@ -126,9 +126,9 @@ func to_dict() -> Dictionary:
 
 static func from_dict(d: Dictionary) -> MatchBook:
 	var book := MatchBook.new()
-	book.likes = d.get("likes", {})
-	book.passes = d.get("passes", {})
-	book.blocks = d.get("blocks", {})
-	book.matches = d.get("matches", [])
-	book.next_id = d.get("next_id", 1)
+	book.likes = d.get("likes", {}).duplicate(true)
+	book.passes = d.get("passes", {}).duplicate(true)
+	book.blocks = d.get("blocks", {}).duplicate(true)
+	book.matches.assign(d.get("matches", []).duplicate(true))
+	book.next_id = int(d.get("next_id", 1))
 	return book

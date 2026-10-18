@@ -45,7 +45,7 @@ func to_dict() -> Dictionary:
 static func from_dict(d: Dictionary) -> ChatLog:
 	var chat := ChatLog.new()
 	if d.has("messages"):
-		chat.messages = d["messages"]
+		chat.messages.assign(d["messages"].duplicate(true))
 		for msg in chat.messages:
 			msg["n"] = int(msg.get("n", 1))
 	else:

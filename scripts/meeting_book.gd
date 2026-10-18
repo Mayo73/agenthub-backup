@@ -58,7 +58,7 @@ func propose(match_id: String, by_id: String, details: Dictionary) -> Array[Stri
 
 	var rules: String = ""
 	if details.has("rules"):
-		rules = details["rules"]
+		rules = str(details["rules"]).strip_edges()
 
 	meetings[match_id] = {
 		"place": place,
@@ -135,5 +135,5 @@ func to_dict() -> Dictionary:
 ## Erstellt eine MeetingBook-Instanz aus einem Dictionary.
 static func from_dict(d: Dictionary) -> MeetingBook:
 	var book := MeetingBook.new()
-	book.meetings = d.get("meetings", {})
+	book.meetings = d.get("meetings", {}).duplicate(true)
 	return book
