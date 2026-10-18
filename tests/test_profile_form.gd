@@ -104,7 +104,7 @@ func test_merkmale_uebernehmen() -> void:
 	check_eq(result.weight_class, 2, "weight_class 2 übernommen")
 	check_eq(result.days, ["Mo", "Sa"], "days ohne Doppelte, sortiert")
 	check_eq(result.equipment, ["Handschuhe", "Pratzen"], "equipment ohne Doppelte, sortiert")
-	check_eq(p.weight_class, -1, "p.weight_class unverändert")
+	check_eq(p.weight_class, 1, "p.weight_class unverändert (Alex hat Mittel)")
 
 
 func test_gewicht_ungueltig() -> void:
