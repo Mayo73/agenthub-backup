@@ -8,18 +8,29 @@ func setup() -> void:
 
 
 func test_anzahl() -> void:
-	check(plan.size() == 17, "Plan hat 17 Einträge")
+	check(plan.size() == 19, "Plan hat 19 Einträge")
 	var silberling := 0
 	var grasfisch := 0
+	var kugelfisch := 0
 	var zackenbarsch := 0
 	for entry in plan:
 		match entry["id"]:
 			"silberling": silberling += 1
 			"grasfisch": grasfisch += 1
+			"kugelfisch": kugelfisch += 1
 			"zackenbarsch": zackenbarsch += 1
 	check_eq(silberling, 12, "12 silberling")
 	check_eq(grasfisch, 3, "3 grasfisch")
+	check_eq(kugelfisch, 2, "2 kugelfisch")
 	check_eq(zackenbarsch, 2, "2 zackenbarsch")
+
+
+func test_kugelfische() -> void:
+	var count := 0
+	for entry in plan:
+		if entry["id"] == "kugelfisch":
+			count += 1
+	check(count == 2, "Genau 2 Kugelfische im Spawn-Plan")
 
 
 func test_abstand() -> void:
