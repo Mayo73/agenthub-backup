@@ -5,10 +5,11 @@ extends RefCounted
 ## sight: Sichtweite in Metern.
 
 const DATA := {
-	"silberling": {"name": "Silberling", "size": 0.6, "speed": 6.0, "hp": 20.0, "bite": 0.0, "behavior": "schwarm", "color": Color(0.78, 0.84, 0.92), "food": 4, "sight": 12.0},
-	"grasfisch": {"name": "Grasfisch", "size": 1.0, "speed": 4.5, "hp": 40.0, "bite": 0.0, "behavior": "scheu", "color": Color(0.42, 0.7, 0.36), "food": 7, "sight": 10.0},
-	"zackenbarsch": {"name": "Zackenbarsch", "size": 1.8, "speed": 7.0, "hp": 90.0, "bite": 15.0, "behavior": "jaeger", "color": Color(0.55, 0.32, 0.25), "food": 12, "sight": 18.0},
-}
+		"silberling": {"name": "Silberling", "size": 0.6, "speed": 6.0, "hp": 20.0, "bite": 0.0, "behavior": "schwarm", "color": Color(0.78, 0.84, 0.92), "food": 4, "sight": 12.0},
+		"grasfisch": {"name": "Grasfisch", "size": 1.0, "speed": 4.5, "hp": 40.0, "bite": 0.0, "behavior": "scheu", "color": Color(0.42, 0.7, 0.36), "food": 7, "sight": 10.0},
+		"kugelfisch": {"name": "Kugelfisch", "size": 0.8, "speed": 3.5, "hp": 30.0, "bite": 0.0, "behavior": "scheu", "color": Color(0.93, 0.74, 0.3), "food": 6, "sight": 8.0},
+		"zackenbarsch": {"name": "Zackenbarsch", "size": 1.8, "speed": 7.0, "hp": 90.0, "bite": 15.0, "behavior": "jaeger", "color": Color(0.55, 0.32, 0.25), "food": 12, "sight": 18.0},
+	}
 
 
 static func ids() -> Array[String]:
