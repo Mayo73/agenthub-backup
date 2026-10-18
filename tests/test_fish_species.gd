@@ -2,9 +2,17 @@ extends "res://tests/base_test.gd"
 
 
 func test_arten() -> void:
-	check_eq(FishSpecies.ids(), ["grasfisch", "silberling", "zackenbarsch"], "alle Arten sortiert")
+	check_eq(FishSpecies.ids(), ["grasfisch", "kugelfisch", "laternenfisch", "silberling", "zackenbarsch"], "alle Arten sortiert")
 	check(FishSpecies.has("silberling"), "silberling existiert")
 	check(not FishSpecies.has("hai"), "hai existiert nicht")
+
+
+func test_kugelfisch() -> void:
+	check(FishSpecies.has("kugelfisch"), "kugelfisch existiert")
+	check(not FishSpecies.is_predator("kugelfisch"), "kugelfisch ist kein Räuber")
+	var kugel_radius := FishSpecies.radius("kugelfisch")
+	check(is_equal_approx(kugel_radius, 0.4), "Kugelfisch-Radius ist 0.4")
+	check_eq(FishSpecies.data("kugelfisch")["behavior"], "scheu", "Kugelfisch-Verhalten ist scheu")
 
 
 func test_werte() -> void:
@@ -31,3 +39,11 @@ func test_vollstaendig() -> void:
 		var d := FishSpecies.data(id)
 		for key: String in required_keys:
 			check(d.has(key), "Art %s hat Schlüssel %s" % [id, key])
+
+
+func test_laternenfisch() -> void:
+	check(FishSpecies.has("laternenfisch"), "laternenfisch existiert")
+	check(not FishSpecies.is_predator("laternenfisch"), "laternenfisch ist kein Räuber")
+	var glow = FishSpecies.data("laternenfisch").get("glow", false)
+	check(glow == true, "Laternenfisch leuchtet (glow = true)")
+	check_eq(FishSpecies.data("laternenfisch")["food"], 10, "Nahrungswert Laternenfisch ist 10")
