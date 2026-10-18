@@ -23,10 +23,14 @@ func _init() -> void:
 
 	avatar = AvatarView.new()
 	avatar.set_diameter(56)
+	avatar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	row.add_child(avatar)
 
 	picker = OptionButton.new()
 	picker.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# Sonst erzwingt der längste Eintrag eine Mindestbreite über die Bildschirmbreite hinaus.
+	picker.fit_to_longest_item = false
+	picker.clip_text = true
 	picker.custom_minimum_size = Vector2(0, UiStyle.BUTTON_HEIGHT)
 	picker.add_theme_font_size_override("font_size", UiStyle.SIZE_NORMAL)
 	picker.get_popup().add_theme_font_size_override("font_size", UiStyle.SIZE_NORMAL)

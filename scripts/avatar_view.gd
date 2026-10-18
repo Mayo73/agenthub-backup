@@ -51,5 +51,6 @@ func _draw() -> void:
 	var initials := shown_initials()
 	var font_size := int(diameter * 0.38)
 	var font := ThemeDB.fallback_font
-	var draw_pos := Vector2(center.x - diameter * 0.5, center.y - center.y)
-	draw_string(font, draw_pos, initials, HORIZONTAL_ALIGNMENT_CENTER, -1, font_size, UiStyle.TEXT)
+	## Grundlinie so, dass die Schrift senkrecht mittig im Kreis steht; waagerecht über die volle Breite zentriert
+	var baseline := center.y + (font.get_ascent(font_size) - font.get_descent(font_size)) * 0.5
+	draw_string(font, Vector2(0.0, baseline), initials, HORIZONTAL_ALIGNMENT_CENTER, diameter, font_size, UiStyle.TEXT)
