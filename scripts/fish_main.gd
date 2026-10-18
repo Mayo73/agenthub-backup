@@ -97,6 +97,7 @@ func _ready() -> void:
 	hud.name = "Hud"
 	add_child(hud)
 	hud.show_progress(progress)
+	update_upgrade_hint()
 	evolve = EvolveMenu.new()
 	evolve.name = "Evolve"
 	add_child(evolve)
@@ -189,6 +190,7 @@ func feed_player() -> void:
 		audio.play("fressen_pflanze")
 		eat_value(item["value"])
 	hud.show_progress(progress)
+	update_upgrade_hint()
 
 
 ## Rechnet einen Bissen Nahrung an; wächst der Fisch dabei, wird er größer.
@@ -223,6 +225,7 @@ func _on_upgraded(slot: String) -> void:
 	hud.show_message("%s verbessert!" % FishBuild.NAMES[slot])
 	apply_sight()
 	save_now()
+	update_upgrade_hint()
 
 
 ## Verteilt die KI-Fische um den Spielerfisch.
@@ -327,3 +330,8 @@ func save_now() -> bool:
 	var data := SaveGame.read_file(save_path)
 	data[FishSave.KEY] = FishSave.to_dict(player.build, progress)
 	return SaveGame.write_file(save_path, data)
+
+
+## Zeigt „E: Verbesserung möglich“, solange die DNA für mindestens eine Verbesserung reicht.
+func update_upgrade_hint() -> void:
+	hud.show_upgrade_hint(FishUpgrades.any_affordable(player.build, progress))
