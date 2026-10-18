@@ -17,7 +17,10 @@ static func profiles() -> Array[SparProfile]:
 		"years": 4,
 		"age": 29,
 		"bio": "Trainiert regelmäßig draußen und mag ein lockeres Tempo.",
-		"color": Color(0.20, 0.55, 0.85)
+		"color": Color(0.20, 0.55, 0.85),
+		"weight_class": 1,
+		"days": ["Di", "Do", "Sa"],
+		"equipment": ["Mundschutz", "Matte"]
 	}))
 
 	result.append(SparProfile.from_dict({
@@ -28,7 +31,10 @@ static func profiles() -> Array[SparProfile]:
 		"years": 7,
 		"age": 33,
 		"bio": "Mag anspruchsvolle Einheiten und verschiedene Techniken.",
-		"color": Color(0.85, 0.35, 0.25)
+		"color": Color(0.85, 0.35, 0.25),
+		"weight_class": 2,
+		"days": ["Mo", "Mi", "Fr"],
+		"equipment": ["Handschuhe", "Schienbeinschoner", "Mundschutz"]
 	}))
 
 	result.append(SparProfile.from_dict({
@@ -39,7 +45,10 @@ static func profiles() -> Array[SparProfile]:
 		"years": 3,
 		"age": 26,
 		"bio": "Freut sich auf Boxstunden mit guter Aufsicht von außen.",
-		"color": Color(0.75, 0.30, 0.65)
+		"color": Color(0.75, 0.30, 0.65),
+		"weight_class": 0,
+		"days": ["Sa", "So"],
+		"equipment": ["Handschuhe", "Pratzen"]
 	}))
 
 	result.append(SparProfile.from_dict({
@@ -50,7 +59,10 @@ static func profiles() -> Array[SparProfile]:
 		"years": 1,
 		"age": 22,
 		"bio": "Neu dabei und lernt gerne die Grundlagen draußen.",
-		"color": Color(0.30, 0.70, 0.40)
+		"color": Color(0.30, 0.70, 0.40),
+		"weight_class": 1,
+		"days": ["Mi", "Sa"],
+		"equipment": []
 	}))
 
 	result.append(SparProfile.from_dict({
@@ -61,7 +73,10 @@ static func profiles() -> Array[SparProfile]:
 		"years": 9,
 		"age": 35,
 		"bio": "Erfahrene Practitionerin mit Fokus auf Technik.",
-		"color": Color(0.90, 0.65, 0.20)
+		"color": Color(0.90, 0.65, 0.20),
+		"weight_class": 0,
+		"days": ["Mo", "Do"],
+		"equipment": ["Matte"]
 	}))
 
 	result.append(SparProfile.from_dict({
@@ -72,7 +87,10 @@ static func profiles() -> Array[SparProfile]:
 		"years": 5,
 		"age": 30,
 		"bio": "Mag Muay-Thai-Einheiten und trainiert gerne draußen.",
-		"color": Color(0.25, 0.65, 0.70)
+		"color": Color(0.25, 0.65, 0.70),
+		"weight_class": 1,
+		"days": ["Di", "Fr", "So"],
+		"equipment": ["Handschuhe", "Schienbeinschoner"]
 	}))
 
 	result.append(SparProfile.from_dict({
@@ -83,7 +101,10 @@ static func profiles() -> Array[SparProfile]:
 		"years": 2,
 		"age": 24,
 		"bio": "Einsteiger im Ringen mit Interesse an Bodenarbeit.",
-		"color": Color(0.55, 0.45, 0.85)
+		"color": Color(0.55, 0.45, 0.85),
+		"weight_class": 2,
+		"days": ["Sa"],
+		"equipment": ["Mundschutz", "Matte"]
 	}))
 
 	result.append(SparProfile.from_dict({
@@ -94,7 +115,10 @@ static func profiles() -> Array[SparProfile]:
 		"years": 11,
 		"age": 38,
 		"bio": "Langjähriger Boxer mit Fokus auf Kondition und Technik.",
-		"color": Color(0.60, 0.60, 0.30)
+		"color": Color(0.60, 0.60, 0.30),
+		"weight_class": 2,
+		"days": ["Mo", "Di", "Mi", "Do", "Fr"],
+		"equipment": ["Handschuhe", "Mundschutz", "Pratzen"]
 	}))
 
 	return result

@@ -44,3 +44,38 @@ func test_frische_kopien() -> void:
 
 	var list2: Array[SparProfile] = DemoData.profiles()
 	check_eq(list2[0].name, name_first, "zweiter Aufruf unverändert")
+
+
+func test_merkmale_vollstaendig() -> void:
+	var profiles: Array[SparProfile] = DemoData.profiles()
+
+	for p in profiles:
+		check(p.weight_class >= 0 and p.weight_class <= 2,
+			"%s hat gültige weight_class %d" % [p.name, p.weight_class])
+		check(p.days.size() > 0,
+			"%s hat mindestens einen Trainingstag, days=%s" % [p.name, p.days])
+
+
+func test_merkmale_alex() -> void:
+	var profiles: Array[SparProfile] = DemoData.profiles()
+	var alex = profiles[0]
+
+	check_eq(alex.weight_class, 1, "Alex weight_class ist 1")
+	check_eq(alex.days, ["Di", "Do", "Sa"], "Alex days sind korrekt")
+	check_eq(alex.equipment, ["Mundschutz", "Matte"], "Alex equipment ist korrekt")
+
+
+func test_merkmale_sam() -> void:
+	var profiles: Array[SparProfile] = DemoData.profiles()
+	var sam = profiles[1]
+
+	check_eq(sam.weight_class, 2, "Sam weight_class ist 2")
+	check_eq(sam.weight_name(), "Schwer (über 84 kg)", "Sam weight_name stimmt")
+	check_eq(sam.days, ["Mo", "Mi", "Fr"], "Sam days sind korrekt")
+
+
+func test_ohne_ausruestung() -> void:
+	var profiles: Array[SparProfile] = DemoData.profiles()
+	var jonas = profiles[3]
+
+	check(jonas.equipment.is_empty(), "Jonas hat leere equipment-Liste")
