@@ -45,3 +45,10 @@ func test_fischphase_fortsetzen() -> void:
 	check(fischphase.contains("Pausemenü"), "Fischphase enthält 'Pausemenü'")
 	check(fischphase.contains("Fortsetzen"), "Fischphase enthält 'Fortsetzen'")
 	check(fischphase.contains("E: Verbesserung möglich"), "Fischphase enthält 'E: Verbesserung möglich'")
+
+
+func test_lebendige_welt() -> void:
+	var text := FileAccess.get_file_as_string(PATH)
+	check(text.contains("Laternenfisch"), "Enthält 'Laternenfisch'")
+	check(text.contains("Schwierigkeitsgrad"), "Enthält 'Schwierigkeitsgrad'")
+	check(text.contains("flieht"), "Enthält 'flieht'")
