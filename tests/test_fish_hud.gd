@@ -79,3 +79,18 @@ func test_hinweis_verbesserung() -> void:
 	hud.show_upgrade_hint(false)
 	check(!hud.upgrade_label.visible, "Nach show_upgrade_hint(false) unsichtbar")
 	hud.free()
+
+
+func test_groesse_text() -> void:
+	var p := FishProgress.new()
+	check_eq(FishHud.size_text(p), "Größe: 1 / 4", "size_text(stage=0)")
+	p.stage = 3
+	check_eq(FishHud.size_text(p), "Größe: 4 / 4", "size_text(stage=3)")
+
+
+func test_groesse_anzeige() -> void:
+	check_eq(hud.size_label.text, "Größe: 1 / 4", "size_label.text initial")
+	var p := FishProgress.new()
+	p.stage = 1
+	hud.show_progress(p)
+	check_eq(hud.size_label.text, "Größe: 2 / 4", "size_label.text nach show_progress(stage=1)")
