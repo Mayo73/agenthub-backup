@@ -66,3 +66,24 @@ func test_folgt_richtung() -> void:
 		var c := FishBrain.steer(m, Vector3(0, 0, -1))
 		m.step(c.x, c.y, c.z, 0.05)
 	check(absf(m.yaw) < 0.2, "Fisch richtet sich nach 60 Schritten auf -z aus")
+
+
+func test_jaeger_flieht_vor_riesen() -> void:
+	## Spieler ist deutlich größer (2.5 > 1.8 * 1.2 = 2.16), Jäger flieht nach links (-x)
+	var result := FishBrain.decide("jaeger", P, 1.8, 18.0, P + Vector3(10, 0, 0), 2.5, null)
+	check_eq(result, Vector3(-1, 0, 0), "Jäger flieht vor deutlich größerem Spieler")
+
+
+func test_jaeger_grenze() -> void:
+	## Bei exakter Grenze (1.8 * 1.2 = 2.16): Jäger flieht
+	var result := FishBrain.decide("jaeger", P, 1.8, 18.0, P + Vector3(10, 0, 0), 1.8 * FishBrain.HUNTER_FLEE_FACTOR, null)
+	check_eq(result, Vector3(-1, 0, 0), "Jäger flieht bei Grenzwert")
+	## Bei 2.1 (unter Grenze von 2.16): Jäger bleibt gleichgültig
+	var result_below := FishBrain.decide("jaeger", P, 1.8, 18.0, P + Vector3(10, 0, 0), 2.1, null)
+	check_eq(result_below, Vector3.ZERO, "Jäger bei Größe knapp unter Grenze")
+
+
+func test_riese_ausser_sicht() -> void:
+	## Spieler ist größer, aber außerhalb der Sichtweite (Dist 30 > sight 18)
+	var result := FishBrain.decide("jaeger", P, 1.8, 18.0, P + Vector3(30, 0, 0), 2.5, null)
+	check_eq(result, Vector3.ZERO, "Jäger ignoriert riesigen Spieler außerhalb der Sicht")
