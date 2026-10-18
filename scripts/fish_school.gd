@@ -80,7 +80,12 @@ static func missing(fishes: Array) -> Array[String]:
 
 
 ## Stelle für einen nachkommenden Fisch: außer Sicht im Abstand MIN_DIST bis MAX_DIST um center.
-static func respawn_position(center: Vector3, seed_value: int) -> Vector3:
+## Laternenfische kommen in ihrer Tiefe (LANTERN_DEPTH) nach.
+static func respawn_position(center: Vector3, seed_value: int, species_id: String = "") -> Vector3:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
-	return _around(center, rng)
+	var p := _around(center, rng)
+	if species_id == "laternenfisch":
+		p.y = -rng.randf_range(LANTERN_DEPTH.x, LANTERN_DEPTH.y)
+		p = FishWorld.clamp_to_water(p)
+	return p

@@ -594,15 +594,15 @@ func test_nachschub_wartet() -> void:
 	check_eq(fish.fishes.size(), 0, "fish.fishes.size() ist 0")
 
 
-## Test: Nachschub补füllt alle fehlenden Fische auf Zielanzahl.
+## Test: Nachschub füllt alle fehlenden Fische auf Zielanzahl.
 func test_nachschub() -> void:
 	_clear_ai_fishes()
 	fish.respawn_timer = 0.0
-	var gezählt: int = fish.refill_fish(fish.RESPAWN_INTERVAL)
+	var gezaehlt: int = fish.refill_fish(fish.RESPAWN_INTERVAL)
 	var zielsumme := 0
 	for v in FishSchool.target_counts().values():
 		zielsumme += v
-	check_eq(gezählt, zielsumme, "Anzahl neuer Fische gleich Summe von target_counts()")
+	check_eq(gezaehlt, zielsumme, "Anzahl neuer Fische gleich Summe von target_counts()")
 	check(FishSchool.missing(fish.fishes).is_empty(), "FishSchool.missing(fish.fishes) ist leer")
 	check_eq(fish.respawn_timer, 0.0, "fish.respawn_timer ist 0.0")
 
@@ -611,11 +611,11 @@ func test_nachschub() -> void:
 func test_nachschub_ausser_sicht() -> void:
 	_clear_ai_fishes()
 	fish.respawn_timer = 0.0
-	var gezählt: int = fish.refill_fish(fish.RESPAWN_INTERVAL)
+	var gezaehlt: int = fish.refill_fish(fish.RESPAWN_INTERVAL)
 	var zielsumme := 0
 	for v in FishSchool.target_counts().values():
 		zielsumme += v
-	check_eq(gezählt, zielsumme, "Anzahl neuer Fische gleich Summe von target_counts()")
+	check_eq(gezaehlt, zielsumme, "Anzahl neuer Fische gleich Summe von target_counts()")
 	for f in fish.fishes:
 		check(f.motion.position.distance_to(fish.player.motion.position) >= FishSchool.MIN_DIST, "jeder Fisch mindestens MIN_DIST vom Spieler entfernt")
 

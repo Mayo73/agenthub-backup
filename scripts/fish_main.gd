@@ -269,7 +269,7 @@ func refill_fish(delta: float) -> int:
 	respawn_timer = 0.0
 	var ids := FishSchool.missing(fishes)
 	for i in ids.size():
-		add_fish(ids[i], FishSchool.respawn_position(player.motion.position, randi() + i))
+		add_fish(ids[i], FishSchool.respawn_position(player.motion.position, randi() + i, ids[i]))
 	return ids.size()
 
 
@@ -368,7 +368,7 @@ func save_now() -> bool:
 	return SaveGame.write_file(save_path, data)
 
 
-## Zeigt „E: Verbesserung möglich", solange die DNA für mindestens eine Verbesserung reicht.
+## Zeigt „E: Verbesserung möglich“, solange die DNA für mindestens eine Verbesserung reicht.
 func update_upgrade_hint() -> void:
 	hud.show_upgrade_hint(FishUpgrades.any_affordable(player.build, progress))
 

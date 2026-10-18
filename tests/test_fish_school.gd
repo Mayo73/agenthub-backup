@@ -121,8 +121,6 @@ func test_fehlende() -> void:
 		stubs.append(stub("grasfisch"))
 	for i in 2:
 		stubs.append(stub("kugelfisch"))
-	for i in 0:
-		stubs.append(stub("laternenfisch"))
 	stubs.append(stub("zackenbarsch"))
 	var miss := FishSchool.missing(stubs)
 	check_eq(miss.size(), 6, "sechs Fische fehlen")
@@ -149,3 +147,9 @@ func test_nachkommen_abstand() -> void:
 		check(dist <= FishSchool.MAX_DIST + 0.01, "Seed %d: Abstand nicht weiter als MAX_DIST" % s)
 		var depth := FishWorld.depth_of(p)
 		check(depth >= 5.0 && depth <= 50.0, "Seed %d: Tiefe zwischen 5 und 50" % s)
+
+
+func test_laternenfisch_kommt_tief_nach() -> void:
+	for s in range(1, 11):
+		var depth := FishWorld.depth_of(FishSchool.respawn_position(FishWorld.START, s, "laternenfisch"))
+		check(depth >= FishSchool.LANTERN_DEPTH.x - 0.01, "Seed %d: Laternenfisch kommt mindestens 45 m tief nach" % s)
