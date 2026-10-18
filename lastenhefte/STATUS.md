@@ -1,16 +1,10 @@
 # Stand des Agent Hub
 
-Automatisch erzeugt am 17.10.2026, 21:53 Uhr. Nicht bearbeiten, wird laufend neu geschrieben.
+Automatisch erzeugt am 18.10.2026, 20:54 Uhr. Nicht bearbeiten, wird laufend neu geschrieben.
 
 ## Bald keine Arbeit mehr für die Agents
 
-Für **Zellenphase – Evolutionsspiel nach dem Vorbild von Spore** bleiben noch etwa 37 Tickets. Das reicht den Agents höchstens für etwa einen Tag, und danach wartet kein weiteres Lastenheft. Bitte sprich mit dem Nutzer über das nächste Projekt und lege ein Lastenheft an, damit die Agents nicht stillstehen.
-
-## Für dich, ChatGPT: offene Punkte
-
-Erledige sie selbst (siehe AGENTS.md): Antwort bzw. Ergebnis in die Datei schreiben und `status: beantwortet` setzen. Was du nicht kannst oder nicht entscheiden darfst: Grund eintragen, `status: weitergegeben`, dem Nutzer Bescheid geben.
-
-- **P-0007** Godot-Exportvorlagen: bitte an den Nutzer weitergeben (Frage; drift, zellenphase) → `punkte/P-0007-exportvorlagen-installieren.md`
+Für **Sparring – Android-Prototyp für Kampfsport-Matches** bleiben noch etwa 47 Tickets. Das reicht den Agents höchstens für etwa einen Tag, und danach wartet kein weiteres Lastenheft. Bitte sprich mit dem Nutzer über das nächste Projekt und lege ein Lastenheft an, damit die Agents nicht stillstehen.
 
 ## Nur für den Nutzer (von dir weitergegeben)
 
@@ -18,13 +12,16 @@ Erledige sie selbst (siehe AGENTS.md): Antwort bzw. Ergebnis in die Datei schrei
 - **P-0005** Zellenphase: Probe spielen (Ausprobieren (Computer Use); zellenphase) → `punkte/P-0005-zellenphase-durchspielen.md`
 - **P-0006** Drift und Zellenphase: Klang anhören (Ausprobieren (Computer Use); drift, zellenphase) → `punkte/P-0006-klang-anhoeren.md`
 
+Beantwortet, Claude setzt es beim nächsten Review um: P-0010
+
 ## In Arbeit
 
-- **Zellenphase – Evolutionsspiel nach dem Vorbild von Spore** (`zellenphase.md`, Status `aktiv`): 173 von 197 Tickets erledigt, 7 von 23 Meilensteinen fertig. Gerade in Arbeit: T-0262 FishAbilities – Bauteile bestimmen die Fähigkeiten des Fischs. Offene Punkte: P-0005, P-0006, P-0007
+- **Sparring – Android-Prototyp für Kampfsport-Matches** (`sparring.md`, Status `aktiv`): 0 von 45 Tickets erledigt, 1 von 9 Meilensteinen fertig
 
 ## Wartet auf eine Antwort (von dir, sonst vom Nutzer)
 
-- **Drift – isometrisches Driftspiel** (`drift.md`, Status `wartet-auf-dich`): 81 von 82 Tickets erledigt, 5 von 16 Meilensteinen fertig. Offene Punkte: P-0003, P-0006, P-0007
+- **Drift – isometrisches Driftspiel** (`drift.md`, Status `wartet-auf-dich`): 82 von 82 Tickets erledigt, 6 von 16 Meilensteinen fertig. Offene Punkte: P-0003, P-0006
+- **Zellenphase – Evolutionsspiel nach dem Vorbild von Spore** (`zellenphase.md`, Status `wartet-auf-dich`): 236 von 236 Tickets erledigt, 9 von 25 Meilensteinen fertig. Offene Punkte: P-0005, P-0006
 
 ## Entwürfe (noch nicht freigegeben)
 

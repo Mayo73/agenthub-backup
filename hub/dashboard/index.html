@@ -150,6 +150,16 @@ main { max-width: 1680px; margin: 0 auto; padding: 20px 24px 48px; display: grid
 .stat.tone-ok .stat-value { color: var(--ok); }
 .stat.tone-warn .stat-value { color: var(--warn); }
 .stat.tone-bad .stat-value { color: var(--bad); }
+.stat.clickable { cursor: pointer; text-align: left; font: inherit; color: inherit; }
+.stat.clickable:hover { border-color: var(--accent); }
+.stat.clickable:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.punkt { padding: 16px 0; border-top: 1px solid var(--border); }
+.punkt:first-of-type { border-top: 0; }
+.punkt-head { display: flex; align-items: center; gap: 6px 8px; flex-wrap: wrap; }
+.punkt-head .badge { margin-left: 0; }
+.punkt h3 { margin: 6px 0 4px; font-size: 16px; }
+.punkt-bilder { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; margin: 8px 0; }
+.punkt-bilder img { display: block; width: 100%; border-radius: 6px; border: 1px solid var(--border); }
 
 /* Board */
 .board { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; align-items: start; }
@@ -633,17 +643,28 @@ function renderKennzahlen() {
     return (today ? 'heute ' : d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ' ') +
       d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   };
-  const tile = (label, value, sub, tone) =>
-    `<div class="stat${tone ? ' tone-' + tone : ''}"><div class="stat-label">${esc(label)}</div><div class="stat-value">${esc(value)}</div>${sub ? `<div class="stat-sub">${esc(sub)}</div>` : ''}</div>`;
+  // Mit punkte (Status, kommagetrennt) wird die Kachel zum Knopf, der die Punkte im Seitenbereich zeigt.
+  const tile = (label, value, sub, tone, punkte) => {
+    const inner = `<div class="stat-label">${esc(label)}</div><div class="stat-value">${esc(value)}</div>${sub ? `<div class="stat-sub">${esc(sub)}</div>` : ''}`;
+    const cls = `stat${tone ? ' tone-' + tone : ''}`;
+    return punkte
+      ? `<button type="button" class="${cls} clickable" data-punkte="${esc(punkte)}" data-titel="${esc(label)}" title="Punkte anzeigen">${inner}</button>`
+      : `<div class="${cls}">${inner}</div>`;
+  };
   const h = k.higgsfield;
   const s = k.sicherung;
-  $('#kennzahlen').innerHTML = [
+  const html = [
     tile('Auslastung 24 h', `${k.auslastung} %`, `${k.bestanden24h} Tickets bestanden${k.fehlgeschlagen24h ? `, ${k.fehlgeschlagen24h} fehlgeschlagen` : ''}`, k.auslastung >= 50 ? 'ok' : 'warn'),
-    tile('Punkte bei ChatGPT', String(k.punkteChatGpt), k.punkteBeantwortet ? `${k.punkteBeantwortet} beantwortet, Claude setzt um` : 'offene Fragen und Prüfaufträge'),
-    tile('Punkte für dich', String(k.punkteNutzer), k.punkteNutzer ? 'von ChatGPT weitergegeben' : 'nichts zu tun', k.punkteNutzer ? 'warn' : ''),
+    tile('Punkte bei ChatGPT', String(k.punkteChatGpt), k.punkteBeantwortet ? `${k.punkteBeantwortet} beantwortet, Claude setzt um` : 'offene Fragen und Prüfaufträge', '', 'offen,beantwortet'),
+    tile('Punkte für dich', String(k.punkteNutzer), k.punkteNutzer ? 'von ChatGPT weitergegeben' : 'nichts zu tun', k.punkteNutzer ? 'warn' : '', 'weitergegeben'),
     tile('Higgsfield', h ? `${String(h.credits).replace('.', ',')} Credits` : '–', h ? `Stand ${when(h.checked)}` : 'noch nicht abgefragt'),
     tile('Sicherung', s ? (s.ok ? 'ok' : 'Fehler') : '–', s ? `${when(s.finished)}${s.message ? ' · ' + s.message : ''}` : 'noch keine', s && !s.ok ? 'bad' : ''),
   ].join('');
+  // Nur bei Änderungen neu zeichnen, sonst kann ein Klick auf eine Kachel ins Leere gehen.
+  if (html !== $('#kennzahlen').dataset.html) {
+    $('#kennzahlen').innerHTML = html;
+    $('#kennzahlen').dataset.html = html;
+  }
 }
 
 /* ---------- Board ---------- */
@@ -881,7 +902,7 @@ $('#board').addEventListener('click', e => {
 });
 $('#scrim').addEventListener('click', closeTicket);
 $('#drawer-close').addEventListener('click', closeTicket);
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && openId) closeTicket(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#drawer').classList.contains('open')) closeTicket(); });
 
 $('#drawer-body').addEventListener('click', async e => {
   const fileBtn = e.target.closest('[data-file]');
@@ -1014,6 +1035,45 @@ async function openSpec(file, title) {
     $('#drawer-body').innerHTML = '<p class="muted">Lastenheft nicht gefunden.</p>';
   }
 }
+$('#kennzahlen').addEventListener('click', e => {
+  const tile = e.target.closest('[data-punkte]');
+  if (tile) openPunkte(tile.dataset.punkte, tile.dataset.titel);
+});
+
+/** Offene Punkte (lastenhefte/punkte) im Seitenbereich: Inhalt, Antwort von ChatGPT, Bilder. */
+async function openPunkte(status, title) {
+  openId = null;
+  viewing = null;
+  $('#drawer').classList.add('open');
+  $('#scrim').classList.add('open');
+  $('#drawer-title').innerHTML = `<div><span class="mono muted">lastenhefte/punkte</span></div><h2>${esc(title)}</h2>`;
+  $('#drawer-body').innerHTML = '<p class="muted">Lade …</p>';
+  let list;
+  try { list = arr(await api('/api/punkte?status=' + encodeURIComponent(status))); }
+  catch { $('#drawer-body').innerHTML = '<p class="muted">Die Punkte ließen sich nicht laden.</p>'; return; }
+  const kinds = { frage: 'Frage', ansehen: 'Ansehen', ausprobieren: 'Ausprobieren' };
+  const states = { offen: ['bei ChatGPT', 'accent'], beantwortet: ['beantwortet', 'ok'], weitergegeben: ['für dich', 'warn'] };
+  const hint = status === 'weitergegeben'
+    ? `<div class="callout warn">Diese Punkte konnte ChatGPT nicht selbst erledigen. Deine Antwort gibst du ChatGPT im Gespräch, zum Beispiel „P-0003: Fährt sich gut, Handbremse etwas zu stark“. ChatGPT trägt sie ein, Claude setzt sie beim nächsten Review um.</div>`
+    : '';
+  if (!list.length) { $('#drawer-body').innerHTML = hint + '<p class="muted">Gerade keine.</p>'; return; }
+  $('#drawer-body').innerHTML = hint + list.map(p => {
+    const [label, tone] = states[p.status] || [p.status, 'neutral'];
+    // Titelzeile steht schon im Kopf, Kommentare (<!-- -->) braucht hier niemand.
+    const body = String(p.body || '').replace(/<!--[\s\S]*?-->/g, '').replace(/^\s*#\s+.*(\r?\n|$)/, '');
+    const pics = arr(p.bilder).map(b => {
+      const src = `/api/punkt-bild?punkt=${encodeURIComponent(p.id)}&name=${encodeURIComponent(b)}`;
+      return `<a href="${src}" target="_blank" rel="noopener" title="${esc(b)}"><img src="${src}" alt="${esc(b)}" loading="lazy"></a>`;
+    }).join('');
+    return `<section class="punkt">
+      <div class="punkt-head"><span class="mono muted">${esc(p.id)}</span><span class="badge tone-${tone}">${esc(label)}</span><span class="badge tone-neutral">${esc(kinds[p.kind] || p.kind)}</span><span class="muted">${esc(arr(p.projects).join(', '))}</span></div>
+      <h3>${esc(p.title)}</h3>
+      ${pics ? `<div class="punkt-bilder">${pics}</div>` : ''}
+      <div class="md">${md(body)}</div>
+    </section>`;
+  }).join('');
+}
+
 document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => setView(t.dataset.view)));
 $('#plan-select').addEventListener('change', e => { planProject = e.target.value; planSig = ''; refreshPlan(); });
 $('#flow-wrap').addEventListener('click', e => {

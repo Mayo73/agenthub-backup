@@ -1,7 +1,7 @@
 ---
 projekt: zellenphase
 titel: Zellenphase – Evolutionsspiel nach dem Vorbild von Spore
-status: aktiv
+status: wartet-auf-dich
 prioritaet: 2
 ablaufplan: ja
 erstellt: 2026-10-16

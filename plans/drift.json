@@ -254,7 +254,8 @@
                            "tasks":  [
                                          {
                                              "text":  "Optik nach den Nachbesserungen erneut beurteilen (Autos, Deko, Texturen, Titelbild)",
-                                             "done":  false
+                                             "done":  true,
+                                             "punkt":  "P-0008"
                                          }
                                      ]
                        },
@@ -301,7 +302,8 @@
                                          {
                                              "text":  "Godot-Exportvorlagen installieren (du selbst oder per Chat-Auftrag an Claude)",
                                              "done":  false,
-                                             "punkt":  "P-0007"
+                                             "punkt":  "P-0007",
+                                             "who":  "nutzer"
                                          },
                                          {
                                              "text":  "Windows-Version starten und testen",

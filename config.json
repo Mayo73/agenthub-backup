@@ -35,6 +35,13 @@
       "verify": "verify.cmd",
       "protected": ["verify.cmd", "tests/run_tests.gd", "tests/base_test.gd", "playtests/playtest.gd"],
       "testCount": "^ERGEBNIS: (\\d+) ok"
+    },
+    "sparring": {
+      "path": "C:\\Users\\wiens\\AgentHub\\projects\\sparring",
+      "baseBranch": "main",
+      "verify": "verify.cmd",
+      "protected": ["verify.cmd", "tests/run_tests.gd", "tests/base_test.gd", "playtests/playtest.gd"],
+      "testCount": "^ERGEBNIS: (\\d+) ok"
     }
   }
 }

@@ -1,0 +1,17 @@
+{
+  "project": "sparring",
+  "title": "Sparring",
+  "goal": "Android-Prototyp mit fiktiven Testprofilen: Kampfsportpartner finden sich über gegenseitige Swipe-Matches, schreiben im Demochat und vereinbaren ein freiwilliges Training draußen.",
+  "target": "Abnahme",
+  "milestones": [
+    { "id": "M0", "title": "Grundgerüst", "description": "Godot-4.7-Projekt im Hochformat, Prüfsystem (verify.cmd, Testlauf), Spieltest, Kopfzeile mit Prototyp-Hinweis und Reiterleiste.", "by": "Claude", "done": true, "tickets": [], "tasks": [] },
+    { "id": "M1", "title": "Demodaten und Profil", "description": "Acht fiktive erwachsene Testprofile (darunter Jiu-Jitsu, MMA, Boxen), selbst gezeichnete Avatare, Zustand der App mit Speichern und Laden, eigenes Profil bearbeiten, Zurücksetzen mit Bestätigung.", "estimate": 11, "tickets": ["T-0322", "T-0323", "T-0324", "T-0325", "T-0326", "T-0327", "T-0328", "T-0333", "T-0334", "T-0335", "T-0336"], "tasks": [] },
+    { "id": "M2", "title": "Swipe und Match", "description": "Profile einzeln ansehen, wischen oder per Knopf Interesse bekunden bzw. überspringen, gegenseitiges Matching, Perspektivwechsel zwischen Testpersonen, Matchliste, Filter, Blockieren, Leerzustände.", "estimate": 7, "tickets": ["T-0329", "T-0330", "T-0331", "T-0332", "T-0337", "T-0338", "T-0339"], "tasks": [] },
+    { "id": "M3", "title": "Demochat", "description": "Nach dem Match lokal Nachrichten zwischen den beiden Testpersonen austauschen; unbeteiligte Personen sehen den Chat nicht; beendete Matches nehmen keine Nachrichten mehr an.", "estimate": 3, "tickets": ["T-0340", "T-0341", "T-0342"], "tasks": [] },
+    { "id": "M4", "title": "Treffen vereinbaren", "description": "Outdoor-Ort, Datum, Uhrzeit, Trainingsform, Intensität und Regeln vorschlagen; bestätigt erst nach beiderseitiger Zustimmung; jede Änderung verlangt neue Zustimmung; Absage und Match beenden aus beiden Perspektiven sichtbar.", "estimate": 3, "tickets": ["T-0343", "T-0344", "T-0345"], "tasks": [] },
+    { "id": "M7", "title": "Profilmerkmale", "description": "Lastenheft (Kann): fiktive Gewichtsklasse, Trainingstage und Ausrüstung je Testprofil, auf der Karte sichtbar und im eigenen Profil bearbeitbar.", "estimate": 6, "tickets": ["T-0351", "T-0352", "T-0353", "T-0354", "T-0355", "T-0356"], "tasks": [] },
+    { "id": "M8", "title": "Ortsskizze", "description": "Lastenheft (Kann): schematische, selbst gezeichnete Ortsskizze im Treffvorschlag (Park, Wiese, Strand, Sportplatz, Wald) ohne Kartendienst, dazu die gemeinsamen Trainingstage.", "estimate": 4, "tickets": ["T-0357", "T-0358", "T-0359", "T-0366"], "tasks": [] },
+    { "id": "M5", "title": "Android-APK und Anleitung", "description": "Export als APK (Android 7.0 und neuer), Installation in einem Android-Emulator geprüft, kurze Anleitung für Installation, Perspektivwechsel, Testablauf und Zurücksetzen. Braucht Android-SDK, JDK und Godot-Exportvorlagen.", "estimate": 3, "tickets": ["T-0350"], "tasks": [{ "text": "Android-Werkzeuge freigeben (JDK installiert 18.10.2026; Android-SDK mit Lizenzen und Exportvorlagen: bitte direkt im Chat mit Claude bestätigen)", "done": false, "punkt": "P-0009", "who": "nutzer" }] },
+    { "id": "M6", "title": "Abnahme", "description": "Abnahmekriterien 1–9 als automatische Tests und Spieltests, APK-Prüfung im Emulator, Ausprobieren durch dich.", "estimate": 6, "tickets": ["T-0346", "T-0347", "T-0348", "T-0349", "T-0360", "T-0361", "T-0362", "T-0363", "T-0364", "T-0365"], "tasks": [] }
+  ]
+}

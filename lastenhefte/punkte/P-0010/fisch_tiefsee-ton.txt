@@ -1,0 +1,7 @@
+Tonbericht Spieltest zellenphase/fisch_tiefsee (Zeit ab Programmstart)
+Ton: 48000 Hz, 2 Kanäle, 32 Bit, Aufnahme 17,6 s
+Gesamt: Pegel -20 dBFS (RMS), Spitze -10 dBFS, übersteuert 0,0 %, still 0 %
+
+Zeit     Pegel   Spitze  Tonhöhe  tiefe
+     0 s   -18 dB   -10 dB  44 Hz  
+     1 s   -23 dB   -17 dB 229 Hz  

@@ -105,6 +105,33 @@ function Send-Json($Context, [int]$Code, $Object) {
     Send-Text $Context $Code 'application/json' (ConvertTo-Json -InputObject $Object -Depth 8 -Compress)
 }
 
+function Send-Bytes($Context, [int]$Code, [string]$ContentType, [byte[]]$Bytes) {
+    $res = $Context.Response
+    $res.StatusCode = $Code
+    $res.ContentType = $ContentType
+    $res.Headers.Add('Cache-Control', 'max-age=60')
+    $res.ContentLength64 = $Bytes.Length
+    $res.OutputStream.Write($Bytes, 0, $Bytes.Length)
+}
+
+## Offene Punkte mit Inhalt und Bildern für den Seitenbereich (Klick auf die Punkte-Kacheln).
+function Get-PunkteDetail([string[]]$Status) {
+    $dir = Get-HubPath 'lastenhefte\punkte'
+    @(Get-Punkte | Where-Object { $Status -contains $_.Status } | Sort-Object Id | ForEach-Object {
+        $body = (Split-FrontMatter (Read-Text (Join-Path $dir $_.File))).Body
+        $material = Join-Path $dir $_.Id
+        $bilder = @()
+        if (Test-Path -LiteralPath $material) {
+            $bilder = @(Get-ChildItem -LiteralPath $material -File | Where-Object { $_.Extension -match '^\.(png|jpe?g|webp|gif)$' } |
+                Sort-Object Name | ForEach-Object { $_.Name })
+        }
+        [ordered]@{
+            id = $_.Id; title = $_.Title; kind = $_.Kind; status = $_.Status
+            projects = @($_.Projects); file = $_.File; body = $body; bilder = $bilder
+        }
+    })
+}
+
 function Get-OllamaStatus {
     if (((Get-Date) - $script:OllamaCacheTime).TotalSeconds -lt 5) { return $script:OllamaCache }
     $result = [ordered]@{ reachable = $false; models = @() }
@@ -350,6 +377,23 @@ function Invoke-Route($Context) {
                     Send-Text $ctx 200 'text/plain' (Read-Text $file)
                 } else {
                     Send-Text $ctx 404 'text/plain' 'Lastenheft nicht gefunden'
+                }
+            } elseif ($path -eq '/api/punkte') {
+                $status = @("$($req.QueryString['status'])" -split ',' | Where-Object { $_ -match '^(offen|beantwortet|weitergegeben)$' })
+                if ($status.Count -eq 0) { $status = @('offen', 'beantwortet', 'weitergegeben') }
+                Send-Json $ctx 200 @(Get-PunkteDetail $status)
+            } elseif ($path -eq '/api/punkt-bild') {
+                $punktId = "$($req.QueryString['punkt'])"
+                $name = "$($req.QueryString['name'])"
+                $file = $null
+                if ($punktId -match '^P-\d{4,6}$' -and $name -match '^[\w.\-]+\.(png|jpe?g|webp|gif)$') {
+                    $file = Join-Path (Get-HubPath "lastenhefte\punkte\$punktId") $name
+                }
+                if ($file -and (Test-Path -LiteralPath $file)) {
+                    $type = switch -Regex ($name) { '\.png$' { 'image/png' } '\.jpe?g$' { 'image/jpeg' } '\.webp$' { 'image/webp' } default { 'image/gif' } }
+                    Send-Bytes $ctx 200 $type ([IO.File]::ReadAllBytes($file))
+                } else {
+                    Send-Text $ctx 404 'text/plain' 'Bild nicht gefunden'
                 }
             } elseif ($path -eq '/api/plans') {
                 Send-Json $ctx 200 @(Get-PlanList)
