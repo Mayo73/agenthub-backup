@@ -9,7 +9,9 @@ var depth_label: Label
 var dna_label: Label
 var growth_label: Label
 var health_label: Label
+var warning_label: Label
 var upgrade_label: Label
+var size_label: Label
 var help_label: Label
 var message_label: Label
 var message_left := 0.0
@@ -26,8 +28,12 @@ func _init() -> void:
 	upgrade_label.text = UPGRADE_HINT
 	upgrade_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.45))
 	upgrade_label.visible = false
+	size_label = make_label("Size", Vector2(320, 116), 28)
 	help_label = make_label("Help", Vector2(40, 1010), 22)
 	help_label.text = HELP
+	warning_label = make_label("Warning", Vector2(560, 200), 30)
+	warning_label.add_theme_color_override("font_color", Color(1.0, 0.55, 0.15))
+	warning_label.visible = false
 	message_label = make_label("Message", Vector2(560, 140), 30)
 	message_label.visible = false
 	show_depth(FishWorld.depth_of(FishWorld.START))
@@ -53,6 +59,10 @@ static func growth_text(progress: FishProgress) -> String:
 	return "Wachstum: %d / %d" % [progress.growth, FishProgress.GROWTH_NEEDED[progress.stage]]
 
 
+static func size_text(progress: FishProgress) -> String:
+	return "Größe: %d / %d" % [progress.stage + 1, FishProgress.SIZES.size()]
+
+
 func show_depth(depth: float) -> void:
 	depth_label.text = depth_text(depth)
 
@@ -60,6 +70,7 @@ func show_depth(depth: float) -> void:
 func show_progress(progress: FishProgress) -> void:
 	dna_label.text = "DNA: %d" % progress.dna
 	growth_label.text = growth_text(progress)
+	size_label.text = size_text(progress)
 
 
 func show_message(text: String, seconds: float = 4.0) -> void:
@@ -74,6 +85,12 @@ static func health_text(ratio: float) -> String:
 
 func show_health(ratio: float) -> void:
 	health_label.text = health_text(ratio)
+
+
+## Zeigt die Warnung vor Raubfischen; ein leerer Text blendet sie aus.
+func show_warning(text: String) -> void:
+	warning_label.text = text
+	warning_label.visible = text != ""
 
 
 func tick(delta: float) -> void:

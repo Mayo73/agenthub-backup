@@ -483,3 +483,53 @@ func test_hinweis_nach_kauf() -> void:
 	fish.evolve.try_upgrade("augen")
 	check_eq(fish.progress.dna, 0, "progress.dna ist 0 nach Upgrade")
 	check(not fish.hud.upgrade_label.visible, "upgrade_label.visible ist falsch nach Upgrade")
+
+
+## Test: Tiefenlicht setzt Farben für Wasseroberfläche.
+func test_tiefenlicht() -> void:
+	fish.apply_depth_light(0.0)
+	check(fish.water.environment.background_color.r == FishWorld.WATER_COLOR.r && fish.water.environment.background_color.g == FishWorld.WATER_COLOR.g && fish.water.environment.background_color.b == FishWorld.WATER_COLOR.b, "background_color bei Oberfläche ist WATER_COLOR")
+
+	fish.apply_depth_light(FishWorld.DEPTH)
+	check(is_equal_approx(fish.water.environment.background_color.r, 0.01), "background_color am Boden r = 0.01")
+	check(is_equal_approx(fish.water.environment.background_color.g, 0.06), "background_color am Boden g = 0.06")
+	check(is_equal_approx(fish.water.environment.background_color.b, 0.13), "background_color am Boden b = 0.13")
+	check(is_equal_approx(fish.water.environment.fog_light_color.r, 0.01), "fog_light_color am Boden r = 0.01")
+	check(is_equal_approx(fish.water.environment.fog_light_color.g, 0.06), "fog_light_color am Boden g = 0.06")
+	check(is_equal_approx(fish.water.environment.fog_light_color.b, 0.13), "fog_light_color am Boden b = 0.13")
+	check_eq(fish.water.environment.ambient_light_energy, 0.35, "ambient_light_energy am Boden ist 0.35")
+
+
+## Test: Tiefenlicht ändert nicht die Nebeldichte.
+func test_tiefenlicht_nebel_bleibt() -> void:
+	var dichte: float = fish.water.environment.fog_density
+	fish.apply_depth_light(40.0)
+	check_eq(fish.water.environment.fog_density, dichte, "fog_density bleibt unverändert nach apply_depth_light")
+
+
+## Test: _process ruft apply_depth_light mit der richtigen Tiefe.
+func test_tiefenlicht_in_process() -> void:
+	fish._process(0.1)
+	check_eq(fish.water.environment.ambient_light_energy, FishWorld.ambient_energy_at(FishWorld.depth_of(fish.camera.position)), "ambient_light_energy im _process ist ambient_energy_at(depth_of(camera.position))")
+
+
+func test_warnung_nah() -> void:
+	_clear_ai_fishes()
+	fish.add_fish("zackenbarsch", fish.player.motion.position + Vector3(8, 0, 0))
+	fish.update_warning()
+	check(fish.hud.warning_label.visible, "warning_label.visible ist wahr bei 8 m")
+	check_eq(fish.hud.warning_label.text, "Vorsicht: Raubfisch in 8 m!", "Text korrekt bei 8 m")
+
+
+func test_warnung_fern() -> void:
+	_clear_ai_fishes()
+	fish.add_fish("zackenbarsch", fish.player.motion.position + Vector3(40, 0, 0))
+	fish.update_warning()
+	check(!fish.hud.warning_label.visible, "warning_label.visible ist falsch bei 40 m")
+
+
+func test_keine_warnung_bei_beute() -> void:
+	_clear_ai_fishes()
+	fish.add_fish("grasfisch", fish.player.motion.position + Vector3(5, 0, 0))
+	fish.update_warning()
+	check(!fish.hud.warning_label.visible, "warning_label.visible ist falsch bei Beute")
