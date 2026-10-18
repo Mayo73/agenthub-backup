@@ -46,6 +46,7 @@ func _ready() -> void:
 	settings.load_from(UserSettings.DEFAULT_PATH)
 	audio = GameAudio.new()
 	audio.name = "Audio"
+	audio.music.stream = FishMusic.theme()
 	audio.streams.merge(FishSounds.all())
 	add_child(audio)
 	world = Node3D.new()
