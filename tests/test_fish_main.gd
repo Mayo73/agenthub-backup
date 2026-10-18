@@ -511,3 +511,25 @@ func test_tiefenlicht_nebel_bleibt() -> void:
 func test_tiefenlicht_in_process() -> void:
 	fish._process(0.1)
 	check_eq(fish.water.environment.ambient_light_energy, FishWorld.ambient_energy_at(FishWorld.depth_of(fish.camera.position)), "ambient_light_energy im _process ist ambient_energy_at(depth_of(camera.position))")
+
+
+func test_warnung_nah() -> void:
+	_clear_ai_fishes()
+	fish.add_fish("zackenbarsch", fish.player.motion.position + Vector3(8, 0, 0))
+	fish.update_warning()
+	check(fish.hud.warning_label.visible, "warning_label.visible ist wahr bei 8 m")
+	check_eq(fish.hud.warning_label.text, "Vorsicht: Raubfisch in 8 m!", "Text korrekt bei 8 m")
+
+
+func test_warnung_fern() -> void:
+	_clear_ai_fishes()
+	fish.add_fish("zackenbarsch", fish.player.motion.position + Vector3(40, 0, 0))
+	fish.update_warning()
+	check(!fish.hud.warning_label.visible, "warning_label.visible ist falsch bei 40 m")
+
+
+func test_keine_warnung_bei_beute() -> void:
+	_clear_ai_fishes()
+	fish.add_fish("grasfisch", fish.player.motion.position + Vector3(5, 0, 0))
+	fish.update_warning()
+	check(!fish.hud.warning_label.visible, "warning_label.visible ist falsch bei Beute")

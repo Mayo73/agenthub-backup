@@ -9,6 +9,7 @@ var depth_label: Label
 var dna_label: Label
 var growth_label: Label
 var health_label: Label
+var warning_label: Label
 var upgrade_label: Label
 var size_label: Label
 var help_label: Label
@@ -30,6 +31,9 @@ func _init() -> void:
 	size_label = make_label("Size", Vector2(320, 116), 28)
 	help_label = make_label("Help", Vector2(40, 1010), 22)
 	help_label.text = HELP
+	warning_label = make_label("Warning", Vector2(560, 200), 30)
+	warning_label.add_theme_color_override("font_color", Color(1.0, 0.55, 0.15))
+	warning_label.visible = false
 	message_label = make_label("Message", Vector2(560, 140), 30)
 	message_label.visible = false
 	show_depth(FishWorld.depth_of(FishWorld.START))
@@ -81,6 +85,12 @@ static func health_text(ratio: float) -> String:
 
 func show_health(ratio: float) -> void:
 	health_label.text = health_text(ratio)
+
+
+## Zeigt die Warnung vor Raubfischen; ein leerer Text blendet sie aus.
+func show_warning(text: String) -> void:
+	warning_label.text = text
+	warning_label.visible = text != ""
 
 
 func tick(delta: float) -> void:

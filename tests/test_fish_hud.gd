@@ -94,3 +94,15 @@ func test_groesse_anzeige() -> void:
 	p.stage = 1
 	hud.show_progress(p)
 	check_eq(hud.size_label.text, "Größe: 2 / 4", "size_label.text nach show_progress(stage=1)")
+
+
+func test_warnung_anfangs_aus() -> void:
+	check(!hud.warning_label.visible, "warning_label ist initial unsichtbar")
+
+
+func test_warnung_zeigen() -> void:
+	hud.show_warning("Vorsicht: Raubfisch in 8 m!")
+	check(hud.warning_label.visible, "Nach show_warning mit Text sichtbar")
+	check_eq(hud.warning_label.text, "Vorsicht: Raubfisch in 8 m!", "Text korrekt")
+	hud.show_warning("")
+	check(!hud.warning_label.visible, "Nach leerem Text unsichtbar")
