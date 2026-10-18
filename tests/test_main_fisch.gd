@@ -45,3 +45,17 @@ func test_vorbereiten() -> void:
 
 func test_szene_vorhanden() -> void:
 	check(ResourceLoader.exists(main.FISH_SCENE), "Fisch-Szene existiert")
+
+
+func test_fortsetzen_ohne_fischteil() -> void:
+	var result: bool = main.prepare_fish_continue({"version": 1, "dna": 4})
+	check(not result, "prepare_fish_continue ist falsch ohne Fischteil")
+	check(FishStart.pending_fish.is_empty(), "FishStart.pending_fish ist leer")
+
+
+func test_fortsetzen_mit_fischteil() -> void:
+	var fisch := {"build": FishBuild.new().to_dict(), "dna": 9, "growth": 0, "stage": 1}
+	var result: bool = main.prepare_fish_continue({"version": 1, "fish": fisch})
+	check(result, "prepare_fish_continue ist wahr mit Fischteil")
+	check_eq(FishStart.pending_fish["dna"], 9, "FishStart.pending_fish.dna ist 9")
+	check_eq(FishStart.pending_save_path, P, "FishStart.pending_save_path ist P")

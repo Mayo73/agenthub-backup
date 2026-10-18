@@ -518,6 +518,9 @@ func _on_new_game(diet: String) -> void:
 
 
 func _on_continue() -> void:
+	if prepare_fish_continue(SaveGame.read_file(save_path)):
+		get_tree().change_scene_to_file(FISH_SCENE)
+		return
 	if load_saved():
 		show_menu(false)
 
@@ -701,3 +704,14 @@ func prepare_fish() -> void:
 func go_to_fish() -> void:
 	prepare_fish()
 	get_tree().change_scene_to_file(FISH_SCENE)
+
+
+## Fortsetzen in der Fischphase: gespeicherten Fisch und Spielstand-Pfad für FishMain hinterlegen.
+## false, wenn der Spielstand noch keinen Fischteil hat.
+func prepare_fish_continue(data: Dictionary) -> bool:
+	if not FishSave.has_fish(data):
+		return false
+	FishStart.clear()
+	FishStart.pending_fish = data[FishSave.KEY]
+	FishStart.pending_save_path = save_path
+	return true
