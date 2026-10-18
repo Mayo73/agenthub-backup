@@ -54,3 +54,29 @@ func test_maul() -> void:
 	fish.setup("grasfisch", Vector3(0, -20, 0))
 	var p := fish.mouth_point()
 	check(is_equal_approx(p.x, 0.0) and is_equal_approx(p.y, -20.0) and is_equal_approx(p.z, -0.8), "mouth_point ist Vector3(0, -20, -0.8)")
+
+
+func test_laternenfisch_leuchtet() -> void:
+	var f := AiFish.new()
+	f.setup("laternenfisch", Vector3(0, -50, 0))
+	check(f.has_node("Glow"), "Laternenfisch hat Glow-Node")
+	var expected_color: Color = FishSpecies.data("laternenfisch")["color"]
+	check(f.glow.light_color == expected_color, "Glow-Farbe stimmt mit Art überein")
+	f.free()
+
+
+func test_silberling_ohne_licht() -> void:
+	var f := AiFish.new()
+	f.setup("silberling", Vector3(0, -20, 0))
+	check(not f.has_node("Glow"), "Silberling hat keinen Glow-Node")
+	check(f.glow == null, "f.glow ist null bei Silberling")
+	f.free()
+
+
+func test_zweimal_setup() -> void:
+	var f := AiFish.new()
+	f.setup("laternenfisch", Vector3(0, -50, 0))
+	f.setup("laternenfisch", Vector3(0, -50, 0))
+	var glow_children := f.get_children().filter(func(c): return c.name.begins_with("Glow"))
+	check(glow_children.size() == 1, "genau ein Glow-Kind nach zweimal setup")
+	f.free()

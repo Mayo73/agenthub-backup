@@ -164,7 +164,7 @@ func test_augen_lichten_nebel() -> void:
 
 
 func test_fische_verteilt() -> void:
-	check_eq(fish.fishes.size(), 17, "fishes.size() ist 17")
+	check_eq(fish.fishes.size(), 22, "fishes.size() ist 22")
 	for f in fish.fishes:
 		check(f is AiFish, "jeder Eintrag ist AiFish")
 		check(f.get_parent() == fish.world, "AiFish hat world als Elternknoten")
@@ -181,9 +181,9 @@ func test_fische_schwimmen() -> void:
 func test_fisch_hinzufuegen_entfernen() -> void:
 	var vorher: int = fish.fishes.size()
 	var f: AiFish = fish.add_fish("grasfisch", Vector3(3, -20, 0))
-	check_eq(fish.fishes.size(), vorher + 1, "fishes.size() ist 18")
+	check_eq(fish.fishes.size(), vorher + 1, "fishes.size() ist 23")
 	fish.remove_fish(f)
-	check_eq(fish.fishes.size(), vorher, "fishes.size() ist 17 nach Entfernen")
+	check_eq(fish.fishes.size(), vorher, "fishes.size() ist 22 nach Entfernen")
 	check(not fish.fishes.has(f), "fish.fishes.has(f) falsch")
 
 

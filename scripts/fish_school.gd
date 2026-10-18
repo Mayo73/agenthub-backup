@@ -8,7 +8,11 @@ const MAX_DIST := 60.0
 const SWARMS := 2
 const SWARM_SIZE := 6
 const GRAZERS := 3
+const PUFFERS := 2
 const PREDATORS := 2
+const LANTERNS := 3
+## Laternenfische leben nur so tief (Meter, von–bis).
+const LANTERN_DEPTH := Vector2(45.0, 58.0)
 
 
 ## Plan: Liste von {"id": String, "position": Vector3}. Gleicher seed, gleicher Plan.
@@ -23,6 +27,12 @@ static func spawn_plan(center: Vector3, seed_value: int) -> Array[Dictionary]:
 			plan.append({"id": "silberling", "position": FishWorld.clamp_to_water(mid + offset)})
 	for i in GRAZERS:
 		plan.append({"id": "grasfisch", "position": _around(center, rng)})
+	for i in PUFFERS:
+		plan.append({"id": "kugelfisch", "position": _around(center, rng)})
+	for i in LANTERNS:
+		var p := _around(center, rng)
+		p.y = -rng.randf_range(LANTERN_DEPTH.x, LANTERN_DEPTH.y)
+		plan.append({"id": "laternenfisch", "position": FishWorld.clamp_to_water(p)})
 	for i in PREDATORS:
 		plan.append({"id": "zackenbarsch", "position": _around(center, rng)})
 	return plan
@@ -48,3 +58,29 @@ static func flock_center(fishes: Array, species_id: String) -> Variant:
 	if n == 0:
 		return null
 	return sum / n
+
+
+## Sollbestand je Art (wie im Startplan).
+static func target_counts() -> Dictionary:
+	return {"silberling": SWARMS * SWARM_SIZE, "grasfisch": GRAZERS, "kugelfisch": PUFFERS, "laternenfisch": LANTERNS, "zackenbarsch": PREDATORS}
+
+
+## Art-IDs der fehlenden Fische, alphabetisch sortiert (eine ID je fehlendem Fisch). fishes: Knoten mit species_id.
+static func missing(fishes: Array) -> Array[String]:
+	var have := {}
+	for f in fishes:
+		have[f.species_id] = int(have.get(f.species_id, 0)) + 1
+	var out: Array[String] = []
+	var counts := target_counts()
+	for id: String in counts:
+		for i in maxi(0, int(counts[id]) - int(have.get(id, 0))):
+			out.append(id)
+	out.sort()
+	return out
+
+
+## Stelle für einen nachkommenden Fisch: außer Sicht im Abstand MIN_DIST bis MAX_DIST um center.
+static func respawn_position(center: Vector3, seed_value: int) -> Vector3:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_value
+	return _around(center, rng)
