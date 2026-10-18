@@ -7,6 +7,7 @@ var motion := FishMotion.new()
 var health := CellHealth.new()
 var size := 1.0
 var model: FishModel
+var glow: OmniLight3D = null
 
 
 func _init() -> void:
@@ -29,6 +30,16 @@ func setup(id: String, pos: Vector3) -> void:
 		b.levels["kiefer"] = 2
 	model.rebuild(b)
 	model.scale = Vector3.ONE * size
+	if glow != null:
+		glow.free()
+		glow = null
+	if bool(d.get("glow", false)):
+		glow = OmniLight3D.new()
+		glow.name = "Glow"
+		glow.light_color = d.get("color", Color.WHITE)
+		glow.light_energy = 1.5
+		glow.omni_range = 4.0 * size
+		add_child(glow)
 	sync()
 
 
