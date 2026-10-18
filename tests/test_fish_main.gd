@@ -636,3 +636,12 @@ func test_schaden_leicht() -> void:
 func test_schaden_schwer() -> void:
 	fish.settings.difficulty = 2
 	check(fish.predator_damage(10.0) > FishCombat.damage_to_player(10.0, fish.player.build), "Schaden bei Schwer größer als Basis")
+
+
+## Test: Fischszene spielt die eigene Musik (FishMusic.theme() statt CellMusic.theme()).
+func test_fischmusik() -> void:
+	check(fish.audio.music.stream is AudioStreamWAV, "fish.audio.music.stream ist AudioStreamWAV")
+	var fish_stream: AudioStreamWAV = fish.audio.music.stream as AudioStreamWAV
+	var cell_stream: AudioStreamWAV = CellMusic.theme()
+	check_eq(fish_stream.data.size(), FishMusic.theme().data.size(), "Stream-Größe entspricht FishMusic.theme()")
+	check(fish_stream.data.size() != cell_stream.data.size(), "Stream-Größe ungleich CellMusic.theme()")
