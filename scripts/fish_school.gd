@@ -10,6 +10,9 @@ const SWARM_SIZE := 6
 const GRAZERS := 3
 const PUFFERS := 2
 const PREDATORS := 2
+const LANTERNS := 3
+## Laternenfische leben nur so tief (Meter, von–bis).
+const LANTERN_DEPTH := Vector2(45.0, 58.0)
 
 
 ## Plan: Liste von {"id": String, "position": Vector3}. Gleicher seed, gleicher Plan.
@@ -26,6 +29,10 @@ static func spawn_plan(center: Vector3, seed_value: int) -> Array[Dictionary]:
 		plan.append({"id": "grasfisch", "position": _around(center, rng)})
 	for i in PUFFERS:
 		plan.append({"id": "kugelfisch", "position": _around(center, rng)})
+	for i in LANTERNS:
+		var p := _around(center, rng)
+		p.y = -rng.randf_range(LANTERN_DEPTH.x, LANTERN_DEPTH.y)
+		plan.append({"id": "laternenfisch", "position": FishWorld.clamp_to_water(p)})
 	for i in PREDATORS:
 		plan.append({"id": "zackenbarsch", "position": _around(center, rng)})
 	return plan
@@ -55,7 +62,7 @@ static func flock_center(fishes: Array, species_id: String) -> Variant:
 
 ## Sollbestand je Art (wie im Startplan).
 static func target_counts() -> Dictionary:
-	return {"silberling": SWARMS * SWARM_SIZE, "grasfisch": GRAZERS, "kugelfisch": PUFFERS, "zackenbarsch": PREDATORS}
+	return {"silberling": SWARMS * SWARM_SIZE, "grasfisch": GRAZERS, "kugelfisch": PUFFERS, "laternenfisch": LANTERNS, "zackenbarsch": PREDATORS}
 
 
 ## Art-IDs der fehlenden Fische, alphabetisch sortiert (eine ID je fehlendem Fisch). fishes: Knoten mit species_id.
