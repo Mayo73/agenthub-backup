@@ -2,9 +2,17 @@ extends "res://tests/base_test.gd"
 
 
 func test_arten() -> void:
-	check_eq(FishSpecies.ids(), ["grasfisch", "silberling", "zackenbarsch"], "alle Arten sortiert")
+	check_eq(FishSpecies.ids(), ["grasfisch", "kugelfisch", "silberling", "zackenbarsch"], "alle Arten sortiert")
 	check(FishSpecies.has("silberling"), "silberling existiert")
 	check(not FishSpecies.has("hai"), "hai existiert nicht")
+
+
+func test_kugelfisch() -> void:
+	check(FishSpecies.has("kugelfisch"), "kugelfisch existiert")
+	check(not FishSpecies.is_predator("kugelfisch"), "kugelfisch ist kein Räuber")
+	var kugel_radius := FishSpecies.radius("kugelfisch")
+	check(is_equal_approx(kugel_radius, 0.4), "Kugelfisch-Radius ist 0.4")
+	check_eq(FishSpecies.data("kugelfisch")["behavior"], "scheu", "Kugelfisch-Verhalten ist scheu")
 
 
 func test_werte() -> void:
