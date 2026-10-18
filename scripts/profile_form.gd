@@ -76,10 +76,37 @@ static func errors(values: Dictionary) -> Array[String]:
 	if bio.length() > BIO_MAX:
 		result.append("Text ist zu lang (höchstens 120 Zeichen)")
 
+	# weight_class prüfen (nach den bisherigen Prüfungen)
+	var weight_class: int = -1
+	if values.has("weight_class"):
+		weight_class = values["weight_class"]
+	if typeof(weight_class) != TYPE_INT:
+		weight_class = -1
+	elif weight_class >= SparProfile.WEIGHT_CLASSES.size():
+		result.append("Gewichtsklasse ist ungültig")
+
+	# days prüfen (nach den bisherigen Prüfungen)
+	if values.has("days"):
+		var days: Variant = values["days"]
+		if typeof(days) == TYPE_ARRAY:
+			for day in days:
+				if typeof(day) != TYPE_STRING or not SparProfile.DAYS.has(day):
+					result.append("Unbekannter Trainingstag")
+					break
+
+	# equipment prüfen (nach den bisherigen Prüfungen)
+	if values.has("equipment"):
+		var equipment: Variant = values["equipment"]
+		if typeof(equipment) == TYPE_ARRAY:
+			for eq in equipment:
+				if typeof(eq) != TYPE_STRING or not SparProfile.EQUIPMENT.has(eq):
+					result.append("Unbekannte Ausrüstung")
+					break
+
 	return result
 
 
-## Die sechs Werte eines Profils als Dictionary zurückgeben
+## Die neun Werte eines Profils als Dictionary zurückgeben
 static func values_of(p: SparProfile) -> Dictionary:
 	return {
 		"name": p.name,
@@ -87,7 +114,10 @@ static func values_of(p: SparProfile) -> Dictionary:
 		"level": p.level,
 		"years": p.years,
 		"age": p.age,
-		"bio": p.bio
+		"bio": p.bio,
+		"weight_class": p.weight_class,
+		"days": p.days.duplicate(),
+		"equipment": p.equipment.duplicate()
 	}
 
 
@@ -107,5 +137,39 @@ static func applied(p: SparProfile, values: Dictionary) -> SparProfile:
 	copy.years = int(values.get("years", 0))
 	copy.age = int(values.get("age", 18))
 	copy.bio = values.get("bio", "").strip_edges()
+
+	# weight_class übernehmen, wenn vorhanden
+	if values.has("weight_class"):
+		var wc_val: Variant = values["weight_class"]
+		if typeof(wc_val) == TYPE_INT:
+			copy.weight_class = int(wc_val)
+
+	# days übernehmen: ohne Doppelte, in Reihenfolge von DAYS
+	if values.has("days"):
+		var raw_days: Variant = values["days"]
+		if typeof(raw_days) == TYPE_ARRAY:
+			var seen: Dictionary
+			for day in raw_days:
+				if typeof(day) == TYPE_STRING and SparProfile.DAYS.has(day):
+					seen[day] = true
+			var new_days: Array[String] = []
+			for d in SparProfile.DAYS:
+				if seen.has(d):
+					new_days.append(d)
+			copy.days = new_days
+
+	# equipment übernehmen: ohne Doppelte, in Reihenfolge von EQUIPMENT
+	if values.has("equipment"):
+		var raw_eq: Variant = values["equipment"]
+		if typeof(raw_eq) == TYPE_ARRAY:
+			var seen_equip: Dictionary
+			for eq in raw_eq:
+				if typeof(eq) == TYPE_STRING and SparProfile.EQUIPMENT.has(eq):
+					seen_equip[eq] = true
+			var new_equipment: Array[String] = []
+			for e in SparProfile.EQUIPMENT:
+				if seen_equip.has(e):
+					new_equipment.append(e)
+			copy.equipment = new_equipment
 
 	return copy

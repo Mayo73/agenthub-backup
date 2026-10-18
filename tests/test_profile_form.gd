@@ -82,3 +82,49 @@ func check_errs_5_fehler(errs: Array[String], msg: String) -> void:
 	check_eq(errs.size(), 5, msg + ": 5 Fehler erwartet")
 	for i in range(5):
 		check_eq(errs[i], expected[i], "Fehler %d ist %s" % [i, errs[i]])
+
+
+# === Neue Tests für Merkmale (Gewichtsklasse, Tage, Ausrüstung) ===
+
+func test_merkmale_in_werten() -> void:
+	check(ok.has("weight_class"), "ok hat Schlüssel weight_class")
+	check(ok.has("days"), "ok hat Schlüssel days")
+	check(ok.has("equipment"), "ok hat Schlüssel equipment")
+	var errs: Array[String] = ProfileForm.errors(ok)
+	check_eq(errs, [], "keine Fehler bei gültigen Merkmalen-Daten")
+
+
+func test_merkmale_uebernehmen() -> void:
+	# ok mit weight_class 2, days ["Sa", "Mo", "Sa"], equipment ["Pratzen", "Handschuhe"]
+	ok["weight_class"] = 2
+	ok["days"] = ["Sa", "Mo", "Sa"]
+	ok["equipment"] = ["Pratzen", "Handschuhe"]
+	var result := ProfileForm.applied(p, ok)
+	check(result != null, "applied gibt Profil zurück bei gültigen Merkmalen")
+	check_eq(result.weight_class, 2, "weight_class 2 übernommen")
+	check_eq(result.days, ["Mo", "Sa"], "days ohne Doppelte, sortiert")
+	check_eq(result.equipment, ["Handschuhe", "Pratzen"], "equipment ohne Doppelte, sortiert")
+	check_eq(p.weight_class, 1, "p.weight_class unverändert (Alex hat Mittel)")
+
+
+func test_gewicht_ungueltig() -> void:
+	ok["weight_class"] = 5
+	var errs: Array[String] = ProfileForm.errors(ok)
+	check_eq(errs, ["Gewichtsklasse ist ungültig"], "ungültige Gewichtsklasse wird gemeldet")
+
+
+func test_unbekannter_tag() -> void:
+	ok["days"] = ["Montag"]
+	var errs: Array[String] = ProfileForm.errors(ok)
+	check_eq(errs, ["Unbekannter Trainingstag"], "unbekannter Tag wird gemeldet")
+
+
+func test_unbekannte_ausruestung() -> void:
+	ok["equipment"] = ["Helm"]
+	var errs: Array[String] = ProfileForm.errors(ok)
+	check_eq(errs, ["Unbekannte Ausrüstung"], "unbekannte Ausrüstung wird gemeldet")
+
+
+func test_leer_weiter_fuenf() -> void:
+	var errs: Array[String] = ProfileForm.errors({})
+	check_errs_5_fehler(errs, "leeres Dict weiterhin 5 Fehler")
