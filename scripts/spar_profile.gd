@@ -104,7 +104,7 @@ static func from_dict(d: Dictionary) -> SparProfile:
 
 	# weight_class: -1 wenn fehlt, außerhalb 0–2 oder nicht-Int → -1
 	var wc_raw: Variant = d.get("weight_class", -1)
-	if typeof(wc_raw) == TYPE_INT and wc_raw >= 0 and wc_raw < profile.WEIGHT_CLASSES.size():
+	if (typeof(wc_raw) == TYPE_INT or (typeof(wc_raw) == TYPE_FLOAT and wc_raw == floor(wc_raw))) and wc_raw >= 0 and wc_raw < profile.WEIGHT_CLASSES.size():
 		profile.weight_class = int(wc_raw)
 	else:
 		profile.weight_class = -1
