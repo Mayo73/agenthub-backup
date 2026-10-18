@@ -13,6 +13,9 @@ var art_picker: OptionButton
 var level_picker: OptionButton
 var age_spin: SpinBox
 var years_spin: SpinBox
+var weight_picker: OptionButton
+var day_boxes: Dictionary
+var equipment_boxes: Dictionary
 var bio_edit: LineEdit
 var error_label: Label
 var save_button: Button
@@ -81,6 +84,38 @@ func _init(app_state: AppState) -> void:
 	years_spin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	vbox.add_child(years_spin)
 
+	# Gewichtsklasse-Label und Picker
+	vbox.add_child(UiStyle.label("Gewichtsklasse"))
+	weight_picker = OptionButton.new()
+	weight_picker.add_item("keine Angabe")
+	for clazz in SparProfile.WEIGHT_CLASSES:
+		weight_picker.add_item(clazz)
+	vbox.add_child(weight_picker)
+
+	# Verfügbar an-Label und CheckBoxes für Tage
+	vbox.add_child(UiStyle.label("Verfügbar an"))
+	var day_flow := HFlowContainer.new()
+	day_flow.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	day_boxes = {}
+	for tag in SparProfile.DAYS:
+		var cb := CheckBox.new()
+		cb.text = tag
+		day_boxes[tag] = cb
+		day_flow.add_child(cb)
+	vbox.add_child(day_flow)
+
+	# Eigene Ausrüstung-Label und CheckBoxes
+	vbox.add_child(UiStyle.label("Eigene Ausrüstung"))
+	var equip_flow := HFlowContainer.new()
+	equip_flow.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	equipment_boxes = {}
+	for name in SparProfile.EQUIPMENT:
+		var cb := CheckBox.new()
+		cb.text = name
+		equipment_boxes[name] = cb
+		equip_flow.add_child(cb)
+	vbox.add_child(equip_flow)
+
 	# Über-mich-Label und Eingabe
 	vbox.add_child(UiStyle.label("Über mich"))
 	bio_edit = LineEdit.new()
@@ -142,18 +177,38 @@ func load_profile() -> void:
 	level_picker.selected = p.level
 	age_spin.value = float(p.age)
 	years_spin.value = float(p.years)
+	weight_picker.select(p.weight_class + 1)
+	for tag in SparProfile.DAYS:
+		if tag in day_boxes:
+			day_boxes[tag].button_pressed = p.days.has(tag)
+	for name in SparProfile.EQUIPMENT:
+		if name in equipment_boxes:
+			equipment_boxes[name].button_pressed = p.equipment.has(name)
 	bio_edit.text = p.bio
 	avatar.set_profile(p)
 	error_label.text = ""
 
 
 func form_values() -> Dictionary:
+	var days_list := [] as Array[String]
+	for tag in SparProfile.DAYS:
+		if tag in day_boxes and day_boxes[tag].button_pressed:
+			days_list.append(tag)
+
+	var equipment_list := [] as Array[String]
+	for name in SparProfile.EQUIPMENT:
+		if name in equipment_boxes and equipment_boxes[name].button_pressed:
+			equipment_list.append(name)
+
 	return {
 		"name": name_edit.text,
 		"art": art_picker.get_item_text(art_picker.selected),
 		"level": level_picker.selected,
 		"age": int(age_spin.value),
 		"years": int(years_spin.value),
+		"weight_class": weight_picker.selected - 1,
+		"days": days_list,
+		"equipment": equipment_list,
 		"bio": bio_edit.text
 	}
 
