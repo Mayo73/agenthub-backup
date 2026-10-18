@@ -12,7 +12,8 @@ const START := Vector3(0.0, -20.0, 0.0)
 const WATER_COLOR := Color(0.04, 0.2, 0.28)
 const FLOOR_COLOR := Color(0.55, 0.5, 0.36)
 const SURFACE_COLOR := Color(0.5, 0.8, 0.9, 0.35)
-const DEEP_COLOR := Color(0.01, 0.06, 0.13)  ## Wasserfarbe am Meeresboden.
+## Wasserfarbe am Meeresboden.
+const DEEP_COLOR := Color(0.01, 0.06, 0.13)
 
 
 ## Hält eine Lage im Wasser: mindestens margin unter der Oberfläche und über dem Boden, innerhalb der Ränder.
