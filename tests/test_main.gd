@@ -71,14 +71,13 @@ func test_profil_wird_gespeichert() -> void:
 
 	var loaded = StateStore.load_state(TEST_PATH)
 	check_eq(loaded.profile("p01").name, "Alexa", "Name im Load")
-	main.perspective.set_state(loaded)
 	check(main.perspective.picker.get_item_text(0).begins_with("Du bist: Alexa"), "Perspektive zeigt neuen Namen")
 	DirAccess.remove_absolute(TEST_PATH)
 
 
 func test_zuruecksetzen() -> void:
 	main.use_store(TEST_PATH)
-	main.state.like("p01>p02")
+	main.state.like("p02")
 	main.save()
 	check(not main.state.book.likes.is_empty(), "Likes vor dem Zurücksetzen")
 

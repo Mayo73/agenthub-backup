@@ -107,6 +107,12 @@ func _on_reset_demo() -> void:
 	reset_demo()
 
 
+## Profil gespeichert: Zustand sichern, die Demo-Leiste zeigt den neuen Namen.
+func _on_profile_changed() -> void:
+	save()
+	perspective.set_state(state)
+
+
 ## Baut den Bildschirm zu einem Namen. Noch nicht umgesetzte Bildschirme zeigen nur den Titel.
 func _make_screen(screen_name: String) -> Control:
 	if screen_name == "entdecken":
@@ -115,7 +121,7 @@ func _make_screen(screen_name: String) -> Control:
 		return discover
 	if screen_name == "profil":
 		var profile := ProfileScreen.new(state)
-		profile.changed.connect(save)
+		profile.changed.connect(_on_profile_changed)
 		profile.reset_requested.connect(_on_reset_demo)
 		return profile
 	var l := UiStyle.label(TAB_TITLES.get(screen_name, screen_name), UiStyle.SIZE_TITLE)
