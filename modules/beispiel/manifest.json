@@ -1,0 +1,1 @@
+{"id": "beispiel", "name": "Beispielmodul", "version": "1.0.0", "engine_api": 1, "requires": [], "optional": true, "capabilities": ["beispiel.hallo"]}
