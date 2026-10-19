@@ -1,0 +1,12 @@
+# Godot-Dateien einheitlich mit LF speichern, Windows-Skripte mit CRLF
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.png binary
+*.jpg binary
+*.webp binary
+*.ogg binary
+*.ogv binary
+*.mp3 binary
+*.wav binary
+*.glb binary
