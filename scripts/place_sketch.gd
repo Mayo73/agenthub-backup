@@ -6,6 +6,7 @@ extends RefCounted
 const KINDS: Array[String] = ["Park", "Wiese", "Strand", "Sportplatz", "Wald", "Draußen"]
 
 const RULES: Array = [
+	["stadtpark", "Park"],
 	["sportplatz", "Sportplatz"],
 	["park", "Park"],
 	["wiese", "Wiese"],
