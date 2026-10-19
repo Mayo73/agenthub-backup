@@ -6,12 +6,14 @@ signal resume
 signal open_settings
 signal to_main_menu
 signal quit_game
+signal open_timeline
 
 var box: VBoxContainer
 var resume_button: Button
 var settings_button: Button
 var main_menu_button: Button
 var quit_button: Button
+var timeline_button: Button
 
 
 func _init() -> void:
@@ -35,10 +37,12 @@ func _init() -> void:
 	resume_button = _button("Weiter")
 	settings_button = _button("Einstellungen")
 	main_menu_button = _button("Hauptmenü")
+	timeline_button = _button("Zeitstrahl")
 	quit_button = _button("Beenden")
 	resume_button.pressed.connect(func() -> void: resume.emit())
 	settings_button.pressed.connect(func() -> void: open_settings.emit())
 	main_menu_button.pressed.connect(func() -> void: to_main_menu.emit())
+	timeline_button.pressed.connect(func() -> void: open_timeline.emit())
 	quit_button.pressed.connect(func() -> void: quit_game.emit())
 	visible = false
 

@@ -352,3 +352,35 @@ func test_zeitstrahl_start() -> void:
 	check_eq(main.timeline.size(), 1, "timeline.size() ist 1 nach start_new")
 	check_eq(main.timeline.entries[0]["kind"], EvolutionTimeline.START, "erste Art ist EvolutionTimeline.START")
 	check_eq(main.timeline.entries[0]["label"], "Start", "Label ist 'Start'")
+
+
+func test_zeitstrahl_umschalten() -> void:
+	main.start_new(Diet.PFLANZENFRESSER)
+	var timeline_layer := main.get_node_or_null("TimelineLayer/TimelineView")
+	check(timeline_layer != null, "TimelineLayer/TimelineView existiert in main")
+
+	# Startzustand: unsichtbar
+	check(not timeline_layer.visible, "timeline_view initial unsichtbar")
+
+	# Öffnen via toggle_timeline()
+	main.toggle_timeline()
+	check(timeline_layer.visible, "timeline_view sichtbar nach toggle_timeline")
+
+	# Schließen via toggle_timeline()
+	main.toggle_timeline()
+	check(not timeline_layer.visible, "timeline_view unsichtbar nach zweitem toggle_timeline")
+
+
+func test_zeitstrahl_aktion() -> void:
+	var timeline_layer := main.get_node_or_null("TimelineLayer/TimelineView")
+	check(timeline_layer != null, "TimelineLayer existiert")
+	check(InputMap.has_action("zeitstrahl"), "InputMap hat action 'zeitstrahl'")
+
+	var key_t_pressed := InputEventKey.new()
+	key_t_pressed.keycode = KEY_T
+	key_t_pressed.pressed = true
+
+	Input.parse_input_event(key_t_pressed)
+	main._unhandled_input(key_t_pressed)
+
+	check(timeline_layer.visible, "timeline_view sichtbar nach T-Taste")
