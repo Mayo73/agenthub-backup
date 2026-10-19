@@ -8,7 +8,7 @@ var commands: Dictionary = {}  # Name -> {"name", "description", "params", "hand
 
 
 func register(name: String, description: String, params: Dictionary, handler: Callable) -> void:
-	"""Befehl registrieren. Alle Parameter sind Pflicht."""
+	## Befehl registrieren. Alle Parameter sind Pflicht.
 	var cmd: Dictionary = {
 		"name": name,
 		"description": description,
@@ -23,7 +23,7 @@ func has_command(name: String) -> bool:
 
 
 func type_matches(value: Variant, type_name: String) -> bool:
-	"""Prüft, ob ein Wert einem Typ entspricht."""
+	## Prüft, ob ein Wert einem Typ entspricht.
 	if type_name == "any":
 		return true
 
@@ -45,7 +45,7 @@ func type_matches(value: Variant, type_name: String) -> bool:
 
 
 func execute(name: String, args: Dictionary) -> CommandResult:
-	"""Befehl ausführen und Parameter prüfen."""
+	## Befehl ausführen und Parameter prüfen.
 	if not has_command(name):
 		return CommandResult.error(CommandResult.UNKNOWN_COMMAND, "Unbekannter Befehl: %s" % name)
 
@@ -75,7 +75,7 @@ func execute(name: String, args: Dictionary) -> CommandResult:
 
 
 func capabilities() -> Array[Dictionary]:
-	"""Verzeichnis aller Befehle ohne Handler, nach Name sortiert."""
+	## Verzeichnis aller Befehle ohne Handler, nach Name sortiert.
 	var result: Array[Dictionary] = []
 
 	for name in commands.keys():

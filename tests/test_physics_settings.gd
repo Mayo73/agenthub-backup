@@ -29,19 +29,13 @@ func test_ungueltig() -> void:
 
 func test_unbekannt() -> void:
 	var result := settings.apply({"wind": 1})
-	check("wind" in result.message, "Meldung enthält 'wind'")
+	check_eq(result.message, "Unbekannte Einstellung: wind", "Meldung nennt den Schlüssel")
 	check(result.code == CommandResult.INVALID_ARGUMENT, "code ist invalid_argument")
 
 
 func test_befehle() -> void:
 	var registry := CommandRegistry.new()
 	PhysicsSettings.register_commands(registry, settings)
-
-	registry.register("physics.set", "Physikparameter ändern", {"changes": "dict"}, func(args: Dictionary) -> CommandResult:
-		return settings.apply(args["changes"]))
-
-	registry.register("physics.get", "Physikparameter abrufen", {}, func(args: Dictionary) -> CommandResult:
-		return CommandResult.success(settings.to_dict()))
 
 	var set_result := registry.execute("physics.set", {"changes": {"gravity": 1.62}})
 	check(set_result.is_ok(), "physics.set ausgeführt ok")

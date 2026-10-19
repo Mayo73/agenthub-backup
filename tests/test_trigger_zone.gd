@@ -63,3 +63,13 @@ func test_reihenfolge() -> void:
 	if events.size() >= 2:
 		check(events[0]["object"] == "a", "erstes Objekt 'a' (sortiert)")
 		check(events[1]["object"] == "b", "zweites Objekt 'b' (sortiert)")
+
+
+func test_wieder_betreten() -> void:
+	zone.update(1, {"a": Vector2(5, 5)})
+	zone.update(2, {"a": Vector2(20, 5)})
+	var events: Array[Dictionary] = zone.update(3, {"a": Vector2(5, 5)})
+	check_eq(events.size(), 1, "erneutes Betreten meldet ein Ereignis")
+	if events.size() > 0:
+		check_eq(events[0]["type"], "entered", "Typ 'entered' beim zweiten Betreten")
+	check(zone.is_inside("a"), "a ist wieder drin")

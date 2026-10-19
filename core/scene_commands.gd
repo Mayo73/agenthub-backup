@@ -7,7 +7,7 @@ var model: SceneModel
 
 
 static func register_all(registry: CommandRegistry, scene: SceneModel) -> SceneCommands:
-	"""Legt eine Instanz an, setzt das Modell und registriert alle Szenenbefehle."""
+	## Legt eine Instanz an, setzt das Modell und registriert alle Szenenbefehle.
 	var cmds := SceneCommands.new()
 	cmds.model = scene
 

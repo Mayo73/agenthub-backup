@@ -26,7 +26,8 @@ func update(step: int, positions: Dictionary) -> Array[Dictionary]:
 		var position: Vector2 = positions[oid]
 		var is_in_rect: bool = rect.has_point(position)
 
-		if is_in_rect and not inside.has(oid):
+		var was_inside: bool = inside.get(oid, false)
+		if is_in_rect and not was_inside:
 			# Betreten: war nicht drin, jetzt drin
 			var event: Dictionary = {
 				"zone": id,
@@ -37,7 +38,7 @@ func update(step: int, positions: Dictionary) -> Array[Dictionary]:
 			new_events.append(event)
 			inside[oid] = true
 
-		elif not is_in_rect and inside.has(oid):
+		elif not is_in_rect and was_inside:
 			# Verlassen: war drin, jetzt nicht mehr
 			var event: Dictionary = {
 				"zone": id,
@@ -46,7 +47,7 @@ func update(step: int, positions: Dictionary) -> Array[Dictionary]:
 				"step": step
 			}
 			new_events.append(event)
-			inside[oid] = false
+			inside.erase(oid)
 
 	# Objekte die in inside stehen, aber in positions fehlen (verschwunden)
 	var vanished_ids: Array[String] = []
@@ -65,15 +66,7 @@ func update(step: int, positions: Dictionary) -> Array[Dictionary]:
 			"step": step
 		}
 		new_events.append(event)
-		inside[oid] = false
-
-	# inside nachführen: Objekte aus positions die drin sind
-	for oid in object_ids:
-		var position: Vector2 = positions[oid]
-		if rect.has_point(position):
-			inside[oid] = true
-		elif not inside.has(oid):
-			inside[oid] = false
+		inside.erase(oid)
 
 	# Neue Ereignisse an events anhängen
 	for event in new_events:

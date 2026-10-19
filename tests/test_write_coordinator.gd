@@ -64,3 +64,12 @@ func test_verlauf() -> void:
 	check_eq(first_entry["old"], 1.0, "alter Wert sollte 1.0 sein")
 	check_eq(first_entry["new"], 2.0, "neuer Wert sollte 2.0 sein")
 	check_eq(first_entry["author"], "gui", "Autor sollte 'gui' sein")
+
+
+func test_neuester_konflikt() -> void:
+	wc.set_property(id, "mass", 2.0, 0, "gui")
+	wc.set_property(id, "mass", 3.0, 1, "agent")
+	var result: CommandResult = wc.set_property(id, "mass", 4.0, 0, "cli")
+	check_eq(result.code, CommandResult.CONFLICT, "Code sollte CONFLICT sein")
+	check_eq(result.message, "Konflikt: %s.mass wurde in Revision 2 von agent geändert" % id, "Meldung nennt die neueste Änderung")
+	check_eq(int(result.data["revision"]), 2, "data.revision ist die aktuelle Revision")

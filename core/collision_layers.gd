@@ -36,7 +36,7 @@ static func collides(layer_a: int, mask_a: int, layer_b: int, mask_b: int) -> bo
 
 
 func names_of(value: int) -> Array[String]:
-	var result := []
+	var result: Array[String] = []
 	for i in range(names.size()):
 		if value & (1 << i):
 			result.append(names[i])

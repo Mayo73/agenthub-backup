@@ -3,7 +3,7 @@ extends RefCounted
 ## Befehle zur Verwaltung von Modulen.
 
 static func register_all(commands: CommandRegistry, modules: ModuleRegistry) -> void:
-	"""Drei Module-Befehle registrieren: list, enable, disable."""
+	## Drei Module-Befehle registrieren: list, enable, disable.
 
 	# module.list – alle Module auflisten
 	commands.register(

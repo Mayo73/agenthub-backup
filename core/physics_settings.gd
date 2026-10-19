@@ -10,7 +10,7 @@ var layer_names: Array[String] = ["Welt", "Spieler", "Gegner", "Projektile"]
 
 
 func to_dict() -> Dictionary:
-	"""Alle Felder als Dictionary."""
+	## Alle Felder als Dictionary.
 	return {
 		"gravity": gravity,
 		"hz": hz,
@@ -21,7 +21,7 @@ func to_dict() -> Dictionary:
 
 
 static func from_dict(d: Dictionary) -> PhysicsSettings:
-	"""Instanz aus Dictionary erstellen; fehlende Felder behalten Standard."""
+	## Instanz aus Dictionary erstellen; fehlende Felder behalten Standard.
 	var settings := PhysicsSettings.new()
 
 	if "gravity" in d:
@@ -41,7 +41,7 @@ static func from_dict(d: Dictionary) -> PhysicsSettings:
 
 
 func validate() -> Array[String]:
-	"""Prüft alle Werte und gibt Fehlermeldungen zurück (leer bei OK)."""
+	## Prüft alle Werte und gibt Fehlermeldungen zurück (leer bei OK).
 	var problems: Array[String] = []
 
 	if gravity < 0.0 or gravity > 100.0:
@@ -59,7 +59,7 @@ func validate() -> Array[String]:
 
 
 func apply(changes: Dictionary) -> CommandResult:
-	"""Änderungen anwenden; unbekannte Schlüssel oder ungültige Werte führen zu INVALID_ARGUMENT."""
+	## Änderungen anwenden; unbekannte Schlüssel oder ungültige Werte führen zu INVALID_ARGUMENT.
 	# Prüfe auf unbekannte Schlüssel
 	for key in changes.keys():
 		if not key in to_dict().keys():
@@ -86,7 +86,7 @@ func apply(changes: Dictionary) -> CommandResult:
 
 
 static func register_commands(commands: CommandRegistry, settings: PhysicsSettings) -> void:
-	"""Befehle 'physics.get' und 'physics.set' registrieren."""
+	## Befehle 'physics.get' und 'physics.set' registrieren.
 	commands.register("physics.get",
 		"Aktuelle Physikparameter abrufen",
 		{},

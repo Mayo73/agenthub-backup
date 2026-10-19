@@ -38,3 +38,8 @@ func test_pruefen() -> void:
 	result = guard.check("C:/Spiele/demo/a.txt")
 	check(result.is_ok(), "erlaubter Pfad ok")
 	check_eq(result.data["path"], "c:/Spiele/demo/a.txt", "data.path korrekt")
+
+
+func test_user_pfad() -> void:
+	check_eq(PathGuard.normalize("user://exporte/"), "user://exporte", "user://-Pfad bleibt erhalten")
+	check_eq(guard.check("user://exporte/spiel.exe").data["path"], "user://exporte/spiel.exe", "data.path mit user://")

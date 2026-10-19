@@ -13,13 +13,15 @@ func set_property(id: String, key: String, value: Variant, base_revision: int, a
 	if not model.has_object(id):
 		return CommandResult.error(CommandResult.NOT_FOUND, "Objekt %s gibt es nicht" % id)
 
-	for entry: Dictionary in entries:
+	# Neuesten Eintrag zuerst prüfen, damit die Meldung die letzte Änderung nennt
+	for i in range(entries.size() - 1, -1, -1):
+		var entry: Dictionary = entries[i]
 		if entry["id"] == id and entry["key"] == key and entry["revision"] > base_revision:
 			var current_value: Variant = model.get_property(id, key)
 			return CommandResult.error(
 				CommandResult.CONFLICT,
 				"Konflikt: %s.%s wurde in Revision %d von %s geändert" % [id, key, entry["revision"], entry["author"]],
-				{"current": current_value, "revision": entry["revision"]}
+				{"current": current_value, "revision": revision}
 			)
 
 	var old_value: Variant = model.get_property(id, key)

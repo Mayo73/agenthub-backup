@@ -10,7 +10,7 @@ var roots: Array[String] = []
 ## abschließenden Slash entfernen (außer bei ://).
 static func normalize(path: String) -> String:
 	path = path.replace("\\", "/")
-	path = simplify_path(path)
+	path = path.simplify_path()
 	# Laufwerkserkennung: zweites Zeichen ist ':'
 	if path.length() >= 2 and path[1] == ":":
 		path = path[0].to_lower() + path.substr(1)
@@ -20,22 +20,6 @@ static func normalize(path: String) -> String:
 	elif path.ends_with("/"):
 		path = path.rstrip("/")
 	return path
-
-
-static func simplify_path(path: String) -> String:
-	var parts := Array(path.split("/", false))
-	var result: Array[String] = []
-	for part in parts:
-		if part.is_empty() or part == ".":
-			continue
-		elif part == "..":
-			if result.size() > 0 and result[-1] != "..":
-				result.pop_back()
-			elif not path.begins_with("/"):
-				result.append("..")
-		else:
-			result.append(part)
-	return "/".join(result)
 
 
 ## Fügt einen erlaubten Wurzel-Pfad hinzu.
