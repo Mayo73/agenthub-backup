@@ -14,6 +14,8 @@ var message_time := 0.0
 var finish_button: Button
 var growth_caption: Label
 var health_caption: Label
+## Fischhinweis unter den Balken im `box`.
+var fish_label: Label
 
 
 ## Kleine Beschriftung über einem Balken.
@@ -46,6 +48,11 @@ func _init() -> void:
 	stage_label.name = "Stage"
 	stage_label.add_theme_font_size_override("font_size", 22)
 	box.add_child(stage_label)
+	fish_label = Label.new()
+	fish_label.name = "FishHint"
+	fish_label.add_theme_font_size_override("font_size", 18)
+	fish_label.visible = false
+	box.add_child(fish_label)
 	health_caption = make_caption("HealthCaption", "Gesundheit")
 	health_bar = ProgressBar.new()
 	health_bar.name = "Health"
@@ -95,6 +102,11 @@ func _process(delta: float) -> void:
 		message_time -= delta
 		if message_time <= 0.0:
 			message_label.text = ""
+
+## Zeigt den Hinweis zum Übergang zum Fisch.
+func show_fish_hint(text: String) -> void:
+	fish_label.text = text
+	fish_label.visible = text != ""
 
 ## Zeigt den Knopf „An Land gehen", sobald die Zellenphase beendet werden kann.
 func show_can_finish(value: bool) -> void:

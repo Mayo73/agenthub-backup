@@ -50,3 +50,11 @@ func test_beschriftungen() -> void:
 func test_reihenfolge() -> void:
 	check(hud.growth_caption.get_index() + 1 == hud.growth_bar.get_index(), "GrowthCaption kommt direkt vor Growth_bar")
 	check(hud.health_caption.get_index() + 1 == hud.health_bar.get_index(), "HealthCaption kommt direkt vor Health_bar")
+
+
+func test_fischhinweis() -> void:
+	hud.show_fish_hint("abc")
+	check(hud.fish_label.visible, "fish_label sichtbar bei nicht leerem Text")
+	check_eq(hud.fish_label.text, "abc", "fish_label zeigt richtigen Text")
+	hud.show_fish_hint("")
+	check(not hud.fish_label.visible, "fish_label unsichtbar bei leerem Text")
