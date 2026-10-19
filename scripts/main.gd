@@ -58,6 +58,17 @@ var electric := ElectricOrgan.new()
 
 var poison_view: PoisonCloudView
 var zap_view: ZapView
+var timeline := EvolutionTimeline.new()
+
+
+func add_timeline(kind: String, label: String) -> void:
+	timeline.add_without_phase(
+		kind,
+		label,
+		player.diet,
+		stats.play_time,
+		player.look.color
+	)
 
 
 func _ready() -> void:
@@ -204,6 +215,7 @@ func eat_value(kind: String, value: int) -> void:
 		player.pulse()
 		mate.add_charge()
 		hud.show_message("Neuer Ruf bereit: Taste C oder rechte Maustaste")
+		add_timeline(EvolutionTimeline.STAGE, "Größe %d" % (progress.stage + 1))
 		autosave_now()
 		audio.play("wachsen")
 		stats.record_stage(player.diet)
@@ -439,6 +451,7 @@ func close_editor(build: CellBuild) -> void:
 	player.set_build(build)
 	if editor.confirmed:
 		player.set_look(editor.look)
+		add_timeline(EvolutionTimeline.EDITOR, "Editor")
 	remove_child(editor)
 	editor.queue_free()
 	editor = null
@@ -458,6 +471,8 @@ func start_new(diet: String) -> void:
 	player_health.reset()
 	unlocks = PartUnlocks.new()
 	mate = MateCall.new()
+	timeline.start_new(diet)
+	add_timeline(EvolutionTimeline.START, "Start")
 	player.diet = diet
 	player.set_build(CellBuild.starter(diet))
 	player.set_stage(0)
@@ -470,7 +485,7 @@ func start_new(diet: String) -> void:
 
 
 func save_now() -> bool:
-	var data := SaveGame.to_dict(progress, player_health, player.build, unlocks)
+	var data := SaveGame.to_dict(progress, player_health, player.build, unlocks, timeline)
 	data["look"] = player.look.to_dict()
 	data["diet"] = player.diet
 	data["stats"] = stats.to_dict()
@@ -498,6 +513,7 @@ func load_saved() -> bool:
 	stats = RunStats.from_dict(stats_data) if stats_data is Dictionary else RunStats.new()
 	var hint_data: Variant = data.get("hints")
 	hints = TutorialHints.from_array(hint_data if hint_data is Array else [])
+	timeline = SaveGame.read_timeline(data)
 	hud.show_progress(progress)
 	autosave = true
 	return true

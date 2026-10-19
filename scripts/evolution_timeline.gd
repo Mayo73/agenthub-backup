@@ -31,6 +31,14 @@ func add(kind: String, label: String, diet: String, time: float, color: Color, p
 	entries.append(entry)
 
 
+func add_without_phase(kind: String, label: String, diet: String, time: float, color: Color) -> void:
+	add(kind, label, diet, time, color, "zelle")
+
+
+func start_new(diet: String) -> void:
+	entries.clear()
+
+
 func size() -> int:
 	return entries.size()
 
