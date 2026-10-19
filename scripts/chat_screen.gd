@@ -29,11 +29,14 @@ func _init(app_state: AppState, id: String) -> void:
 	match_id = id
 
 	set_anchors_preset(Control.PRESET_FULL_RECT)
+	var layout := VBoxContainer.new()
+	layout.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(layout)
 
 	# Kopf: HBoxContainer mit Zurück-Button, Avatar und Titel
 	var header := HBoxContainer.new()
 	header.custom_minimum_size = Vector2(0, 100)
-	add_child(header)
+	layout.add_child(header)
 
 	back_button = UiStyle.button("‹ Zurück")
 	back_button.custom_minimum_size = Vector2(0, 64)
@@ -50,12 +53,12 @@ func _init(app_state: AppState, id: String) -> void:
 	# Demo-Hinweis
 	demo_hint = UiStyle.label("Demochat: Nachrichten bleiben auf diesem Gerät, es wird nichts verschickt.", UiStyle.SIZE_SMALL)
 	demo_hint.add_theme_color_override("font_color", UiStyle.DEMO)
-	add_child(demo_hint)
+	layout.add_child(demo_hint)
 
 	# HBoxContainer mit end_button und block_button
 	var action_hbox := HBoxContainer.new()
 	action_hbox.custom_minimum_size = Vector2(0, 64)
-	add_child(action_hbox)
+	layout.add_child(action_hbox)
 
 	end_button = UiStyle.button("Match beenden", UiStyle.PASS)
 	end_button.custom_minimum_size = Vector2(0, 56)
@@ -65,31 +68,26 @@ func _init(app_state: AppState, id: String) -> void:
 	block_button.custom_minimum_size = Vector2(0, 56)
 	action_hbox.add_child(block_button)
 
-	# ConfirmDialog als letztes Kind direkt am Bildschirm
-	dialog = ConfirmDialog.new()
-	add_child(dialog)
-
 	# ScrollContainer mit messages_box
 	var scroll := ScrollContainer.new()
-	scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	add_child(scroll)
+	layout.add_child(scroll)
 
 	messages_box = VBoxContainer.new()
 	scroll.add_child(messages_box)
 
 	# Leerzustand
 	empty_label = UiStyle.label("Noch keine Nachrichten. Schreib die erste!", UiStyle.SIZE_NORMAL, UiStyle.MUTED)
-	add_child(empty_label)
+	layout.add_child(empty_label)
 
 	# Geschlossen-Hinweis
 	closed_label = UiStyle.label("Dieses Match ist beendet. Neue Nachrichten und Treffen sind nicht mehr möglich.", UiStyle.SIZE_NORMAL, UiStyle.PASS)
-	add_child(closed_label)
+	layout.add_child(closed_label)
 
 	# Eingabe: HBoxContainer mit LineEdit und Button
 	var input_hbox := HBoxContainer.new()
 	input_hbox.custom_minimum_size = Vector2(0, 88)
-	add_child(input_hbox)
+	layout.add_child(input_hbox)
 
 	input = LineEdit.new()
 	input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -99,6 +97,10 @@ func _init(app_state: AppState, id: String) -> void:
 
 	send_button = UiStyle.button("Senden", UiStyle.ACCENT)
 	input_hbox.add_child(send_button)
+
+	# ConfirmDialog als letztes Kind direkt am Bildschirm
+	dialog = ConfirmDialog.new()
+	add_child(dialog)
 
 	# Signale verbinden
 	back_button.pressed.connect(_on_back_pressed)
