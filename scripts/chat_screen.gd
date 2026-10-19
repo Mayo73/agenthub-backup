@@ -17,6 +17,11 @@ var empty_label: Label
 var closed_label: Label
 var input: LineEdit
 var send_button: Button
+var end_button: Button
+var block_button: Button
+var dialog: ConfirmDialog
+
+var pending := ""
 
 
 func _init(app_state: AppState, id: String) -> void:
@@ -46,6 +51,23 @@ func _init(app_state: AppState, id: String) -> void:
 	demo_hint = UiStyle.label("Demochat: Nachrichten bleiben auf diesem Gerät, es wird nichts verschickt.", UiStyle.SIZE_SMALL)
 	demo_hint.add_theme_color_override("font_color", UiStyle.DEMO)
 	add_child(demo_hint)
+
+	# HBoxContainer mit end_button und block_button
+	var action_hbox := HBoxContainer.new()
+	action_hbox.custom_minimum_size = Vector2(0, 64)
+	add_child(action_hbox)
+
+	end_button = UiStyle.button("Match beenden", UiStyle.PASS)
+	end_button.custom_minimum_size = Vector2(0, 56)
+	action_hbox.add_child(end_button)
+
+	block_button = UiStyle.button("Blockieren", UiStyle.PASS)
+	block_button.custom_minimum_size = Vector2(0, 56)
+	action_hbox.add_child(block_button)
+
+	# ConfirmDialog als letztes Kind direkt am Bildschirm
+	dialog = ConfirmDialog.new()
+	add_child(dialog)
 
 	# ScrollContainer mit messages_box
 	var scroll := ScrollContainer.new()
@@ -82,6 +104,10 @@ func _init(app_state: AppState, id: String) -> void:
 	back_button.pressed.connect(_on_back_pressed)
 	send_button.pressed.connect(_on_send_pressed)
 	input.text_submitted.connect(_on_text_submitted)
+	end_button.pressed.connect(_on_end_pressed)
+	block_button.pressed.connect(_on_block_pressed)
+	dialog.confirmed.connect(_on_dialog_confirmed)
+	dialog.cancelled.connect(_on_dialog_cancelled)
 
 	refresh()
 
@@ -125,20 +151,61 @@ func refresh() -> void:
 				label.add_theme_color_override("font_color", UiStyle.TEXT)
 			messages_box.add_child(label)
 
-	# Writable prüfen
+	# Writable prüfen und geschlossene Matches anzeigen
 	var writable := state.can_write(match_id)
-	input.editable = writable
+	end_button.disabled = not writable
+	block_button.disabled = not writable
 	send_button.disabled = not writable
-	closed_label.visible = not writable
+	input.editable = writable
+
+	if writable:
+		closed_label.visible = false
+	else:
+		closed_label.visible = true
+		var ended_by_id: String = m["ended_by"]
+		if ended_by_id != "":
+			if ended_by_id == state.active_id:
+				closed_label.text = "Beendet von dir. Neue Nachrichten und Treffen sind nicht mehr möglich."
+			else:
+				var ended_by_name := state.profile(ended_by_id).name
+				closed_label.text = "Beendet von %s. Neue Nachrichten und Treffen sind nicht mehr möglich." % ended_by_name
 
 
 func send() -> bool:
-	var result := state.send_message(match_id, input.text)
+	var result: bool = state.send_message(match_id, input.text)
 	if result:
 		input.text = ""
 		refresh()
 		changed.emit()
 	return result
+
+
+func _on_end_pressed() -> void:
+	pending = "beenden"
+	dialog.ask("Match mit %s beenden? Danach sind keine Nachrichten und Treffen mehr möglich." % other().name, "Beenden")
+
+
+func _on_block_pressed() -> void:
+	pending = "blockieren"
+	dialog.ask("%s blockieren? Ihr seht euch danach nicht mehr unter „Entdecken“." % other().name, "Blockieren")
+
+
+func _on_dialog_confirmed() -> void:
+	match pending:
+		"beenden":
+			state.end_match(match_id)
+		"blockieren":
+			state.block(other().id)
+		_:
+			pass
+
+	pending = ""
+	refresh()
+	changed.emit()
+
+
+func _on_dialog_cancelled() -> void:
+	pending = ""
 
 
 func _on_back_pressed() -> void:
