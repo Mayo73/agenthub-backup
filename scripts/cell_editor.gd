@@ -4,6 +4,8 @@ extends Node
 
 ## Neuer Aufbau nach Bestätigen, unveränderter Aufbau nach Abbrechen.
 signal finished(build: CellBuild)
+## Klick auf „Zum Fisch entwickeln“: der aktuelle Aufbau (DNA ist schon verrechnet).
+signal evolve_requested(build: CellBuild)
 
 const COLORS := [Color("#7FE0D0"), Color("#6CCB5F"), Color("#E0C060"), Color("#D98FE0"), Color("#E07F7F"), Color("#7FA8E0")]
 
@@ -22,6 +24,8 @@ var undo_button: Button
 var redo_button: Button
 var symmetry_button: CheckButton
 var background_image: TextureRect
+var evolve_button: Button
+var evolve_hint: Label
 var look: CellLook
 var look_box: VBoxContainer
 var color_buttons: Array[Button] = []
@@ -47,18 +51,18 @@ func _init() -> void:
 	background_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	background_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	view_layer.add_child(background_image)
-	timeline_view = TimelineView.new()
-	timeline_view.name = "Timeline"
-	timeline_view.position = Vector2(24, 16)
-	timeline_view.custom_minimum_size = Vector2(800, 150)
-	add_child(timeline_view)
 	canvas = CellEditorCanvas.new()
 	canvas.name = "Canvas"
-	canvas.position = Vector2(0, 170)
 	view_layer.add_child(canvas)
 	panel = CellEditorPanel.new()
 	panel.name = "Panel"
 	add_child(panel)
+	# Zeitstrahl oben zwischen Teile-Auswahl (links) und Info-Spalte (rechts)
+	timeline_view = TimelineView.new()
+	timeline_view.name = "Timeline"
+	timeline_view.position = Vector2(420, 16)
+	timeline_view.use_compact(Vector2(1080, 144))
+	panel.add_child(timeline_view)
 	tools = HBoxContainer.new()
 	tools.name = "Tools"
 	tools.position = Vector2(24, 990)
@@ -79,6 +83,17 @@ func _init() -> void:
 	panel.part_selected.connect(func(id: String) -> void: canvas.place_id = id)
 	panel.confirm_pressed.connect(confirm)
 	panel.cancel_pressed.connect(cancel)
+	evolve_button = Button.new()
+	evolve_button.name = "EvolveButton"
+	evolve_button.text = "Zum Fisch entwickeln"
+	evolve_button.custom_minimum_size = Vector2(360, 52)
+	evolve_button.disabled = true
+	panel.info.add_child(evolve_button)
+	evolve_hint = Label.new()
+	evolve_hint.name = "EvolveHint"
+	evolve_hint.visible = false
+	panel.info.add_child(evolve_hint)
+	evolve_button.pressed.connect(evolve)
 	canvas.changed.connect(_on_changed)
 
 	look_box = VBoxContainer.new()
@@ -204,3 +219,21 @@ func _unhandled_input(event: InputEvent) -> void:
 ## Zeitstrahl anzeigen, damit man sieht, woher die Zelle kommt.
 func show_timeline(t: EvolutionTimeline) -> void:
 	timeline_view.show_timeline(t)
+
+
+## Sperrt oder öffnet den Knopf „Zum Fisch entwickeln“; hint sagt, was noch fehlt.
+func set_fish_ready(ready: bool, hint: String) -> void:
+	evolve_button.disabled = not ready
+	evolve_hint.text = hint
+	evolve_hint.visible = not ready and hint != ""
+
+
+## Wie confirm(), meldet den Aufbau aber mit evolve_requested statt finished.
+func evolve() -> void:
+	if evolve_button.disabled:
+		return
+	var b := session.confirm(progress)
+	if b == null:
+		return
+	confirmed = true
+	evolve_requested.emit(b)

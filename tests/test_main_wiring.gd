@@ -372,6 +372,7 @@ func test_zeitstrahl_umschalten() -> void:
 
 
 func test_zeitstrahl_aktion() -> void:
+	main.start_new(Diet.PFLANZENFRESSER)
 	var timeline_layer := main.get_node_or_null("TimelineLayer/TimelineView")
 	check(timeline_layer != null, "TimelineLayer existiert")
 	check(InputMap.has_action("zeitstrahl"), "InputMap hat action 'zeitstrahl'")

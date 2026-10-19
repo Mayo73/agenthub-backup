@@ -169,6 +169,7 @@ func _ready() -> void:
 
 	timeline_view = TimelineView.new()
 	timeline_view.name = "TimelineView"
+	timeline_view.use_fullscreen()
 	var timeline_layer = CanvasLayer.new()
 	timeline_layer.name = "TimelineLayer"
 	timeline_layer.layer = 6
@@ -453,6 +454,7 @@ func open_editor() -> void:
 	editor.show_timeline(timeline)
 	editor.set_look(player.look.copy())
 	editor.finished.connect(close_editor)
+	editor.set_fish_ready(FishReadiness.is_ready(progress, unlocks), FishReadiness.missing_text(progress, unlocks))
 	hint("editor")
 	editor.canvas.changed.connect(func() -> void: audio.play("teil_setzen"))
 	add_click_sounds(editor)
@@ -484,12 +486,12 @@ func start_new(diet: String) -> void:
 	player_health.reset()
 	unlocks = PartUnlocks.new()
 	mate = MateCall.new()
-	timeline.start_new(diet)
-	add_timeline(EvolutionTimeline.START, "Start")
 	player.diet = diet
 	player.set_build(CellBuild.starter(diet))
 	player.set_stage(0)
 	player.set_look(CellLook.new())
+	timeline = EvolutionTimeline.new()
+	add_timeline(EvolutionTimeline.START, "Start")
 	hud.show_progress(progress)
 	autosave = true
 	hints = TutorialHints.new()
@@ -569,13 +571,14 @@ func toggle_pause() -> void:
 
 func _on_pause_open_timeline() -> void:
 	if paused:
-		paused = false
-		pause_menu.close()
+		toggle_pause()
 	toggle_timeline()
 
 
 ## Öffnet/Schließt die Zeitstrahl-Ansicht.
 func toggle_timeline() -> void:
+	if not timeline_view.visible and (in_menu or editor_open):
+		return
 	if timeline_view.visible:
 		timeline_view.visible = false
 	else:

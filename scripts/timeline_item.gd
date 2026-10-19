@@ -1,81 +1,57 @@
 class_name TimelineItem
 extends Control
-## Ein Eintrag im Zeitstrahl: Bild der Lebensform mit farbigem Rand und zwei Labels.
+## Ein Eintrag im Zeitstrahl: Bild der Lebensform mit farbigem Rand, darunter Beschriftung und Zeit.
+
+const BORDER_WIDTH := 4.0
+const LABEL_FONT_SIZE := 14
+const PICTURE_HEIGHT := 72.0
 
 var entry: Dictionary
-const BORDER_WIDTH := 4
-const LABEL_FONT_SIZE := 14
+var name_label: Label
+var time_label: Label
 
 
 func _init() -> void:
 	custom_minimum_size = Vector2(96, 120)
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 static func create(timeline_entry: Dictionary) -> TimelineItem:
 	var item := TimelineItem.new()
 	item.entry = timeline_entry
+	item.name_label = item._label(str(timeline_entry["label"]), PICTURE_HEIGHT)
+	item.time_label = item._label(EvolutionTimeline.time_text(timeline_entry["time"]), PICTURE_HEIGHT + 22.0)
 	return item
 
 
-func _ready() -> void:
-	# Labels unter dem Bild erstellen
-	var lbl_label := Label.new()
-	lbl_label.name = "LabelLabel"
-	lbl_label.text = entry["label"]
-	lbl_label.add_theme_font_size_override("font_size", LABEL_FONT_SIZE)
-	add_child(lbl_label)
-
-	var lbl_time := Label.new()
-	lbl_time.name = "LabelTime"
-	lbl_time.text = EvolutionTimeline.time_text(entry["time"])
-	lbl_time.add_theme_font_size_override("font_size", LABEL_FONT_SIZE)
-	add_child(lbl_time)
-
-	# Labels positionieren
-	_update_labels()
+func _label(text: String, y: float) -> Label:
+	var l := Label.new()
+	l.text = text
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.position = Vector2(0, y)
+	l.size = Vector2(custom_minimum_size.x, 20)
+	l.clip_text = true
+	l.add_theme_font_size_override("font_size", LABEL_FONT_SIZE)
+	add_child(l)
+	return l
 
 
 func _draw() -> void:
 	var border_color: Color = EvolutionTimeline.diet_color(entry["diet"])
-	var center: Vector2 = size / 2.0
-	var min_edge: float = min(size.x, size.y)
-
-	# Rahmen mit Farbe je Ernährung (Breite BORDER_WIDTH)
-	draw_rect(Rect2(Vector2.ZERO, size), border_color, false, BORDER_WIDTH)
-
-	# Inhalt in der Mitte zeichnen
-	if entry["phase"] == "zelle":
-		# Kreis für Zelle in entry["color"]
-		var radius: float = min_edge / 2.0 * 0.6
+	var box := Rect2(Vector2.ZERO, Vector2(size.x, PICTURE_HEIGHT))
+	draw_rect(box, Color(0, 0, 0, 0.35), true)
+	draw_rect(box, border_color, false, BORDER_WIDTH)
+	var center := box.get_center()
+	var radius := PICTURE_HEIGHT * 0.3
+	if entry["phase"] == "fisch":
+		draw_colored_polygon(_ellipse(center, radius * 2.0, radius, 24), entry["color"])
+	else:
 		draw_circle(center, radius, entry["color"])
-	elif entry["phase"] == "fisch":
-		# Ellipse (Polygon aus 24 Punkten), doppelt so breit wie hoch
-		var ellipse_width: float = min_edge * 0.75
-		var ellipse_height: float = ellipse_width / 2.0
-		var points: PackedVector2Array = _build_ellipse(center, ellipse_width, ellipse_height, 24)
-		draw_colored_polygon(points, entry["color"])
 
 
-func _build_ellipse(center: Vector2, width: float, height: float, point_count: int) -> PackedVector2Array:
-	var points: PackedVector2Array = PackedVector2Array()
-	for i in range(point_count):
-		var angle: float = (i / float(point_count)) * TAU
-		var x: float = center.x + (width / 2.0) * cos(angle)
-		var y: float = center.y + (height / 2.0) * sin(angle)
-		points.append(Vector2(x, y))
+func _ellipse(center: Vector2, half_width: float, half_height: float, point_count: int) -> PackedVector2Array:
+	var points := PackedVector2Array()
+	for i in point_count:
+		var angle := TAU * i / point_count
+		points.append(center + Vector2(cos(angle) * half_width, sin(angle) * half_height))
 	return points
-
-
-func _update_labels() -> void:
-	if get_child_count() < 2:
-		return
-
-	var lbl_label: Label = get_node_or_null("LabelLabel") as Label
-	var lbl_time: Label = get_node_or_null("LabelTime") as Label
-	if not lbl_label or not lbl_time:
-		return
-
-	# Labels untereinander zentrieren (unten im Control)
-	var y_pos: float = size.y - lbl_label.size.y - lbl_time.size.y - 10
-	lbl_label.position = Vector2((size.x - lbl_label.size.x) / 2.0, y_pos)
-	lbl_time.position = Vector2((size.x - lbl_time.size.x) / 2.0, y_pos + lbl_label.size.y + 5)

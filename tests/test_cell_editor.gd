@@ -98,3 +98,29 @@ func test_zeitstrahl() -> void:
 	_add_two_timeline_entries()
 	editor.show_timeline(timeline)
 	check_eq(editor.timeline_view.item_count(), 2, "timeline_item_count")
+
+
+func test_fischknopf_gesperrt() -> void:
+	editor.set_fish_ready(false, "Noch 2 Teile finden")
+	check(editor.evolve_button.disabled, "evolve_button gesperrt")
+	check_eq(editor.evolve_hint.text, "Noch 2 Teile finden", "evolve_hint Text")
+	check(editor.evolve_hint.visible, "evolve_hint sichtbar")
+	var got: Array = []
+	editor.evolve_requested.connect(func(b: CellBuild) -> void: got.append(b))
+	editor.evolve_button.pressed.emit()
+	check_eq(got.size(), 0, "gesperrter Knopf sendet nichts")
+
+
+func test_fischknopf_bereit() -> void:
+	var got: Array = []
+	var finished_got: Array = []
+	editor.evolve_requested.connect(func(b: CellBuild) -> void: got.append(b))
+	editor.finished.connect(func(b: CellBuild) -> void: finished_got.append(b))
+	editor.set_fish_ready(true, "")
+	check(not editor.evolve_hint.visible, "evolve_hint unsichtbar, wenn bereit")
+	_place_geissel()
+	editor.evolve_button.pressed.emit()
+	check_eq(got.size(), 1, "evolve_requested gesendet")
+	check_eq(got[0].parts.size(), 4, "Aufbau mit den neuen Teilen")
+	check(editor.confirmed, "confirmed wahr")
+	check_eq(finished_got.size(), 0, "finished nicht gesendet")
