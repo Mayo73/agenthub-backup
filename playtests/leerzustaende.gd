@@ -13,8 +13,7 @@ func describe() -> String:
 
 func run() -> void:
 	# Eigene Speicherdatei zu Beginn löschen, falls vorhanden
-	if FileAccess.file_exists(STORE):
-		DirAccess.remove_absolute(STORE)
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(STORE))
 	scene.use_store(STORE)
 
 	await wait(0.3)
@@ -70,5 +69,4 @@ func run() -> void:
 	shot("treffen_unvollstaendig")
 
 	# Eigene Speicherdatei am Ende löschen
-	if FileAccess.file_exists(STORE):
-		DirAccess.remove_absolute(STORE)
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(STORE))

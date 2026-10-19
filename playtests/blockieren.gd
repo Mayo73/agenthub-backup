@@ -58,7 +58,7 @@ func run() -> void:
 	# 5. Perspektivwechsel zu p02 und Prüfung der anderen Seite
 	scene._on_switched("p02")
 	await wait(0.3)
-	var ids: Array = scene.state.candidates()
+	var ids: Array[String] = scene.state.book.candidates(scene.state.active_id, scene.state.all_ids())
 	check(not ids.has("p01"), "Alex erscheint bei Sam nicht mehr unter Entdecken")
 	check(not scene.state.can_write("m1"), "Sam kann Alex nicht mehr schreiben")
 

@@ -16,11 +16,6 @@ func run() -> void:
 	# Speicherdatei am Anfang löschen
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(STORE))
 
-	# Szene laden und eigene Speicherdatei verwenden
-	scene = (load(scene_path) as PackedScene).instantiate()
-	get_tree().root.add_child(scene)
-	get_tree().current_scene = scene
-	await get_tree().process_frame
 	scene.use_store(STORE)
 	await wait(0.3)
 
@@ -45,11 +40,11 @@ func run() -> void:
 
 	# Nun auf p01 kommen und like_button drücken
 	discover = scene.screen as DiscoverScreen
-	if discover.current() != null and discover.current().id == "p01":
-		discover.like_button.pressed.emit()
-		await wait(0.3)
-		check(not scene.state.my_matches().is_empty(), "Gegenseitiges Interesse ergibt ein Match")
-		check(discover.match_label.visible, "Match-Hinweis sichtbar")
+	check(discover.current() != null and discover.current().id == "p01", "Sam findet Alex im Entdecken-Stapel")
+	discover.like_button.pressed.emit()
+	await wait(0.3)
+	check(not scene.state.my_matches().is_empty(), "Gegenseitiges Interesse ergibt ein Match")
+	check(discover.match_label.visible, "Match-Hinweis sichtbar")
 	shot("match")
 
 	# ===== 3. Matches-Reiter =====
@@ -71,12 +66,6 @@ func run() -> void:
 	shot("chat")
 
 	# ===== 4. Treffen =====
-	scene.tab_buttons["matches"].pressed.emit()
-	await wait(0.3)
-	matches_screen.rows["m1"].pressed.emit()
-	await wait(0.3)
-	chat_screen = scene.screen as ChatScreen
-
 	chat_screen.meeting_button.pressed.emit()
 	await wait(0.3)
 
