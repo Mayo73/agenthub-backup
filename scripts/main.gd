@@ -449,6 +449,7 @@ func open_editor() -> void:
 	editor.name = "Editor"
 	add_child(editor)
 	editor.open(player.build, unlocks, progress, progress.stage)
+	editor.show_timeline(timeline)
 	editor.set_look(player.look.copy())
 	editor.finished.connect(close_editor)
 	hint("editor")

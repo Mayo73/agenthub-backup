@@ -15,6 +15,8 @@ func _init() -> void:
 	strip.name = "Strip"
 	add_child(strip)
 
+var timeline_shown := false
+
 func _ready() -> void:
 	# Set spacing after _ready is called, when type checking is complete
 	var temp_spacing: float = 12.0
@@ -31,9 +33,16 @@ func _ready() -> void:
 	stats_label.add_theme_font_size_override("font_size", 18)
 	add_child(stats_label)
 
+	if timeline_shown:
+		title_label.visible = false
+
 
 func show_timeline(t: EvolutionTimeline) -> void:
 	timeline = t
+	timeline_shown = true
+
+	if title_label != null:
+		title_label.visible = false
 
 	# Alle Kinder im strip entfernen (mit free())
 	for child in strip.get_children():
