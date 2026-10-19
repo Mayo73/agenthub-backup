@@ -35,6 +35,7 @@ func test_kein_vorschlag() -> void:
 
 	var t := MeetingStatus.text(state, match_p01_p02)
 	check_eq(t, "Noch kein Treffvorschlag.", "text sollte 'Noch kein Treffvorschlag.' sein")
+	check(not MeetingStatus.can_cancel(state, match_p01_p02), "ohne Vorschlag gibt es nichts abzusagen")
 
 	# Als p02
 	state.switch_to("p02")

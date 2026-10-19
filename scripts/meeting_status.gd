@@ -111,8 +111,7 @@ static func can_approve(state: AppState, match_id: String) -> bool:
 ## Prüfen, ob der aktive Nutzer den Vorschlag absagen kann.
 static func can_cancel(state: AppState, match_id: String) -> bool:
 	# Vorschlag existiert und ist nicht abgesagt
-	var match_dict2: Dictionary = state.book.get_match(match_id)
-	if match_dict2.is_empty():
+	if not state.meetings.has_meeting(match_id):
 		return false
 	if state.meetings.is_cancelled(match_id):
 		return false
