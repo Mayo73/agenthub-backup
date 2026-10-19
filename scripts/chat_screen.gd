@@ -1,0 +1,153 @@
+class_name ChatScreen
+extends Control
+## Bildschirm für Demochat zwischen den beiden Testpersonen eines Matches.
+
+signal changed
+signal back
+
+var state: AppState
+var match_id := ""
+
+var back_button: Button
+var avatar: AvatarView
+var title_label: Label
+var demo_hint: Label
+var messages_box: VBoxContainer
+var empty_label: Label
+var closed_label: Label
+var input: LineEdit
+var send_button: Button
+
+
+func _init(app_state: AppState, id: String) -> void:
+	state = app_state
+	match_id = id
+
+	set_anchors_preset(Control.PRESET_FULL_RECT)
+
+	# Kopf: HBoxContainer mit Zurück-Button, Avatar und Titel
+	var header := HBoxContainer.new()
+	header.custom_minimum_size = Vector2(0, 100)
+	add_child(header)
+
+	back_button = UiStyle.button("‹ Zurück")
+	back_button.custom_minimum_size = Vector2(0, 64)
+	header.add_child(back_button)
+
+	avatar = AvatarView.new()
+	avatar.set_diameter(64.0)
+	header.add_child(avatar)
+
+	title_label = UiStyle.label("", UiStyle.SIZE_NORMAL)
+	title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	header.add_child(title_label)
+
+	# Demo-Hinweis
+	demo_hint = UiStyle.label("Demochat: Nachrichten bleiben auf diesem Gerät, es wird nichts verschickt.", UiStyle.SIZE_SMALL)
+	demo_hint.add_theme_color_override("font_color", UiStyle.DEMO)
+	add_child(demo_hint)
+
+	# ScrollContainer mit messages_box
+	var scroll := ScrollContainer.new()
+	scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	add_child(scroll)
+
+	messages_box = VBoxContainer.new()
+	scroll.add_child(messages_box)
+
+	# Leerzustand
+	empty_label = UiStyle.label("Noch keine Nachrichten. Schreib die erste!", UiStyle.SIZE_NORMAL, UiStyle.MUTED)
+	add_child(empty_label)
+
+	# Geschlossen-Hinweis
+	closed_label = UiStyle.label("Dieses Match ist beendet. Neue Nachrichten und Treffen sind nicht mehr möglich.", UiStyle.SIZE_NORMAL, UiStyle.PASS)
+	add_child(closed_label)
+
+	# Eingabe: HBoxContainer mit LineEdit und Button
+	var input_hbox := HBoxContainer.new()
+	input_hbox.custom_minimum_size = Vector2(0, 88)
+	add_child(input_hbox)
+
+	input = LineEdit.new()
+	input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	input.max_length = ChatLog.MAX_LENGTH
+	input.placeholder_text = "Nachricht schreiben …"
+	input_hbox.add_child(input)
+
+	send_button = UiStyle.button("Senden", UiStyle.ACCENT)
+	input_hbox.add_child(send_button)
+
+	# Signale verbinden
+	back_button.pressed.connect(_on_back_pressed)
+	send_button.pressed.connect(_on_send_pressed)
+	input.text_submitted.connect(_on_text_submitted)
+
+	refresh()
+
+
+func other() -> SparProfile:
+	var m := state.book.get_match(match_id)
+	if m.is_empty():
+		return null
+	var other_id := state.book.other(m, state.active_id)
+	return state.profile(other_id)
+
+
+func refresh() -> void:
+	# Titel und Avatar aktualisieren
+	var m := state.book.get_match(match_id)
+	if not m.is_empty():
+		var other_id := state.book.other(m, state.active_id)
+		var other := state.profile(other_id)
+		if other:
+			avatar.set_profile(other)
+			title_label.text = "%s · %s" % [other.name, other.art]
+
+	# messages_box leeren und alte Labels entfernen
+	for c in messages_box.get_children():
+		messages_box.remove_child(c)
+		c.free()
+
+	# Nachrichten anzeigen
+	var msgs := state.chat.messages_for(match_id)
+	if msgs.is_empty():
+		empty_label.visible = true
+	else:
+		empty_label.visible = false
+		for msg in msgs:
+			var label := UiStyle.label(msg["text"])
+			if msg["from"] == state.active_id:
+				label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+				label.add_theme_color_override("font_color", UiStyle.ACCENT)
+			else:
+				label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+				label.add_theme_color_override("font_color", UiStyle.TEXT)
+			messages_box.add_child(label)
+
+	# Writable prüfen
+	var writable := state.can_write(match_id)
+	input.editable = writable
+	send_button.disabled = not writable
+	closed_label.visible = not writable
+
+
+func send() -> bool:
+	var result := state.send_message(match_id, input.text)
+	if result:
+		input.text = ""
+		refresh()
+		changed.emit()
+	return result
+
+
+func _on_back_pressed() -> void:
+	back.emit()
+
+
+func _on_send_pressed() -> void:
+	send()
+
+
+func _on_text_submitted(new_text: String) -> void:
+	send()
