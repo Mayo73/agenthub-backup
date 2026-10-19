@@ -56,3 +56,10 @@ func test_tasten_anwenden() -> void:
 
 func test_ohne_tasten() -> void:
 	check(UserSettings.new().keys.is_empty(), "neue Settings haben leeres keys-Dictionary")
+
+func test_fenstermodus() -> void:
+	check_eq(UserSettings.window_mode_for(false, DisplayServer.WINDOW_MODE_MAXIMIZED), -1, "maximiertes Fenster bleibt maximiert")
+	check_eq(UserSettings.window_mode_for(false, DisplayServer.WINDOW_MODE_WINDOWED), -1, "Fenster bleibt unverändert")
+	check_eq(UserSettings.window_mode_for(false, DisplayServer.WINDOW_MODE_FULLSCREEN), DisplayServer.WINDOW_MODE_WINDOWED, "Vollbild aus: zurück ins Fenster")
+	check_eq(UserSettings.window_mode_for(true, DisplayServer.WINDOW_MODE_MAXIMIZED), DisplayServer.WINDOW_MODE_FULLSCREEN, "Vollbild an")
+	check_eq(UserSettings.window_mode_for(true, DisplayServer.WINDOW_MODE_FULLSCREEN), -1, "Vollbild bleibt")

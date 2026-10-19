@@ -39,12 +39,19 @@ static func load_from(path: String = DEFAULT_PATH) -> UserSettings:
 			settings.keys[str(action)] = int(k[action])
 	return settings
 
+## Fenstermodus, den apply() setzen muss; -1 = nichts ändern. Nur der Wechsel zwischen Vollbild
+## und Fenster wird gesetzt, ein vom Spieler vergrößertes (maximiertes) Fenster bleibt so groß.
+static func window_mode_for(want_fullscreen: bool, current: int) -> int:
+	var is_full := current == DisplayServer.WINDOW_MODE_FULLSCREEN or current == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN
+	if want_fullscreen:
+		return -1 if is_full else DisplayServer.WINDOW_MODE_FULLSCREEN
+	return DisplayServer.WINDOW_MODE_WINDOWED if is_full else -1
+
 func apply() -> void:
 	AudioServer.set_bus_volume_db(0, volume_db(volume))
 	if DisplayServer.get_name() != "headless":
-		if fullscreen:
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
-		else:
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		var mode := window_mode_for(fullscreen, DisplayServer.window_get_mode())
+		if mode != -1:
+			DisplayServer.window_set_mode(mode)
 	Controls.setup()
 	Controls.apply_bindings(keys)
