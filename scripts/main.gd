@@ -96,12 +96,28 @@ func use_store(path: String) -> void:
 	show_screen(current_screen)
 
 
+## Alle Profile, Matches, Nachrichten und Treffen auf die ursprünglichen Testdaten zurücksetzen.
+func reset_demo() -> void:
+	state = StateStore.reset(store_path)
+	perspective.set_state(state)
+	show_screen("entdecken")
+
+
+func _on_reset_demo() -> void:
+	reset_demo()
+
+
 ## Baut den Bildschirm zu einem Namen. Noch nicht umgesetzte Bildschirme zeigen nur den Titel.
 func _make_screen(screen_name: String) -> Control:
 	if screen_name == "entdecken":
 		var discover := DiscoverScreen.new(state)
 		discover.changed.connect(save)
 		return discover
+	if screen_name == "profil":
+		var profile := ProfileScreen.new(state)
+		profile.changed.connect(save)
+		profile.reset_requested.connect(_on_reset_demo)
+		return profile
 	var l := UiStyle.label(TAB_TITLES.get(screen_name, screen_name), UiStyle.SIZE_TITLE)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
