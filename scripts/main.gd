@@ -247,6 +247,7 @@ func _process(delta: float) -> void:
 	hud.show_progress(progress)
 	hud.show_health(player_health)
 	hud.show_can_finish(PhaseEnd.can_finish(progress) and not finished)
+	hud.show_fish_hint(FishReadiness.hud_text(progress, unlocks))
 
 
 ## Füllt die KI-Zellen auf EcoSpawner.TARGET_COUNT auf.
