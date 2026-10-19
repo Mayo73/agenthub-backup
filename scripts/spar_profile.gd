@@ -95,7 +95,9 @@ static func from_dict(d: Dictionary) -> SparProfile:
 	profile.age = int(d.get("age", 18))
 
 	var color_html: Variant = d.get("color", "")
-	if typeof(color_html) == TYPE_STRING and not color_html.is_empty():
+	if color_html is Color:
+		profile.color = color_html
+	elif typeof(color_html) == TYPE_STRING and not color_html.is_empty():
 		profile.color = Color.html(color_html)
 	else:
 		profile.color = Color(0.5, 0.5, 0.5)

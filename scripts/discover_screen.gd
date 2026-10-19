@@ -23,22 +23,30 @@ func _init(app_state: AppState) -> void:
 
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 
+	var margin := MarginContainer.new()
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	for side in ["left", "right", "top", "bottom"]:
+		margin.add_theme_constant_override("margin_" + side, UiStyle.GAP)
+	add_child(margin)
 	var vbox := VBoxContainer.new()
-	vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(vbox)
+	vbox.add_theme_constant_override("separation", UiStyle.GAP)
+	margin.add_child(vbox)
 
 	# Filterleiste als erstes Kind der VBoxContainer
 	var filter_hbox := HBoxContainer.new()
 	filter_hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	filter_hbox.add_theme_constant_override("separation", 12)
 	vbox.add_child(filter_hbox)
 
 	art_filter = OptionButton.new()
 	art_filter.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	UiStyle.style_option(art_filter)
 	art_filter.item_selected.connect(func(index: int) -> void: set_filter(art_filter.get_selected_id(), level_filter.get_selected_id()))
 	filter_hbox.add_child(art_filter)
 
 	level_filter = OptionButton.new()
 	level_filter.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	UiStyle.style_option(level_filter)
 	level_filter.item_selected.connect(func(index: int) -> void: set_filter(art_filter.get_selected_id(), level_filter.get_selected_id()))
 	filter_hbox.add_child(level_filter)
 
@@ -63,18 +71,19 @@ func _init(app_state: AppState) -> void:
 	match_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	vbox.add_child(match_label)
 
-	# HBoxContainer mit Knöpfen
+	# Runde Aktionsknöpfe unter der Karte: Nein links, Ja rechts
 	var hbox := HBoxContainer.new()
-	hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox.add_theme_constant_override("separation", 72)
 	vbox.add_child(hbox)
 
-	pass_button = UiStyle.button("✕ Überspringen", UiStyle.PASS)
-	pass_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	pass_button = UiStyle.round_button("✕", UiStyle.PASS)
+	pass_button.tooltip_text = "Überspringen"
 	pass_button.pressed.connect(decide_pass)
 	hbox.add_child(pass_button)
 
-	like_button = UiStyle.button("♥ Interesse",UiStyle.LIKE)
-	like_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	like_button = UiStyle.round_button("♥", UiStyle.LIKE)
+	like_button.tooltip_text = "Interesse"
 	like_button.pressed.connect(decide_like)
 	hbox.add_child(like_button)
 

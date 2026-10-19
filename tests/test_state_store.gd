@@ -70,3 +70,12 @@ func test_zuruecksetzen() -> void:
 	var loaded := StateStore.load_state(PATH)
 	check_eq(loaded.my_matches().size(), 0, "geladen: keine Matches")
 	check_eq(loaded.profile("p01").name, "Alex", "geladen: ursprünglicher Name")
+
+
+func test_graue_farben_ergaenzt() -> void:
+	var state := AppState.demo()
+	for p in state.profiles:
+		p.color = Color(0.5, 0.5, 0.5)
+	StateStore.save(state, PATH)
+	var loaded := StateStore.load_state(PATH)
+	check(loaded.profiles[0].color.is_equal_approx(DemoData.profiles()[0].color), "graue Farbe aus den Demodaten ergänzt")

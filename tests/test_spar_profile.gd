@@ -131,3 +131,9 @@ func test_kopie_unabhaengig() -> void:
 	q.days.append("Di")
 
 	check_eq(p.days.size(), 1, "p.days bleibt unverändert (Größe 1)")
+
+
+func test_farbe_als_color() -> void:
+	var p := SparProfile.from_dict({"id": "x", "color": Color(0.2, 0.55, 0.85)})
+	check(p.color.is_equal_approx(Color(0.2, 0.55, 0.85)), "Farbe als Color wird übernommen")
+	check(DemoData.profiles()[0].color.is_equal_approx(Color(0.20, 0.55, 0.85)), "DemoData behält die Avatarfarbe")

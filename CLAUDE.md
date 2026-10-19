@@ -64,3 +64,13 @@ Spieltests in `playtests/` führt der Hub aus (`hub\tools\spieltest.ps1 -Projekt
 ## Android
 
 Mindestversion Android 7.0 (API 24, Godot-Standard), Renderer „Compatibility“, Hochformat. Export: Vorlage „Android“ in `export_presets.cfg` (arm64-v8a und x86_64, ohne Gradle, signiert mit dem Debug-Schlüssel, keine Internet-Berechtigung, ohne `tests/` und `playtests/`). Bauen macht Claude: `godot --headless --path . --export-debug Android build/sparring.apk` (Ordner `build/` ist ignoriert). Im Emulator `Sparring_Pixel` nur mit `-gpu host` starten; mit der Software-Grafik (SwiftShader, Standard bei `-no-window`) bleibt der Bildschirm leer. Icon: `assets/icon/icon.png` (selbst gezeichnet).
+
+## Stil (seit 20.10.2026)
+
+Vorbild sind moderne Dating-Apps, aber ohne deren Marken, Logos oder Farben.
+
+- Fast schwarzer Hintergrund (`UiStyle.BG`), dunkle Flächen (`CARD`, `RAISED`) mit weichen Schatten (`UiStyle.card_panel()`), große runde Ecken (`RADIUS`, `RADIUS_CARD`), Abstände `UiStyle.GAP`.
+- Akzent violett `ACCENT` mit türkisem `ACCENT_2` (Verläufe mit `UiStyle.vertical_gradient()`), Ja grün `LIKE`, Nein rot `PASS`, Demo-Hinweise gelb `DEMO`.
+- Bausteine: `UiStyle.round_button(symbol, farbe)` für runde Aktionsknöpfe, `UiStyle.chip(text, farbe)` für Merkmale (Beschriftung ist `chip.get_child(0)`), `UiStyle.overlay_label()` für Text auf Bildern, `UiStyle.style_option()` für Auswahlfelder.
+- `ProfileCard`: Porträt füllt die Karte (`AvatarView.set_fill(true)`), unten dunkler Verlauf mit Name (`SIZE_HERO`), Chips, Kurzbeschreibung, Merkmalen.
+- `AvatarView` zeichnet ein illustriertes Porträt (Verlauf der Profilfarbe, Kopf, Frisur, Schultern); rund in Listen, als Fläche auf der Karte.
