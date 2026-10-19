@@ -1,0 +1,17 @@
+Tonbericht Spieltest zellenphase/fisch_entwicklung (Zeit ab Programmstart)
+Ton: 48000 Hz, 2 Kanäle, 32 Bit, Aufnahme 17,2 s
+Gesamt: Pegel -18 dBFS (RMS), Spitze 0 dBFS, übersteuert 0,0 %, still 0 %
+
+Zeit     Pegel   Spitze  Tonhöhe  tempo_vorher  tempo_nachher
+     0 s   -18 dB   -10 dB  44 Hz    
+     1 s   -23 dB   -17 dB 229 Hz    
+     2 s   -18 dB   -10 dB 181 Hz    
+     3 s   -39 dB   -28 dB 176 Hz  6.42825698852539  
+     4 s   -21 dB   -10 dB 173 Hz    
+     5 s   -10 dB     0 dB 200 Hz    
+     6 s   -19 dB    -6 dB 270 Hz    
+     7 s   -18 dB   -10 dB  87 Hz    
+     8 s   -39 dB   -12 dB 190 Hz    11.2519836425781
+     9 s   -20 dB   -10 dB  38 Hz    
+    10 s   -22 dB   -10 dB  74 Hz    
+    11 s   -13 dB    -7 dB 485 Hz    

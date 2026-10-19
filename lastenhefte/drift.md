@@ -1,7 +1,7 @@
 ---
 projekt: drift
 titel: Drift – isometrisches Driftspiel
-status: wartet-auf-dich
+status: warteschlange
 prioritaet: 1
 ablaufplan: ja
 erstellt: 2026-10-15

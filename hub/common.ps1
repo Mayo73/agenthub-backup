@@ -281,9 +281,32 @@ function Get-Punkte {
     }
 }
 
+## Antwort des Nutzers auf einen weitergegebenen Punkt (Dashboard, auch vom Handy): unter "## Antwort"
+## mit Datum anhängen und den Punkt auf "beantwortet" setzen. Danach setzt Claude sie im nächsten Review um.
+## Rückgabe: $null bei Erfolg, sonst eine Fehlermeldung für den Nutzer.
+function Set-PunktAntwort([string]$Id, [string]$Text, [string]$Dir = '') {
+    if (-not $Dir) { $Dir = Get-HubPath 'lastenhefte\punkte' }
+    if ($Id -notmatch '^P-\d{4,6}$') { return 'Ungültige Punkt-ID.' }
+    $Text = "$Text".Trim()
+    if (-not $Text) { return 'Die Antwort ist leer.' }
+    if ($Text.Length -gt 4000) { return 'Die Antwort ist zu lang (höchstens 4000 Zeichen).' }
+    $file = Get-ChildItem -LiteralPath $Dir -Filter "$Id-*.md" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    if (-not $file) { return 'Punkt nicht gefunden.' }
+    $content = Read-Text $file.FullName
+    if ("$((Split-FrontMatter $content).Meta['status'])".ToLower() -ne 'weitergegeben') { return 'Dieser Punkt wartet gerade nicht auf dich.' }
+    # Zeilen, die wie Überschriften oder Kopf-Trenner aussehen, einrücken, damit die Datei ihre Gliederung behält.
+    $lines = ($Text -replace "`r", '') -split "`n" | ForEach-Object { if ($_ -match '^\s*(#|---)') { '    ' + $_ } else { $_ } }
+    $entry = "$((Get-Date).ToString('dd.MM.yyyy')) – Antwort des Nutzers im Dashboard:`n`n" + ($lines -join "`n")
+    $content = [regex]::Replace($content, '(?m)^status:[ \t]*weitergegeben[ \t]*$', 'status: beantwortet', 1)
+    Write-Text $file.FullName ($content.TrimEnd() + "`n`n" + $entry + "`n")
+    Add-HubLog "$Id vom Nutzer im Dashboard beantwortet"
+    return $null
+}
+
 ## Nachricht an den Nutzer: Windows-Meldung auf dem PC und, wenn in config.json unter
 ## benachrichtigung.ntfy eine Adresse steht (z. B. https://ntfy.sh/<geheimes-thema>), per ntfy aufs Handy.
-function Send-HubNachricht([string]$Titel, [string]$Text) {
+## $Pfad (z. B. "#fragen") hängt an benachrichtigung.dashboard: Antippen öffnet das Dashboard dort.
+function Send-HubNachricht([string]$Titel, [string]$Text, [string]$Pfad = '') {
     try {
         $null = [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime]
         $null = [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]
@@ -292,11 +315,21 @@ function Send-HubNachricht([string]$Titel, [string]$Text) {
         $appId = '{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\WindowsPowerShell\v1.0\powershell.exe'
         [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($appId).Show([Windows.UI.Notifications.ToastNotification]::new($xml))
     } catch { Add-HubLog "Windows-Meldung fehlgeschlagen: $($_.Exception.Message)" }
-    $ntfy = "$((Get-HubConfig).benachrichtigung.ntfy)"
+    $cfg = (Get-HubConfig).benachrichtigung
+    $ntfy = "$($cfg.ntfy)"
     if ($ntfy -match '^(https?://[^/]+)/([A-Za-z0-9_-]+)$') {
+        $server = $Matches[1]
+        $topic = $Matches[2]
         try {
-            $body = ConvertTo-Json @{ topic = $Matches[2]; title = $Titel; message = $Text; tags = @('robot') }
-            Invoke-RestMethod -Uri $Matches[1] -Method Post -ContentType 'application/json; charset=utf-8' `
+            $msg = [ordered]@{ topic = $topic; title = $Titel; message = $Text; tags = @('robot') }
+            $dashboard = "$($cfg.dashboard)"
+            if ($dashboard -match '^https?://') {
+                $url = $dashboard.TrimEnd('/') + '/' + $Pfad
+                $msg['click'] = $url
+                if ($Pfad -eq '#fragen') { $msg['actions'] = @(@{ action = 'view'; label = 'Antworten'; url = $url }) }
+            }
+            $body = ConvertTo-Json $msg -Depth 4
+            Invoke-RestMethod -Uri $server -Method Post -ContentType 'application/json; charset=utf-8' `
                 -Body ([Text.Encoding]::UTF8.GetBytes($body)) -TimeoutSec 15 | Out-Null
         } catch { Add-HubLog "ntfy-Nachricht fehlgeschlagen: $($_.Exception.Message)" }
     }
@@ -318,7 +351,7 @@ function Update-Benachrichtigungen([bool]$OllamaOk = $true) {
     $new = @($forUser | Where-Object { $known -notcontains $_.Id })
     if ($new.Count -gt 0) {
         $titel = if ($new.Count -eq 1) { 'Agent Hub: 1 Punkt für dich' } else { "Agent Hub: $($new.Count) Punkte für dich" }
-        Send-HubNachricht $titel ((@($new | ForEach-Object { "$($_.Id) $($_.Title)" }) -join '; ') + '. Details im Dashboard oder bei ChatGPT.')
+        Send-HubNachricht $titel ((@($new | ForEach-Object { "$($_.Id) $($_.Title)" }) -join '; ') + '. Antippen und im Dashboard antworten.') '#fragen'
         Add-HubLog "Benachrichtigung: $(@($new | ForEach-Object { $_.Id }) -join ', ') für den Nutzer"
     }
     if ($OllamaOk) {
@@ -640,4 +673,20 @@ function Update-StatusFile {
     Write-Text (Join-Path $dir 'STATUS.md') ($header + $content)
     $script:StatusHash = $hash
     $script:StatusWritten = Get-Date
+}
+
+# Fenstergröße eines Godot-Projekts für Movie-Maker-Läufe (Screenshots, Filme), z. B. "720x1280"
+# für Hochformat-Apps. Ohne Angabe in project.godot: 1280x720.
+function Get-GodotAufloesung([string]$ProjektPfad) {
+    $datei = Join-Path $ProjektPfad 'project.godot'
+    $b = 1280; $h = 720
+    if (Test-Path -LiteralPath $datei) {
+        $text = Get-Content -LiteralPath $datei -Raw -Encoding UTF8
+        if ($text -match '(?m)^window/size/viewport_width=(\d+)') { $b = [int]$Matches[1] }
+        if ($text -match '(?m)^window/size/viewport_height=(\d+)') { $h = [int]$Matches[1] }
+    }
+    # Große Projekte auf höchstens 1280 Pixel Kantenlänge verkleinern (Seitenverhältnis bleibt).
+    $max = [math]::Max($b, $h)
+    if ($max -gt 1280) { $b = [int][math]::Round($b * 1280 / $max); $h = [int][math]::Round($h * 1280 / $max) }
+    return "${b}x${h}"
 }

@@ -230,6 +230,11 @@ main { max-width: 1680px; margin: 0 auto; padding: 20px 24px 48px; display: grid
 .callout { padding: 10px 14px; border-radius: 10px; margin: 12px 0; font-size: 13.5px; }
 .callout.warn { background: var(--warn-soft); color: var(--warn); }
 .callout.bad { background: var(--bad-soft); color: var(--bad); }
+.callout.ok { background: var(--ok-soft); color: var(--ok); }
+.antwort { margin-top: 10px; }
+.antwort textarea { width: 100%; box-sizing: border-box; min-height: 76px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--sunken); color: var(--text); font: inherit; font-size: 15px; resize: vertical; }
+.antwort-row { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; margin-top: 6px; }
+.antwort-status { margin: 4px 0 0; font-size: 12.5px; }
 .callout ul { margin: 4px 0 0; padding-left: 18px; }
 .section-title { font-size: 13px; font-weight: 650; color: var(--muted); margin: 22px 0 8px; padding-top: 14px; border-top: 1px solid var(--border); }
 table.attempts { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -489,8 +494,10 @@ let openId = null;   // Ticket im Detailbereich
 let openSig = '';    // erkennt Änderungen am geöffneten Ticket
 let viewing = null;  // gerade angezeigte Datei im Detailbereich
 
-async function api(path, method = 'GET') {
-  const res = await fetch(path, { method, headers: { 'X-Hub': '1' }, cache: 'no-store' });
+async function api(path, method = 'GET', body = null) {
+  const opts = { method, headers: { 'X-Hub': '1' }, cache: 'no-store' };
+  if (body !== null) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
+  const res = await fetch(path, opts);
   if (!res.ok) throw new Error((await res.text()) || String(res.status));
   return (res.headers.get('content-type') || '').includes('json') ? res.json() : res.text();
 }
@@ -1054,8 +1061,16 @@ async function openPunkte(status, title) {
   const kinds = { frage: 'Frage', ansehen: 'Ansehen', ausprobieren: 'Ausprobieren' };
   const states = { offen: ['bei ChatGPT', 'accent'], beantwortet: ['beantwortet', 'ok'], weitergegeben: ['für dich', 'warn'] };
   const hint = status === 'weitergegeben'
-    ? `<div class="callout warn">Diese Punkte konnte ChatGPT nicht selbst erledigen. Deine Antwort gibst du ChatGPT im Gespräch, zum Beispiel „P-0003: Fährt sich gut, Handbremse etwas zu stark“. ChatGPT trägt sie ein, Claude setzt sie beim nächsten Review um.</div>`
+    ? `<div class="callout warn">Diese Punkte konnte ChatGPT nicht selbst erledigen. Antworte direkt hier, auch vom Handy. Claude setzt deine Antwort beim nächsten Review um. Du kannst sie auch weiter ChatGPT im Gespräch geben.</div>`
     : '';
+  // Schnellantworten je Art; sie füllen nur das Feld, abgeschickt wird mit „Antwort senden“.
+  const quick = { frage: ['Ja', 'Nein'], ansehen: ['Passt so'], ausprobieren: ['Passt so'] };
+  const answerForm = p => p.status !== 'weitergegeben' ? '' : `
+      <form class="antwort" data-id="${esc(p.id)}">
+        <textarea name="text" rows="3" maxlength="4000" placeholder="Deine Antwort …" aria-label="Antwort auf ${esc(p.id)}"></textarea>
+        <div class="antwort-row">${arr(quick[p.kind]).map(q => `<button type="button" class="btn small" data-fill="${esc(q)}">${esc(q)}</button>`).join('')}<button type="submit" class="btn primary">Antwort senden</button></div>
+        <p class="antwort-status muted"></p>
+      </form>`;
   if (!list.length) { $('#drawer-body').innerHTML = hint + '<p class="muted">Gerade keine.</p>'; return; }
   $('#drawer-body').innerHTML = hint + list.map(p => {
     const [label, tone] = states[p.status] || [p.status, 'neutral'];
@@ -1070,9 +1085,37 @@ async function openPunkte(status, title) {
       <h3>${esc(p.title)}</h3>
       ${pics ? `<div class="punkt-bilder">${pics}</div>` : ''}
       <div class="md">${md(body)}</div>
+      ${answerForm(p)}
     </section>`;
   }).join('');
 }
+
+// Antworten auf weitergegebene Punkte (Formulare im Seitenbereich).
+$('#drawer-body').addEventListener('click', e => {
+  const fill = e.target.closest('[data-fill]');
+  if (!fill) return;
+  const area = fill.closest('form.antwort').querySelector('textarea');
+  area.value = fill.dataset.fill + (area.value.trim() ? ' – ' + area.value.trim() : '');
+  area.focus();
+});
+$('#drawer-body').addEventListener('submit', async e => {
+  const form = e.target.closest('form.antwort');
+  if (!form) return;
+  e.preventDefault();
+  const text = form.querySelector('textarea').value.trim();
+  const status = form.querySelector('.antwort-status');
+  if (!text) { status.textContent = 'Bitte erst eine Antwort schreiben.'; return; }
+  form.querySelectorAll('button, textarea').forEach(el => { el.disabled = true; });
+  status.textContent = 'Sende …';
+  try {
+    await api('/api/punkt-antwort', 'POST', { id: form.dataset.id, text });
+    form.innerHTML = `<div class="callout ok">Danke, deine Antwort ist eingetragen. Claude setzt sie beim nächsten Review um.</div>`;
+    refresh();
+  } catch (err) {
+    form.querySelectorAll('button, textarea').forEach(el => { el.disabled = false; });
+    status.textContent = 'Nicht gesendet: ' + (err.message || 'Fehler');
+  }
+});
 
 document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => setView(t.dataset.view)));
 $('#plan-select').addEventListener('change', e => { planProject = e.target.value; planSig = ''; refreshPlan(); });
@@ -1470,8 +1513,11 @@ async function refresh() {
   if (view === 'projects') refreshProjects();
 }
 
+// Link aus der Push-Nachricht (…/#fragen): gleich die Punkte öffnen, die auf dich warten.
+const startFragen = location.hash === '#fragen';
 setView(view);
 refresh();
+if (startFragen) openPunkte('weitergegeben', 'Punkte für dich');
 setInterval(refresh, 4000);
 setInterval(tick, 1000);
 </script>

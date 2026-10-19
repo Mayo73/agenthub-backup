@@ -10,7 +10,7 @@
   "idleSeconds": 30,
   "dashboardHosts": ["desktop-niko.tail810eaa.ts.net"],
   "backup": { "url": "https://github.com/Mayo73/agenthub-backup.git" },
-  "benachrichtigung": { "ntfy": "" },
+  "benachrichtigung": { "ntfy": "https://ntfy.sh/agenthub-g8xstwy2aw9dv69xw4", "dashboard": "https://desktop-niko.tail810eaa.ts.net:8443/" },
   "reviewTimes": ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "21:00", "22:00", "23:00"],
   "reviewMinutes": 20,
   "reviewGate": { "minOpen": 15, "minOpenNoon": 40, "maxReview": 20, "pause": ["12:30", "21:00"], "mediaRetryHours": 6 },
@@ -38,6 +38,13 @@
     },
     "sparring": {
       "path": "C:\\Users\\wiens\\AgentHub\\projects\\sparring",
+      "baseBranch": "main",
+      "verify": "verify.cmd",
+      "protected": ["verify.cmd", "tests/run_tests.gd", "tests/base_test.gd", "playtests/playtest.gd"],
+      "testCount": "^ERGEBNIS: (\\d+) ok"
+    },
+    "hub-engine": {
+      "path": "C:\\Users\\wiens\\AgentHub\\projects\\hub-engine",
       "baseBranch": "main",
       "verify": "verify.cmd",
       "protected": ["verify.cmd", "tests/run_tests.gd", "tests/base_test.gd", "playtests/playtest.gd"],

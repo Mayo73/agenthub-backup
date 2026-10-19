@@ -1,27 +1,18 @@
 # Stand des Agent Hub
 
-Automatisch erzeugt am 18.10.2026, 20:54 Uhr. Nicht bearbeiten, wird laufend neu geschrieben.
+Automatisch erzeugt am 19.10.2026, 19:54 Uhr. Nicht bearbeiten, wird laufend neu geschrieben.
 
-## Bald keine Arbeit mehr für die Agents
-
-Für **Sparring – Android-Prototyp für Kampfsport-Matches** bleiben noch etwa 47 Tickets. Das reicht den Agents höchstens für etwa einen Tag, und danach wartet kein weiteres Lastenheft. Bitte sprich mit dem Nutzer über das nächste Projekt und lege ein Lastenheft an, damit die Agents nicht stillstehen.
-
-## Nur für den Nutzer (von dir weitergegeben)
-
-- **P-0003** Drift: Probe spielen (Ausprobieren (Computer Use); drift) → `punkte/P-0003-drift-durchspielen.md`
-- **P-0005** Zellenphase: Probe spielen (Ausprobieren (Computer Use); zellenphase) → `punkte/P-0005-zellenphase-durchspielen.md`
-- **P-0006** Drift und Zellenphase: Klang anhören (Ausprobieren (Computer Use); drift, zellenphase) → `punkte/P-0006-klang-anhoeren.md`
-
-Beantwortet, Claude setzt es beim nächsten Review um: P-0010
+Beantwortet, Claude setzt es beim nächsten Review um: P-0011
 
 ## In Arbeit
 
-- **Sparring – Android-Prototyp für Kampfsport-Matches** (`sparring.md`, Status `aktiv`): 0 von 45 Tickets erledigt, 1 von 9 Meilensteinen fertig
+- **Sparring – Android-Prototyp für Kampfsport-Matches** (`sparring.md`, Status `aktiv`): 51 von 51 Tickets erledigt, 9 von 10 Meilensteinen fertig
 
-## Wartet auf eine Antwort (von dir, sonst vom Nutzer)
+## Warteschlange (in dieser Reihenfolge)
 
-- **Drift – isometrisches Driftspiel** (`drift.md`, Status `wartet-auf-dich`): 82 von 82 Tickets erledigt, 6 von 16 Meilensteinen fertig. Offene Punkte: P-0003, P-0006
-- **Zellenphase – Evolutionsspiel nach dem Vorbild von Spore** (`zellenphase.md`, Status `wartet-auf-dich`): 236 von 236 Tickets erledigt, 9 von 25 Meilensteinen fertig. Offene Punkte: P-0005, P-0006
+1. **Drift – isometrisches Driftspiel** (`drift.md`, Status `warteschlange`): 82 von 82 Tickets erledigt, 14 von 18 Meilensteinen fertig
+2. **Zellenphase – Evolutionsspiel nach dem Vorbild von Spore** (`zellenphase.md`, Status `warteschlange`): 236 von 236 Tickets erledigt, 17 von 29 Meilensteinen fertig
+3. **Hub Engine – modulare Windows-Spielengine für Mensch und KI-Agenten** (`hub-engine.md`, Status `warteschlange`): 12 von 53 Tickets erledigt, 1 von 9 Meilensteinen fertig
 
 ## Entwürfe (noch nicht freigegeben)
 

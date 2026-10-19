@@ -46,7 +46,7 @@ if ($Film) {
     if (-not $Ziel) { Write-Host 'SPIELTESTS: FEHLER -Film braucht -Ziel.'; exit 1 }
     if (-not [IO.Path]::IsPathRooted($Ziel)) { $Ziel = Get-HubPath $Ziel }
     New-Item -ItemType Directory -Force -Path $Ziel | Out-Null
-    $godotArgs = @('--path', "`"$Pfad`"", '--write-movie', "`"$tmp\frame.png`"", '--fixed-fps', "$Fps", '--resolution', '1280x720', '--script', "`"$runner`"")
+    $godotArgs = @('--path', "`"$Pfad`"", '--write-movie', "`"$tmp\frame.png`"", '--fixed-fps', "$Fps", '--resolution', (Get-GodotAufloesung $Pfad), '--script', "`"$runner`"")
     $style = 'Minimized'
 } else {
     $godotArgs = @('--headless', '--path', "`"$Pfad`"", '--fixed-fps', '60', '--script', "`"$runner`"")

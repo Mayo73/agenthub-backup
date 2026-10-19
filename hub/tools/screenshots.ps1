@@ -32,7 +32,7 @@ New-Item -ItemType Directory -Force -Path $tmp | Out-Null
 $frames = [math]::Max(2, [int][math]::Ceiling($Sekunden * $Fps))
 $godotArgs = @('--path', "`"$($project.path)`"")
 if ($Szene) { $godotArgs += $Szene }
-$godotArgs += @('--write-movie', "`"$tmp\frame.png`"", '--fixed-fps', "$Fps", '--quit-after', "$frames", '--resolution', '1280x720')
+$godotArgs += @('--write-movie', "`"$tmp\frame.png`"", '--fixed-fps', "$Fps", '--quit-after', "$frames", '--resolution', (Get-GodotAufloesung $project.path))
 if ($Spiel.Count -gt 0) { $godotArgs += @('--') + $Spiel }
 
 $log = Join-Path $tmp 'godot.log'

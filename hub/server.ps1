@@ -31,7 +31,7 @@ foreach ($address in @([System.Net.IPAddress]::Loopback, [System.Net.IPAddress]:
 if ($listeners.Count -eq 0) { Add-HubLog "Dashboard: Port $port ist belegt, Server nicht gestartet"; exit 1 }
 Write-Text (Get-HubPath 'state\server.pid') "$PID"
 
-## Liest eine HTTP-Anfrage (Kopfzeilen genügen, die API hat keine Anfrage-Körper).
+## Liest eine HTTP-Anfrage: Kopfzeilen und, falls Content-Length gesetzt ist, den Körper (höchstens 64 KB, als UTF-8-Text).
 function Read-HttpRequest($Client) {
     $stream = $Client.GetStream()
     $stream.ReadTimeout = 5000
@@ -56,11 +56,24 @@ function Read-HttpRequest($Client) {
         if ($i -gt 0) { $headers.Add($line.Substring(0, $i).Trim(), $line.Substring($i + 1).Trim()) }
     }
     $uri = [Uri]("http://localhost" + $parts[1])
+    $body = ''
+    $length = 0
+    if ([int]::TryParse("$($headers['Content-Length'])", [ref]$length) -and $length -gt 0 -and $length -le 65536) {
+        $start = $headerEnd + 4
+        while ($data.Length - $start -lt $length) {
+            $n = $stream.Read($buffer, 0, $buffer.Length)
+            if ($n -le 0) { break }
+            $data.Write($buffer, 0, $n)
+        }
+        $available = [Math]::Min($length, [int]$data.Length - $start)
+        if ($available -gt 0) { $body = [Text.Encoding]::UTF8.GetString($data.GetBuffer(), $start, $available) }
+    }
     [pscustomobject]@{
         HttpMethod  = $parts[0].ToUpper()
         Url         = $uri
         QueryString = [System.Web.HttpUtility]::ParseQueryString($uri.Query)
         Headers     = $headers
+        Body        = $body
     }
 }
 
@@ -423,6 +436,12 @@ function Invoke-Route($Context) {
             # Eigener Header: Fremde Webseiten können ihn nicht setzen, ohne am CORS-Check zu scheitern.
             if ($req.Headers['X-Hub'] -ne '1') {
                 Send-Text $ctx 403 'text/plain' 'Verboten'
+            } elseif ($path -eq '/api/punkt-antwort') {
+                # Antwort des Nutzers auf einen weitergegebenen Punkt (vom Handy oder PC); Körper: {"id": "P-0012", "text": "…"}
+                $answer = $null
+                try { $answer = $req.Body | ConvertFrom-Json } catch { }
+                $fehler = if ($answer) { Set-PunktAntwort "$($answer.id)" "$($answer.text)" } else { 'Ungültige Anfrage' }
+                if ($fehler) { Send-Text $ctx 400 'text/plain' $fehler } else { Send-Json $ctx 200 @{ ok = $true } }
             } elseif ($path -eq '/api/pause') {
                 Write-Text (Get-HubPath 'state\paused') (Get-Now)
                 Add-HubLog 'Worker pausiert (über das Dashboard)'

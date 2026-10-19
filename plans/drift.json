@@ -29,7 +29,7 @@
                            "tasks":  [
                                          {
                                              "text":  "Probefahrt: Wie fühlt sich das Driften an?",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0003"
                                          }
                                      ]
@@ -63,7 +63,7 @@
                            "tasks":  [
                                          {
                                              "text":  "Ein ganzes Rennen durchspielen",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0003"
                                          }
                                      ]
@@ -81,7 +81,7 @@
                            "tasks":  [
                                          {
                                              "text":  "Gegen das Geisterauto fahren: gut erkennbar, hilfreich?",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0003"
                                          }
                                      ]
@@ -121,7 +121,7 @@
                            "tasks":  [
                                          {
                                              "text":  "Alle 3 Strecken probefahren",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0003"
                                          }
                                      ]
@@ -156,7 +156,7 @@
                            "tasks":  [
                                          {
                                              "text":  "Alle 3 Autos probefahren: Fühlen sie sich verschieden an?",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0003"
                                          }
                                      ]
@@ -182,7 +182,7 @@
                            "tasks":  [
                                          {
                                              "text":  "Gegen die KI fahren: zu leicht oder zu schwer?",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0003"
                                          }
                                      ]
@@ -209,7 +209,7 @@
                            "tasks":  [
                                          {
                                              "text":  "Sound anhören und beurteilen",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0006"
                                          }
                                      ]
@@ -291,6 +291,37 @@
                                      ]
                        },
                        {
+                           "id":  "M16",
+                           "title":  "Fenstergröße bleibt beim Zurückgehen",
+                           "description":  "Rückmeldung vom 19.10.2026: Ein maximiertes Fenster wurde beim Wechsel ins Hauptmenü wieder klein. Von Claude behoben.",
+                           "tickets":  [
+
+                                       ],
+                           "estimate":  0,
+                           "tasks":  [
+
+                                     ],
+                           "by":  "Claude",
+                           "done":  true
+                       },
+                       {
+                           "id":  "M17",
+                           "title":  "Echtes Reifenquietschen",
+                           "description":  "Rückmeldung vom 19.10.2026: Driftgeräusch durch die Aufnahme „Tires Squealing“ (Mike Koenig, soundbible.com, CC BY 3.0) ersetzt, nahtlose Schleife, Namensnennung im Hauptmenü. Von Claude umgesetzt.",
+                           "tickets":  [
+
+                                       ],
+                           "estimate":  2,
+                           "tasks":  [
+                                         {
+                                             "text":  "Reifenquietschen beim Driften anhören",
+                                             "done":  false
+                                         }
+                                     ],
+                           "by":  "Claude",
+                           "done":  true
+                       },
+                       {
                            "id":  "M13",
                            "title":  "Version 1.0 (Windows)",
                            "description":  "Eigenständige .exe, die ohne Godot läuft. Braucht einmalig die Godot-Exportvorlagen.",
@@ -301,7 +332,7 @@
                            "tasks":  [
                                          {
                                              "text":  "Godot-Exportvorlagen installieren (du selbst oder per Chat-Auftrag an Claude)",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0007",
                                              "who":  "nutzer"
                                          },

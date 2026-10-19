@@ -60,7 +60,7 @@
                            "tasks":  [
                                          {
                                              "text":  "Frühe spielbare Fassung ausprobieren: Schwimmen, Fressen, Kampf und Wachstum",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0005"
                                          }
                                      ]
@@ -90,7 +90,7 @@
                            "tasks":  [
                                          {
                                              "text":  "Teile ausprobieren: Wirken Geißel, Wimpern, Stacheln, Gift und Elektroorgan spürbar?",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0005"
                                          }
                                      ]
@@ -119,7 +119,7 @@
                            "tasks":  [
                                          {
                                              "text":  "Zelleditor ausprobieren: Bedienung und Symmetrie verständlich?",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0005"
                                          }
                                      ]
@@ -164,7 +164,7 @@
                            "tasks":  [
                                          {
                                              "text":  "Je einen Durchlauf als Pflanzen- und als Fleischfresser spielen",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0005"
                                          }
                                      ]
@@ -244,12 +244,12 @@
                            "tasks":  [
                                          {
                                              "text":  "Sound und Musik anhören und beurteilen",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0006"
                                          },
                                          {
                                              "text":  "Musik und Klänge anhören: Wasser, Fressen, Treffer, Wachsen, Editor",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0006"
                                          }
                                      ]
@@ -268,7 +268,7 @@
                            "tasks":  [
                                          {
                                              "text":  "Ausprobieren: Fühlen sich Leicht und Schwer passend an?",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0005"
                                          }
                                      ]
@@ -295,7 +295,7 @@
                            "tasks":  [
                                          {
                                              "text":  "Probespiel: Sind Stachelkugel, Giftling und Zitterzelle jetzt spürbar gefährlich, aber fair?",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0005"
                                          }
                                      ]
@@ -477,6 +477,11 @@
                                          {
                                              "text":  "Fischphase ansehen: Tiefsee, Trefferblitz, Entwicklungsmenü, Anzeige (Bilder aus den Spieltests); Spielgefühl im Probespiel P-0005",
                                              "punkt":  "P-0010",
+                                             "done":  true
+                                         },
+                                         {
+                                             "text":  "Nachbesserungen aus P-0010 ansehen: Randblitz beim Biss, Menüknöpfe, Augen vorher/nachher",
+                                             "punkt":  "P-0011",
                                              "done":  false
                                          }
                                      ]
@@ -525,6 +530,68 @@
                                      ]
                        },
                        {
+                           "id":  "M25",
+                           "title":  "Neuer Klang beim Fressen",
+                           "description":  "Rückmeldung vom 19.10.2026: Schmatzen und Schlucken statt Rauschen, eigener Klang fürs Zuschnappen. Von Claude umgesetzt.",
+                           "tickets":  [
+
+                                       ],
+                           "estimate":  0,
+                           "tasks":  [
+                                         {
+                                             "text":  "Neuen Fressklang anhören",
+                                             "done":  false
+                                         }
+                                     ],
+                           "by":  "Claude",
+                           "done":  true
+                       },
+                       {
+                           "id":  "M26",
+                           "title":  "Übergang zum Fisch im Editor",
+                           "description":  "Rückmeldung vom 19.10.2026: Im letzten Größenabschnitt mit mindestens 6 von 8 Teilen zeigt der Editor „Zum Fisch entwickeln“; die Zelle verwandelt sich fließend in den Fisch. Prüfbar: Tests für Bedingung, Knopf und Übergang.",
+                           "tickets":  [
+
+                                       ],
+                           "estimate":  6,
+                           "tasks":  [
+                                         {
+                                             "text":  "Übergang im Editor ansehen: fließend?",
+                                             "done":  false
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M27",
+                           "title":  "Entwicklungszeitstrahl",
+                           "description":  "Rückmeldung vom 19.10.2026: Zeitstrahl wie in Spore mit einem Bild je Entwicklungsschritt, nach Ernährung gefärbt, gespeichert. Prüfbar: Tests für Einträge und Speichern.",
+                           "tickets":  [
+
+                                       ],
+                           "estimate":  6,
+                           "tasks":  [
+                                         {
+                                             "text":  "Zeitstrahl ansehen",
+                                             "done":  false
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M28",
+                           "title":  "Fischphase: unendliche Welt",
+                           "description":  "Rückmeldung vom 19.10.2026: Prozedurale Welt aus Kacheln mit Höhenprofil, ohne Ränder; Kacheln werden nachgeladen. Prüfbar: Tests für Kacheln, Seeds und Grenzen, Leistungstest.",
+                           "tickets":  [
+
+                                       ],
+                           "estimate":  8,
+                           "tasks":  [
+                                         {
+                                             "text":  "Weit schwimmen: Wirkt die Welt endlos und abwechslungsreich?",
+                                             "done":  false
+                                         }
+                                     ]
+                       },
+                       {
                            "id":  "M9",
                            "title":  "Vergleichsliste und Leistung",
                            "description":  "Vergleichsliste zu Steuerung, Kamera, Nahrung und Kampf, Editor, Optik und Ablauf ausfüllen; Messszene mit 30 KI-Zellen bei 1920 × 1080 und mindestens 60 FPS.",
@@ -549,7 +616,7 @@
                            "tasks":  [
                                          {
                                              "text":  "Godot-Exportvorlagen installieren (du selbst oder per Chat-Auftrag an Claude)",
-                                             "done":  false,
+                                             "done":  true,
                                              "punkt":  "P-0007",
                                              "who":  "nutzer"
                                          }

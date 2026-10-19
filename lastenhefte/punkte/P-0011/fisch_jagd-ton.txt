@@ -1,0 +1,11 @@
+Tonbericht Spieltest zellenphase/fisch_jagd (Zeit ab Programmstart)
+Ton: 48000 Hz, 2 Kanäle, 32 Bit, Aufnahme 17,2 s
+Gesamt: Pegel -20 dBFS (RMS), Spitze 0 dBFS, übersteuert 0,0 %, still 0 %
+
+Zeit     Pegel   Spitze  Tonhöhe  gesundheit
+    12 s   -18 dB   -10 dB  44 Hz  
+    13 s   -24 dB   -17 dB 228 Hz  
+    14 s   -18 dB   -10 dB 182 Hz  
+    15 s   -37 dB   -15 dB 160 Hz  
+    16 s   -17 dB     0 dB 178 Hz  85
+    17 s   -16 dB   -10 dB  45 Hz  
