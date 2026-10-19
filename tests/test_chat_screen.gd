@@ -4,6 +4,7 @@ var state: AppState
 var screen: ChatScreen
 var changed_count := 0
 var back_count := 0
+var meeting_signal_id := ""
 
 
 func setup() -> void:
@@ -24,6 +25,9 @@ func setup() -> void:
 	changed_count = 0
 	screen.changed.connect(_on_changed)
 
+	meeting_signal_id = ""
+	screen.open_meeting.connect(_on_open_meeting)
+
 
 func teardown() -> void:
 	if screen:
@@ -37,6 +41,10 @@ func _on_changed() -> void:
 
 func _on_back() -> void:
 	back_count += 1
+
+
+func _on_open_meeting(id: String) -> void:
+	meeting_signal_id = id
 
 
 func test_kopf() -> void:
@@ -165,3 +173,28 @@ func test_blockieren() -> void:
 	check(state.book.is_blocked("p01", "p02"), "state.book.is_blocked('p01', 'p02') wahr nach Blockieren")
 	check(not state.can_write("m1"), "state.can_write('m1') falsch nach Blockieren")
 	check_eq(changed_count, 1, "changed einmal ausgelöst")
+
+
+func test_treffen_knopf() -> void:
+	# Meeting-Button existiert und hat Text „Treffen"
+	check(screen.meeting_button != null, "meeting_button existiert")
+	check(screen.meeting_button.text == "Treffen", "meeting_button.text ist 'Treffen'")
+
+	# Signal wird gesendet mit korrekter match_id
+	screen.meeting_button.pressed.emit()
+	check_eq(meeting_signal_id, "m1", "Signal open_meeting mit ID 'm1' gesendet")
+
+
+func test_treffen_status() -> void:
+	# Ohne Vorschlag: Statuszeile zeigt „Noch kein Treffvorschlag."
+	screen.refresh()
+	check(screen.meeting_label.text == "Noch kein Treffvorschlag.", "meeting_label ohne Vorschlag")
+
+	# Als p01 gültigen Vorschlag erstellen
+	state.switch_to("p01")
+	state.propose_meeting("m1", {"place": "Stadtpark", "date": "24.10.2026", "time": "10:30", "form": "Drills", "intensity": "mittel", "rules": ""})
+
+	# refresh() → Statuszeile aktualisiert sich
+	screen.refresh()
+	var expected := "Wartet auf die Zustimmung von Sam."
+	check_eq(screen.meeting_label.text, expected, "meeting_label zeigt Wartestatus als p01")

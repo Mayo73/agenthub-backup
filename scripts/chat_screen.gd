@@ -4,6 +4,7 @@ extends Control
 
 signal changed
 signal back
+signal open_meeting(match_id: String)
 
 var state: AppState
 var match_id := ""
@@ -20,6 +21,8 @@ var send_button: Button
 var end_button: Button
 var block_button: Button
 var dialog: ConfirmDialog
+var meeting_button: Button
+var meeting_label: Label
 
 var pending := ""
 
@@ -68,6 +71,10 @@ func _init(app_state: AppState, id: String) -> void:
 	block_button.custom_minimum_size = Vector2(0, 56)
 	action_hbox.add_child(block_button)
 
+	meeting_button = UiStyle.button("Treffen", UiStyle.ACCENT)
+	meeting_button.custom_minimum_size = Vector2(0, 56)
+	action_hbox.add_child(meeting_button)
+
 	# ScrollContainer mit messages_box
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -83,6 +90,10 @@ func _init(app_state: AppState, id: String) -> void:
 	# Geschlossen-Hinweis
 	closed_label = UiStyle.label("Dieses Match ist beendet. Neue Nachrichten und Treffen sind nicht mehr möglich.", UiStyle.SIZE_NORMAL, UiStyle.PASS)
 	layout.add_child(closed_label)
+
+	meeting_label = UiStyle.label("Noch kein Treffvorschlag.", UiStyle.SIZE_NORMAL, UiStyle.MUTED)
+	meeting_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	layout.add_child(meeting_label)
 
 	# Eingabe: HBoxContainer mit LineEdit und Button
 	var input_hbox := HBoxContainer.new()
@@ -108,6 +119,7 @@ func _init(app_state: AppState, id: String) -> void:
 	input.text_submitted.connect(_on_text_submitted)
 	end_button.pressed.connect(_on_end_pressed)
 	block_button.pressed.connect(_on_block_pressed)
+	meeting_button.pressed.connect(func() -> void: open_meeting.emit(match_id))
 	dialog.confirmed.connect(_on_dialog_confirmed)
 	dialog.cancelled.connect(_on_dialog_cancelled)
 
@@ -171,6 +183,8 @@ func refresh() -> void:
 			else:
 				var ended_by_name := state.profile(ended_by_id).name
 				closed_label.text = "Beendet von %s. Neue Nachrichten und Treffen sind nicht mehr möglich." % ended_by_name
+
+	meeting_label.text = MeetingStatus.text(state, match_id)
 
 
 func send() -> bool:

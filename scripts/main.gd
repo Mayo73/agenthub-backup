@@ -90,6 +90,7 @@ func show_chat(match_id: String) -> void:
 	var chat := ChatScreen.new(state, match_id)
 	chat.changed.connect(save)
 	chat.back.connect(show_screen.bind("matches"))
+	chat.open_meeting.connect(show_meeting)
 	screen = chat
 	screen.set_anchors_preset(Control.PRESET_FULL_RECT)
 	content.add_child(screen)
@@ -98,13 +99,29 @@ func show_chat(match_id: String) -> void:
 		(tab_buttons[n] as Button).disabled = n == "matches"
 
 
+## Zeigt das Treffen zu einem Match; der Reiter „Matches" bleibt als aktiv markiert.
+func show_meeting(match_id: String) -> void:
+	if screen != null:
+		content.remove_child(screen)
+		screen.queue_free()
+	var meeting := MeetingScreen.new(state, match_id)
+	meeting.changed.connect(save)
+	meeting.back.connect(show_chat.bind(match_id))
+	screen = meeting
+	screen.set_anchors_preset(Control.PRESET_FULL_RECT)
+	content.add_child(screen)
+	current_screen = "treffen"
+	for n in tab_buttons:
+		(tab_buttons[n] as Button).disabled = n == "matches"
+
+
 ## Wechselt die Testperson, speichert und baut den aktuellen Bildschirm neu auf.
-## Ein offener Chat geht zurück zur Liste, weil die neue Person vielleicht nicht beteiligt ist.
+## Ein offener Chat oder Treffen geht zurück zur Liste, weil die neue Person vielleicht nicht beteiligt ist.
 func _on_switched(id: String) -> void:
 	state.switch_to(id)
 	save()
 	perspective.set_state(state)
-	if current_screen == "chat":
+	if current_screen == "chat" or current_screen == "treffen":
 		show_screen("matches")
 	else:
 		show_screen(current_screen)

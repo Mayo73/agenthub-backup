@@ -143,3 +143,28 @@ func test_wechsel_im_chat() -> void:
 	check_eq(main.current_screen, "matches", "Wechsel im Chat führt zur Liste")
 	check_eq((main.screen as MatchesScreen).rows.size(), 0, "p03 hat keine Matches")
 	DirAccess.remove_absolute(TEST_PATH)
+
+func test_treffen_oeffnen() -> void:
+	main.use_store(TEST_PATH)
+	make_match()
+	main.show_chat("m1")
+	(main.screen as ChatScreen).meeting_button.pressed.emit()
+	check(main.screen is MeetingScreen, "Knopf Treffen öffnet den Treffvorschlag")
+	check_eq(main.current_screen, "treffen", "aktueller Bildschirm")
+	(main.screen as MeetingScreen).back_button.pressed.emit()
+	check(main.screen is ChatScreen, "Zurück führt in den Chat")
+	DirAccess.remove_absolute(TEST_PATH)
+
+
+func test_treffen_gespeichert() -> void:
+	main.use_store(TEST_PATH)
+	make_match()
+	main.show_meeting("m1")
+	var meeting := main.screen as MeetingScreen
+	meeting.place_edit.text = "Stadtpark"
+	meeting.date_edit.text = "24.10.2026"
+	meeting.time_edit.text = "10:30"
+	meeting.form_picker.select(1)
+	meeting.propose_button.pressed.emit()
+	check_eq(StateStore.load_state(TEST_PATH).meetings.get_meeting("m1").get("place", ""), "Stadtpark", "Treffvorschlag gespeichert")
+	DirAccess.remove_absolute(TEST_PATH)
