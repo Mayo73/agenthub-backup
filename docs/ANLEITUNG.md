@@ -4,7 +4,11 @@
 Lokaler Prototyp mit acht fiktiven Testprofilen; kein Konto, kein Server, keine Standortfreigabe; nichts wird an echte Menschen gesendet.
 
 ## Installation
-Folgt mit der APK.
+Die APK (`build/sparring.apk`, Android 7.0 oder neuer) läuft auf echten Geräten mit arm64 und im Android-Emulator (x86_64).
+
+- **Handy:** APK aufs Gerät kopieren, antippen und die Installation aus unbekannten Quellen für diesen einen Vorgang erlauben. Die App braucht keine Berechtigungen, auch kein Internet.
+- **Emulator auf dem PC:** Emulator mit `emulator -avd Sparring_Pixel -gpu host` starten, dann `adb install -r build/sparring.apk`. Die App heißt „Sparring“.
+- Deinstallieren löscht auch alle lokalen Testdaten.
 
 ## Testperson wechseln
 Die Leiste unter der Kopfzeile („Du bist: …“) wechselt die Testperson. Das ist eine Demofunktion zum Nachspielen beider Seiten, keine Anmeldung.
