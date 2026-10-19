@@ -100,3 +100,47 @@ func test_beendet() -> void:
 	state.end_match("m1")
 	screen.refresh()
 	check(screen.propose_button.disabled, "beendetes Match: kein Vorschlag mehr")
+
+
+## Skizze startet mit "Draußen"
+func test_skizze_anfang() -> void:
+	check_eq(screen.place_view.kind, "Draußen", "Skizze initial Draußen")
+
+
+## Skizze folgt der Eingabe
+func test_skizze_folgt_eingabe() -> void:
+	screen.place_edit.text = "Stadtpark"
+	screen.place_edit.text_changed.emit("Stadtpark")
+	check_eq(screen.place_view.kind, "Park", "Skizze wird zu Park")
+
+
+## Skizze aus Vorschlag mit Strand
+func test_skizze_aus_vorschlag() -> void:
+	fill(screen)
+	screen.place_edit.text = "Strand am Badesee"
+	screen.state.propose_meeting("m1", screen.details())
+	state.switch_to("p02")
+	var other := MeetingScreen.new(state, "m1")
+	(Engine.get_main_loop() as SceneTree).root.add_child(other)
+	check_eq(other.place_view.kind, "Strand", "Skizze ist Strand bei Platzvorschlag")
+	other.free()
+
+
+## Gemeinsame Tage werden angezeigt
+func test_gemeinsame_tage() -> void:
+	screen.refresh()
+	var p01 := state.profile("p01")
+	var p02 := state.profile("p02")
+	check(p01.days.has("Di"), "Alex hat Di")
+	check(p01.days.has("Do"), "Alex hat Do")
+	check(p01.days.has("Sa"), "Alex hat Sa")
+	check(p02.days.has("Mo"), "Sam hat Mo")
+	check(p02.days.has("Mi"), "Sam hat Mi")
+	check(p02.days.has("Fr"), "Sam hat Fr")
+	var expected := "Keine gemeinsamen Tage – sprecht euch ab."
+	check_eq(screen.days_label.text, expected, "days_label zeigt keine gemeinsamen Tage")
+
+
+## Reihenfolge der Elemente
+func test_reihenfolge() -> void:
+	check(screen.place_view.get_index() == screen.place_edit.get_index() + 1, "place_view folgt direkt nach place_edit")
