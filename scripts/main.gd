@@ -59,6 +59,7 @@ var electric := ElectricOrgan.new()
 var poison_view: PoisonCloudView
 var zap_view: ZapView
 var timeline := EvolutionTimeline.new()
+var timeline_view: TimelineView
 
 
 func add_timeline(kind: String, label: String) -> void:
@@ -117,6 +118,7 @@ func _ready() -> void:
 	pause_menu.resume.connect(toggle_pause)
 	pause_menu.to_main_menu.connect(back_to_menu)
 	pause_menu.quit_game.connect(quit)
+	pause_menu.open_timeline.connect(_on_pause_open_timeline)
 	settings.load_from(settings_path)
 	settings_menu = SettingsMenu.new()
 	settings_menu.name = "SettingsMenu"
@@ -164,6 +166,15 @@ func _ready() -> void:
 	zap_view = ZapView.new()
 	zap_view.name = "Zaps"
 	world.add_child(zap_view)
+
+	timeline_view = TimelineView.new()
+	timeline_view.name = "TimelineView"
+	var timeline_layer = CanvasLayer.new()
+	timeline_layer.name = "TimelineLayer"
+	timeline_layer.layer = 6
+	timeline_layer.add_child(timeline_view)
+	add_child(timeline_layer)
+	timeline_view.visible = false
 
 	if Benchmark.requested(OS.get_cmdline_user_args()):
 		start_benchmark()
@@ -554,6 +565,23 @@ func toggle_pause() -> void:
 	world.process_mode = Node.PROCESS_MODE_DISABLED if paused else Node.PROCESS_MODE_INHERIT
 
 
+func _on_pause_open_timeline() -> void:
+	if paused:
+		paused = false
+		pause_menu.close()
+	toggle_timeline()
+
+
+## Öffnet/Schließt die Zeitstrahl-Ansicht.
+func toggle_timeline() -> void:
+	if timeline_view.visible:
+		timeline_view.visible = false
+	else:
+		timeline_view.show_timeline(timeline)
+		timeline_view.show_stats(stats.summary_lines())
+		timeline_view.visible = true
+
+
 func back_to_menu() -> void:
 	autosave_now()
 	paused = false
@@ -569,7 +597,12 @@ func quit() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause"):
-		toggle_pause()
+		if timeline_view.visible:
+			toggle_timeline()
+		else:
+			toggle_pause()
+	if event.is_action_pressed("zeitstrahl"):
+		toggle_timeline()
 
 
 func open_settings() -> void:
