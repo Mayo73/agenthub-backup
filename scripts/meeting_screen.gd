@@ -11,8 +11,10 @@ var match_id := ""
 var back_button: Button
 var title_label: Label
 var hint_label: Label
+var days_label: Label
 var status_label: Label
 var summary_label: Label
+var place_view: PlaceView
 var place_edit: LineEdit
 var date_edit: LineEdit
 var time_edit: LineEdit
@@ -48,6 +50,10 @@ func _init(app_state: AppState, id: String) -> void:
 	hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(hint_label)
 
+	days_label = UiStyle.label("", UiStyle.SIZE_SMALL, UiStyle.MUTED)
+	days_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(days_label)
+
 	status_label = UiStyle.label("")
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(status_label)
@@ -57,6 +63,11 @@ func _init(app_state: AppState, id: String) -> void:
 	vbox.add_child(summary_label)
 
 	place_edit = _line_edit(vbox, "Ort draußen", "z. B. Stadtpark, Wiese am Teich")
+	place_edit.text_changed.connect(func(new_text: String) -> void: place_view.set_place(new_text))
+
+	place_view = PlaceView.new()
+	place_view.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.add_child(place_view)
 	date_edit = _line_edit(vbox, "Datum", "TT.MM.JJJJ")
 	time_edit = _line_edit(vbox, "Uhrzeit", "HH:MM")
 	form_picker = _picker(vbox, "Trainingsform", MeetingBook.FORMS)
@@ -99,6 +110,7 @@ func load_meeting() -> void:
 	if intensity_index >= 0:
 		intensity_picker.select(intensity_index)
 	rules_edit.text = str(meeting.get("rules", ""))
+	place_view.set_place(place_edit.text)
 
 
 ## Angaben aus den Feldern.
@@ -115,6 +127,8 @@ func details() -> Dictionary:
 
 func refresh() -> void:
 	status_label.text = MeetingStatus.text(state, match_id)
+	var m: Dictionary = state.book.get_match(match_id)
+	days_label.text = ProfileFacts.common_days_text(state.active(), state.profile(state.book.other(m, state.active_id))) if not m.is_empty() else ""
 	summary_label.text = MeetingStatus.summary(state.meetings.get_meeting(match_id))
 	approve_button.visible = MeetingStatus.can_approve(state, match_id)
 	cancel_button.visible = MeetingStatus.can_cancel(state, match_id)
