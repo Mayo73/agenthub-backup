@@ -16,6 +16,7 @@ var confirmed := false
 var panel: CellEditorPanel
 var view_layer: CanvasLayer
 var canvas: CellEditorCanvas
+var timeline_view: TimelineView
 var tools: HBoxContainer
 var undo_button: Button
 var redo_button: Button
@@ -46,8 +47,14 @@ func _init() -> void:
 	background_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	background_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	view_layer.add_child(background_image)
+	timeline_view = TimelineView.new()
+	timeline_view.name = "Timeline"
+	timeline_view.position = Vector2(24, 16)
+	timeline_view.custom_minimum_size = Vector2(800, 150)
+	add_child(timeline_view)
 	canvas = CellEditorCanvas.new()
 	canvas.name = "Canvas"
+	canvas.position = Vector2(0, 170)
 	view_layer.add_child(canvas)
 	panel = CellEditorPanel.new()
 	panel.name = "Panel"
@@ -193,3 +200,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			undo()
 		elif event.physical_keycode == KEY_Y:
 			redo()
+
+## Zeitstrahl anzeigen, damit man sieht, woher die Zelle kommt.
+func show_timeline(t: EvolutionTimeline) -> void:
+	timeline_view.show_timeline(t)
