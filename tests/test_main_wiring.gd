@@ -345,3 +345,10 @@ func test_aussehen_abbrechen() -> void:
 	main.editor.set_color(Color.RED)
 	main.editor.cancel()
 	check(main.player.look.color.is_equal_approx(CellLook.DEFAULT_COLOR), "main.player.look.color.is_equal_approx(CellLook.DEFAULT_COLOR) wahr")
+
+
+func test_zeitstrahl_start() -> void:
+	main.start_new(Diet.PFLANZENFRESSER)
+	check_eq(main.timeline.size(), 1, "timeline.size() ist 1 nach start_new")
+	check_eq(main.timeline.entries[0]["kind"], EvolutionTimeline.START, "erste Art ist EvolutionTimeline.START")
+	check_eq(main.timeline.entries[0]["label"], "Start", "Label ist 'Start'")
