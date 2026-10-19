@@ -280,7 +280,7 @@ func resolve_combat() -> void:
 			if cell.health.damage(CombatRules.bite_damage(CombatRules.PLAYER_BITE, player.radius, cell.radius)):
 				cell.motion.knockback(cell.motion.position - player.motion.position, 120.0)
 				cell.flash.trigger()
-				audio.play("treffer")
+				audio.play("zuschnappen")
 				player.bite()
 		if cell.damage > 0.0 and CombatRules.can_bite(cell.diet) and CombatRules.bite_hits(cell.motion.position, cell.motion.heading, cell.radius, player.motion.position, player.radius):
 			if player_health.damage(enemy_bite_damage(cell)):

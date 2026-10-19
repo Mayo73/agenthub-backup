@@ -8,11 +8,29 @@ static func eat_plant() -> AudioStreamWAV:
 	return SoundSynth.make_stream(SoundSynth.fade_out(SoundSynth.sweep(500.0, 900.0, 0.12, SoundSynth.Wave.SINE, 0.4)), false)
 
 
-## Fleisch fressen: dumpfes Rauschen mit tiefem Ton.
+## Fleisch oder eine ganze Zelle fressen: kurzes Schmatzen, weiches Schlucken, ein Bläschen danach.
+## (Neu gestaltet am 19.10.2026, weil das alte Rauschen dem Nutzer nicht gefiel.)
 static func eat_meat() -> AudioStreamWAV:
-	var crunch := SoundSynth.lowpass(SoundSynth.noise(0.15, 0.6, 5), 0.2)
-	var low := SoundSynth.tone(180.0, 0.15, SoundSynth.Wave.SINE, 0.3)
-	return SoundSynth.make_stream(SoundSynth.fade_out(SoundSynth.mix(crunch, low)), false)
+	var smack := SoundSynth.fade_out(SoundSynth.lowpass(SoundSynth.noise(0.05, 0.5, 5), 0.25))
+	var gulp := SoundSynth.fade_out(SoundSynth.sweep(260.0, 110.0, 0.16, SoundSynth.Wave.SINE, 0.45))
+	var bubble := SoundSynth.fade_out(SoundSynth.sweep(700.0, 1200.0, 0.05, SoundSynth.Wave.SINE, 0.12))
+	return SoundSynth.make_stream(SoundSynth.mix(SoundSynth.mix(smack, delayed(gulp, 0.03)), delayed(bubble, 0.17)), false)
+
+
+## Die Spielerzelle beißt zu: kurzes, dumpfes Zuschnappen (weicher als der Treffer, den sie selbst abbekommt).
+static func bite() -> AudioStreamWAV:
+	var snap := SoundSynth.fade_out(SoundSynth.lowpass(SoundSynth.noise(0.04, 0.5, 9), 0.35))
+	var thud := SoundSynth.fade_out(SoundSynth.sweep(200.0, 120.0, 0.09, SoundSynth.Wave.SINE, 0.4))
+	return SoundSynth.make_stream(SoundSynth.mix(snap, thud), false)
+
+
+## Verschiebt einen Klang um seconds nach hinten (Stille davor).
+static func delayed(samples: PackedFloat32Array, seconds: float) -> PackedFloat32Array:
+	var out := PackedFloat32Array()
+	out.resize(int(seconds * SoundSynth.MIX_RATE))
+	out.fill(0.0)
+	out.append_array(samples)
+	return out
 
 
 ## Treffer: fallender, rauer Ton.
@@ -59,6 +77,7 @@ static func all() -> Dictionary:
 	return {
 		"fressen_pflanze": eat_plant(),
 		"fressen_fleisch": eat_meat(),
+		"zuschnappen": bite(),
 		"treffer": hit(),
 		"wachsen": grow(),
 		"tod": death(),

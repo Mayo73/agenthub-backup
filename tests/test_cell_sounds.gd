@@ -3,8 +3,9 @@ extends "res://tests/base_test.gd"
 
 func test_alle() -> void:
 	var a := CellSounds.all()
-	check_eq(a.size(), 8, "a.size() ist 8")
+	check_eq(a.size(), 9, "a.size() ist 9")
 	check(a.has("wachsen"), "a.has(\"wachsen\") wahr")
+	check(a.has("zuschnappen"), "a.has(\"zuschnappen\") wahr")
 	for v in a.values():
 		check(v is AudioStreamWAV, "v is AudioStreamWAV wahr")
 		check((v as AudioStreamWAV).loop_mode == AudioStreamWAV.LOOP_DISABLED, "loop_mode == LOOP_DISABLED")
@@ -29,3 +30,9 @@ func test_nicht_stumm() -> void:
 			break
 		i += 1
 	check(i < data.size(), "mindestens ein Byte ungleich 0")
+
+
+func test_fressen_und_biss() -> void:
+	check_eq(CellSounds.eat_meat().data.size(), (int(0.17 * SoundSynth.MIX_RATE) + int(0.05 * SoundSynth.MIX_RATE)) * 2, "Schlucken mit Bläschen dauert 0,22 s")
+	check_eq(CellSounds.bite().data.size(), int(0.09 * SoundSynth.MIX_RATE) * 2, "Zuschnappen dauert 0,09 s")
+	check_eq(CellSounds.delayed(PackedFloat32Array([0.5]), 0.01).size(), int(0.01 * SoundSynth.MIX_RATE) + 1, "Stille davor")
