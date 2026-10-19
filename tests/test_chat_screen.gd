@@ -35,6 +35,10 @@ func _on_changed() -> void:
 	changed_count += 1
 
 
+func _on_back() -> void:
+	back_count += 1
+
+
 func test_kopf() -> void:
 	check_eq(screen.title_label.text, "Sam · MMA", "Titel zeigt Name und Sportart")
 	check(screen.empty_label.visible, "empty_label.visible wahr bei leerem Chat")
@@ -54,7 +58,7 @@ func test_senden() -> void:
 
 func test_leer_nicht_senden() -> void:
 	screen.input.text = "  "
-	var result := screen.send()
+	var result: bool = screen.send()
 
 	check(not result, "send() false bei nur Leerzeichen")
 	check_eq(state.chat.count_for("m1"), 0, "keine Nachricht gespeichert")
@@ -88,12 +92,8 @@ func test_beendet() -> void:
 	check(not screen.input.editable, "input.editable falsch nach Beenden")
 
 	screen.input.text = "x"
-	var result := screen.send()
+	var result: bool = screen.send()
 	check(not result, "send() false bei beendetem Match")
-
-
-func _on_back() -> void:
-	back_count += 1
 
 
 func test_zurueck() -> void:
@@ -102,3 +102,66 @@ func test_zurueck() -> void:
 	screen.back_button.pressed.emit()
 
 	check_eq(back_count, 1, "back_count ist 1 nach Klick")
+
+
+func test_beenden_fragt() -> void:
+	var dialog := screen.dialog as ConfirmDialog
+	check(not dialog.visible, "Dialog initial unsichtbar")
+
+	screen.end_button.pressed.emit()
+
+	check(dialog.visible, "dialog.visible wahr nach end_button.pressed.emit()")
+	check(state.book.is_active("m1"), "Match noch aktiv")
+
+
+func test_beenden() -> void:
+	var dialog := screen.dialog as ConfirmDialog
+
+	# Frage stellen und bestätigen
+	screen.end_button.pressed.emit()
+	dialog.ok_button.pressed.emit()
+
+	check(not state.book.is_active("m1"), "state.book.is_active('m1') falsch nach Beenden")
+	check(screen.closed_label.visible, "closed_label.visible wahr nach Beenden")
+	check(screen.closed_label.text.begins_with("Beendet von dir."), "closed_label.text beginnt mit 'Beendet von dir.'")
+	check(screen.end_button.disabled, "end_button.disabled wahr nach Beenden")
+
+
+func test_beenden_andere_seite() -> void:
+	var dialog := screen.dialog as ConfirmDialog
+
+	# Als p01 beenden
+	screen.end_button.pressed.emit()
+	dialog.ok_button.pressed.emit()
+
+	# Zu p02 wechseln und neuen ChatScreen bauen
+	state.switch_to("p02")
+	var screen2: ChatScreen = ChatScreen.new(state, "m1")
+	(Engine.get_main_loop() as SceneTree).root.add_child(screen2)
+
+	check(screen2.closed_label.text.begins_with("Beendet von Alex."), "closed_label.text beginnt mit 'Beendet von Alex.'")
+
+	screen2.free()
+	screen2 = null
+
+
+func test_abbrechen() -> void:
+	var dialog := screen.dialog as ConfirmDialog
+
+	# Frage stellen und abbrechen
+	screen.end_button.pressed.emit()
+	dialog.cancel_button.pressed.emit()
+
+	check(state.book.is_active("m1"), "Match weiter aktiv nach Abbruch")
+
+
+func test_blockieren() -> void:
+	var dialog := screen.dialog as ConfirmDialog
+
+	# Blockieren fragen und bestätigen
+	screen.block_button.pressed.emit()
+	dialog.ok_button.pressed.emit()
+
+	check(state.book.is_blocked("p01", "p02"), "state.book.is_blocked('p01', 'p02') wahr nach Blockieren")
+	check(not state.can_write("m1"), "state.can_write('m1') falsch nach Blockieren")
+	check_eq(changed_count, 1, "changed einmal ausgelöst")

@@ -56,6 +56,10 @@ func ask(question: String, ok_text: String = "Ja") -> void:
 	visible = true
 
 
+func cancel() -> void:
+	_on_cancel_pressed()
+
+
 func _on_cancel_pressed() -> void:
 	visible = false
 	cancelled.emit()
