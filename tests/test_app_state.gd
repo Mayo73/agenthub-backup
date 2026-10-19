@@ -200,3 +200,48 @@ func test_speichern_laden() -> void:
 	var meeting := loaded.meetings.get_meeting(match_id)
 	check(not meeting.is_empty(), "Treffvorschlag vorhanden")
 	check_eq(meeting.get("place", ""), "Turnhalle", "Ort des Treffens stimmt")
+
+
+func test_filter_kandidaten() -> void:
+	# Filter auf Boxen setzen
+	state.filter.art = "Boxen"
+
+	var cands := state.candidates()
+	var ids: Array[String] = []
+	for p in cands:
+		ids.append(p.id)
+
+	check_eq(ids.size(), 2, "Filter Boxen: 2 Kandidaten")
+	check(ids.has("p03"), "enthält p03 (Mira)")
+	check(ids.has("p08"), "enthält p08 (Tarek)")
+
+
+func test_filter_kein_matchverbot() -> void:
+	# Filter setzen auf Boxen, damit Kandidaten nur Boxer angezeigt werden
+	state.filter.art = "Boxen"
+
+	# p01 und p02 liken sich gegenseitig → Match
+	# als p01 liken
+	state.switch_to("p01")
+	state.like("p02")  # einseitiges Like von p01 auf p02
+
+	# als p02 liken und Gegenlike von p01 → Match m1
+	state.switch_to("p02")
+	var match_id := state.like("p01")
+	check(match_id == "m1", "p02 likes p01 → Match m1")
+
+	# Auch wenn Filter auf Boxen steht, darf gematcht werden (Filter gilt nur für Kandidaten-Anzeige)
+	state.switch_to("p01")
+	var my_matches := state.my_matches()
+	check_eq(my_matches.size(), 1, "p01 hat Match trotz Filter")
+
+
+func test_filter_gespeichert() -> void:
+	# Filter-Ebene setzen
+	state.filter.level = 0
+
+	# Serialisieren und deserialisieren
+	var d := state.to_dict()
+	var loaded := AppState.from_dict(d)
+
+	check_eq(loaded.filter.level, 0, "filter.level wurde gespeichert")

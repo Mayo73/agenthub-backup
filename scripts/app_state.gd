@@ -8,6 +8,7 @@ var active_id := "p01"
 var book := MatchBook.new()
 var chat := ChatLog.new()
 var meetings := MeetingBook.new()
+var filter := SparFilter.new()
 
 
 ## Demo-Zustand mit 8 Testpersonen zurückgeben
@@ -55,7 +56,7 @@ func candidates() -> Array[SparProfile]:
 		var p := profile(id)
 		if p != null:
 			result.append(p)
-	return result
+	return filter.apply(result)
 
 
 ## Like von aktiver Person zu to_id; Match-ID oder ""
@@ -179,7 +180,8 @@ func to_dict() -> Dictionary:
 		"profiles": profile_dicts,
 		"book": book.to_dict(),
 		"chat": chat.to_dict(),
-		"meetings": meetings.to_dict()
+		"meetings": meetings.to_dict(),
+		"filter": filter.to_dict()
 	}
 
 
@@ -198,5 +200,6 @@ static func from_dict(d: Dictionary) -> AppState:
 	state.book = MatchBook.from_dict(d.get("book", {}))
 	state.chat = ChatLog.from_dict(d.get("chat", {}))
 	state.meetings = MeetingBook.from_dict(d.get("meetings", {}))
+	state.filter = SparFilter.from_dict(d.get("filter", {}))
 
 	return state
