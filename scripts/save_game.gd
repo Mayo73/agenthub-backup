@@ -23,8 +23,8 @@ static func build_from_array(data: Array) -> CellBuild:
 	return build
 
 
-static func to_dict(progress: CellProgress, health: CellHealth, build: CellBuild, unlocks: PartUnlocks) -> Dictionary:
-	return {
+static func to_dict(progress: CellProgress, health: CellHealth, build: CellBuild, unlocks: PartUnlocks, timeline: EvolutionTimeline = null) -> Dictionary:
+	var result := {
 		"version": VERSION,
 		"dna": progress.dna,
 		"growth": progress.growth,
@@ -33,6 +33,9 @@ static func to_dict(progress: CellProgress, health: CellHealth, build: CellBuild
 		"build": build_to_array(build),
 		"unlocked": unlocks.unlocked.duplicate(),
 	}
+	if timeline != null:
+		result["timeline"] = timeline.to_dict()
+	return result
 
 
 ## Überträgt einen gelesenen Stand auf die Objekte. false (und keine Änderung), wenn die Version nicht passt.
@@ -53,6 +56,12 @@ static func apply(data: Dictionary, progress: CellProgress, health: CellHealth, 
 
 static func read_build(data: Dictionary) -> CellBuild:
 	return build_from_array(data.get("build", []))
+
+
+static func read_timeline(data: Dictionary) -> EvolutionTimeline:
+	if data.has("timeline"):
+		return EvolutionTimeline.from_dict(data["timeline"])
+	return EvolutionTimeline.new()
 
 
 static func write_file(path: String, data: Dictionary) -> bool:
