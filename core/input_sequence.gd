@@ -34,10 +34,11 @@ func pressed_at(step: int) -> Array[String]:
 	for entry in holds:
 		var f: int = entry["from"]
 		var t: int = entry["to"]
-		if f <= step and step < t:
-			result.append(entry["action"])
+		var action: String = entry["action"]
+		if f <= step and step < t and not result.has(action):
+			result.append(action)
 	result.sort()
-	return result.duplicate(true)
+	return result
 
 ## Alle Drück- und Loslass-Ereignisse, sortiert nach Schritt; bei gleichem Schritt Loslassen vor Drücken, dann nach Aktion
 func events() -> Array[Dictionary]:

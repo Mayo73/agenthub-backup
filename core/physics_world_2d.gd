@@ -23,17 +23,17 @@ var floor_y := 1000.0
 
 
 func add_body(id: String, body: Body2D, layer: int = 1, mask: int = 1) -> void:
-	"""Einen dynamischen Körper zur Welt hinzufügen."""
+	## Einen dynamischen Körper zur Welt hinzufügen.
 	bodies[id] = {"body": body, "layer": layer, "mask": mask}
 
 
 func add_static(id: String, rect: Rect2, layer: int = 1, mask: int = 1) -> void:
-	"""Ein statisches Hindernis (Rechteck) zur Welt hinzufügen."""
+	## Ein statisches Hindernis (Rechteck) zur Welt hinzufügen.
 	statics.append({"id": id, "rect": rect, "layer": layer, "mask": mask})
 
 
 func step(dt: float) -> Array[Dictionary]:
-	"""Einen Physikschritt durchführen und Kontakte zurückgeben."""
+	## Einen Physikschritt durchführen und Kontakte zurückgeben.
 	step_count += 1
 	var contacts_this_step: Array[Dictionary] = []
 
@@ -75,10 +75,7 @@ func step(dt: float) -> Array[Dictionary]:
 
 
 func run(seconds: float, hz: int = 120) -> int:
-	"""Eine bestimmte Anzahl an Schritten durchführen.
-
-	Zurückgegeben wird die Anzahl aller Kontakte in dieser Zeit.
-	"""
+	## Schritte für die angegebene Zeit ausführen; Rückgabe: Anzahl aller Kontakte.
 	var steps: int = roundi(seconds * hz)
 	for i in range(steps):
 		step(1.0 / hz)

@@ -13,8 +13,9 @@ func _init(path_guard: PathGuard) -> void:
 
 
 func save(path: String, name: String, scene: SceneModel, modules: Array[String]) -> CommandResult:
-	if guard.check(path).is_ok() == false:
-		return CommandResult.error(CommandResult.FORBIDDEN_PATH, "Pfad liegt außerhalb der erlaubten Orte: %s" % path)
+	var erlaubt: CommandResult = guard.check(path)
+	if not erlaubt.is_ok():
+		return erlaubt
 
 	var inhalt := {
 		"format": FORMAT,
@@ -37,8 +38,9 @@ func save(path: String, name: String, scene: SceneModel, modules: Array[String])
 
 
 func open(path: String) -> CommandResult:
-	if guard.check(path).is_ok() == false:
-		return CommandResult.error(CommandResult.FORBIDDEN_PATH, "Pfad liegt außerhalb der erlaubten Orte: %s" % path)
+	var erlaubt: CommandResult = guard.check(path)
+	if not erlaubt.is_ok():
+		return erlaubt
 
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
@@ -52,9 +54,9 @@ func open(path: String) -> CommandResult:
 	if error != OK:
 		return CommandResult.error(CommandResult.INVALID_ARGUMENT, "Projektdatei ist beschädigt: %s" % path)
 
-	var d := json.data as Dictionary
-	if not typeof(d) == TYPE_DICTIONARY:
+	if typeof(json.data) != TYPE_DICTIONARY:
 		return CommandResult.error(CommandResult.INVALID_ARGUMENT, "Projektdatei ist beschädigt: %s" % path)
+	var d: Dictionary = json.data
 
 	var format_val := int(d.get("format", 0))
 	if format_val != FORMAT:

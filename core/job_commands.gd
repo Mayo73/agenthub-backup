@@ -3,7 +3,7 @@ extends RefCounted
 ## Verwaltet Befehle für Job-Operationen über CommandRegistry.
 
 static func register_all(commands: CommandRegistry, queue: JobQueue) -> void:
-	"""Befehle zur Verwaltung von Jobs registrieren."""
+	## Befehle zur Verwaltung von Jobs registrieren.
 
 	commands.register(
 		"job.submit",

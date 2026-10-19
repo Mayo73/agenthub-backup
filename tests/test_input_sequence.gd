@@ -62,3 +62,11 @@ func test_speichern_laden() -> void:
 	var loaded = InputSequence.from_dict(parsed)
 	check_eq(loaded.pressed_at(50), seq.pressed_at(50), "geladene Sequenz gleiche Pressed-States")
 	check(typeof(loaded.holds[0]["from"]) == TYPE_INT, "holds[from] ist INT")
+
+
+func test_ohne_doppelte() -> void:
+	var seq := InputSequence.new()
+	seq.hold("springen", 0, 10)
+	seq.hold("springen", 5, 15)
+	var gedrueckt: Array[String] = seq.pressed_at(7)
+	check_eq(gedrueckt.size(), 1, "überlappendes Halten erscheint nur einmal")

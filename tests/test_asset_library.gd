@@ -120,3 +120,12 @@ func test_find_alle() -> void:
 
 	var ergebnis := lib.find("")
 	check_eq(ergebnis.size(), 3, "Alle Elemente bei leerer Suche")
+
+
+func test_doppelt_meldung() -> void:
+	lib = AssetLibrary.new()
+	lib.add("held.png")
+	var r: CommandResult = lib.add("held.png")
+	check_eq(r.code, CommandResult.CONFLICT, "gleicher Pfad ist ein Konflikt")
+	check_eq(r.message, "Asset held.png ist schon vorhanden", "Meldung nennt den Pfad")
+	check(lib.assets.has("a1"), "Assets sind nach Kennung abgelegt")

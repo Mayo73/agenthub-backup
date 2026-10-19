@@ -65,28 +65,15 @@ static func validate(name: String, params: Dictionary) -> Array[String]:
 		problems.append("Verhalten %s gibt es nicht" % name)
 		return problems
 
-	var allowed_params: Array[String] = []
-	for key in _BEHAVIORS[name].parameters:
-		allowed_params.append(key)
-	allowed_params.sort()
-
-	# Prüfen auf unbekannte Parameter (in sortierter Reihenfolge)
-	for param_name in allowed_params:
-		if param_name in params:
-			continue
-
 	var known_params: Array[String] = []
 	for key in _BEHAVIORS[name].parameters:
 		known_params.append(key)
 	known_params.sort()
 
-	for param_name in params.keys():
-		var found := false
-		for allowed in known_params:
-			if allowed == param_name:
-				found = true
-				break
-		if not found:
+	var given: Array = params.keys()
+	given.sort()
+	for param_name in given:
+		if not known_params.has(str(param_name)):
 			problems.append("Unbekannter Parameter %s" % param_name)
 
 	# Prüfen der vorgesehenen Parameter (in sortierter Reihenfolge)

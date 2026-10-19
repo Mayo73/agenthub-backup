@@ -1,4 +1,3 @@
-@tool
 class_name CliParser
 extends RefCounted
 
@@ -7,7 +6,7 @@ extends RefCounted
 
 
 static func parse_value(text: String) -> Variant:
-	## Parses a single argument value into an appropriate variant type.
+	## Wandelt einen Parameterwert in Wahrheitswert, Zahl, JSON oder Text um.
 	if text == "true":
 		return true
 	elif text == "false":
@@ -23,26 +22,12 @@ static func parse_value(text: String) -> Variant:
 	if text.is_valid_float():
 		return float(text)
 
-	# JSON-Objekt oder Array
+	# JSON-Objekt oder Array; JSON.new().parse meldet Fehler still
 	if text.begins_with("{") or text.begins_with("["):
-		# Prüfen ob es ein plausibles JSON sein könnte:
-		# - "{" muss gefolgt von " oder Zahl oder n/t/f für null/true/false
-		# - "[" kann mit beliebtem Wert beginnen
-		var valid_start := false
-		if text.begins_with("{"):
-			var idx := 1
-			while idx < text.length() and (text[idx] == " " or text[idx] == "\t"):
-				idx += 1
-			if idx < text.length():
-				var c := text[idx]
-				valid_start = (c == "\"") or (c >= "0" and c <= "9") or (c == "-" and idx + 1 < text.length() and text[idx + 1] >= "0" and text[idx + 1] <= "9") or (c in ["n", "t", "f"])
-		elif text.begins_with("["):
-			valid_start = true  # Arrays können alles enthalten
-
-		if valid_start:
-			var parsed_result: Variant = JSON.parse_string(text)
-			if parsed_result is Array or parsed_result is Dictionary:
-				return parsed_result
+		var json := JSON.new()
+		if json.parse(text) == OK:
+			return json.data
+		return text
 
 	# String in Anführungszeichen
 	if text.length() >= 2 and text.begins_with("\"") and text.ends_with("\""):
@@ -73,10 +58,6 @@ static func parse(argv: PackedStringArray) -> Dictionary:
 	# Restliche Elemente sind Parameter
 	for i in range(1, argv.size()):
 		var arg: String = argv[i]
-
-		# Leerer Parameter ist gültig (name="")
-		if arg.is_empty():
-			continue
 
 		# Trennung am ersten '='
 		var eq_pos: int = arg.find("=")

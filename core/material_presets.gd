@@ -27,7 +27,8 @@ static func names() -> Array[String]:
 static func get_preset(name: String) -> Dictionary:
 	if not _presets.has(name):
 		return {}
-	return _deep_copy(_presets[name])
+	var vorlage: Dictionary = _presets[name]
+	return vorlage.duplicate(true)
 
 
 ## Material-Parameter prüfen und Liste von Fehlermeldungen zurückgeben
@@ -78,27 +79,27 @@ static func blend(a: Dictionary, b: Dictionary, t: float) -> Dictionary:
 	var result: Dictionary = {}
 
 	# albedo mischen
-	var final_albedo := PackedFloat32Array()
+	var final_albedo: Array = []
 	for i in range(3):
 		var val_a: float = float(albedo_a[i]) if i < albedo_a.size() else 0.0
 		var val_b: float = float(albedo_b[i]) if i < albedo_b.size() else 0.0
-		final_albedo.append(lerp(val_a, val_b, t))
+		final_albedo.append(lerpf(val_a, val_b, t))
 	result["albedo"] = final_albedo
 
 	# roughness mischen
 	var rough_a: float = float(a.get("roughness", 0.0))
 	var rough_b: float = float(b.get("roughness", 0.0))
-	result["roughness"] = lerp(rough_a, rough_b, t)
+	result["roughness"] = lerpf(rough_a, rough_b, t)
 
 	# metallic mischen
 	var metal_a: float = float(a.get("metallic", 0.0))
 	var metal_b: float = float(b.get("metallic", 0.0))
-	result["metallic"] = lerp(metal_a, metal_b, t)
+	result["metallic"] = lerpf(metal_a, metal_b, t)
 
 	# emission mischen
 	var emit_a: float = float(a.get("emission", 0.0))
 	var emit_b: float = float(b.get("emission", 0.0))
-	result["emission"] = lerp(emit_a, emit_b, t)
+	result["emission"] = lerpf(emit_a, emit_b, t)
 
 	return result
 
@@ -111,18 +112,3 @@ static func to_color(material: Dictionary) -> Color:
 	var b_val: float = float(albedo[2]) if albedo.size() > 2 else 0.0
 	return Color(r, g, b_val)
 
-
-## Tiefe Kopie eines Dictionaries erstellen
-static func _deep_copy(obj: Variant) -> Variant:
-	if typeof(obj) == TYPE_DICTIONARY:
-		var result: Dictionary = {}
-		for key in obj.keys():
-			result[key] = _deep_copy(obj[key])
-		return result
-	elif typeof(obj) == TYPE_ARRAY or typeof(obj) == TYPE_PACKED_FLOAT32_ARRAY:
-		var arr: PackedFloat32Array = PackedFloat32Array()
-		for item in obj:
-			arr.append(float(item))
-		return arr
-	else:
-		return obj

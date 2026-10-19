@@ -4,7 +4,7 @@ extends RefCounted
 
 const FORMATS := {"png": "bild", "jpg": "bild", "webp": "bild", "ogg": "audio", "wav": "audio", "mp3": "audio", "glb": "modell", "gltf": "modell"}
 
-var assets: Dictionary = {}
+var assets: Dictionary = {}  # Kennung -> {"id", "path", "kind", "name"}
 var next_id := 1
 
 
@@ -21,8 +21,9 @@ func add(path: String, name: String = "") -> CommandResult:
 		var endung := path.get_extension().to_lower()
 		return CommandResult.error(CommandResult.INVALID_ARGUMENT, "Format .%s wird nicht unterstützt" % endung)
 
-	if assets.has(path):
-		return CommandResult.error(CommandResult.CONFLICT, "Asset %s ist schon vorhanden")
+	for asset: Dictionary in assets.values():
+		if asset["path"] == path:
+			return CommandResult.error(CommandResult.CONFLICT, "Asset %s ist schon vorhanden" % path)
 
 	var id: String = "a%d" % next_id
 	next_id += 1
@@ -30,38 +31,31 @@ func add(path: String, name: String = "") -> CommandResult:
 	if name == "":
 		name = path.get_file().get_basename()
 
-	assets[path] = {"id": id, "path": path, "kind": art, "name": name}
+	assets[id] = {"id": id, "path": path, "kind": art, "name": name}
 	return CommandResult.success({"id": id, "kind": art})
 
 
 func remove(id: String) -> bool:
-	for path in assets.keys():
-		if assets[path]["id"] == id:
-			assets.erase(path)
-			return true
-	return false
+	return assets.erase(id)
 
 
 func list(kind: String = "") -> Array[Dictionary]:
 	var ergebnis: Array[Dictionary] = []
-	for path in assets.keys():
-		var asset: Dictionary = assets[path]
+	for asset: Dictionary in assets.values():
 		if kind != "" and asset["kind"] != kind:
 			continue
-		ergebnis.append({"id": asset["id"], "path": asset["path"], "kind": asset["kind"], "name": asset["name"]})
+		ergebnis.append(asset.duplicate())
 
-	ergebnis.sort_custom(func(a, b): return int(a.id.substr(1)) < int(b.id.substr(1)))
+	ergebnis.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return int(str(a["id"]).substr(1)) < int(str(b["id"]).substr(1)))
 	return ergebnis
 
 
 func find(text: String) -> Array[String]:
 	var ergebnis: Array[String] = []
-	for path in assets.keys():
-		var asset: Dictionary = assets[path]
-		if text == "" or asset["name"].to_lower().findn(text.to_lower()) >= 0:
+	for asset: Dictionary in list():
+		var name: String = asset["name"]
+		if text == "" or name.findn(text) >= 0:
 			ergebnis.append(asset["id"])
-
-	ergebnis.sort_custom(func(a, b): return int(a.substr(1)) < int(b.substr(1)))
 	return ergebnis
 
 

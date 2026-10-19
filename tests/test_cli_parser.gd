@@ -91,3 +91,11 @@ func test_fehler() -> void:
 	# Doppelter Parametername
 	var r5: Dictionary = CliParser.parse(PackedStringArray(["x", "a=1", "a=2"]))
 	check_eq(r5["error"], "Parameter doppelt: a", "Fehler bei doppeltem Parametername")
+
+
+func test_json_und_leere_teile() -> void:
+	var leer: Variant = CliParser.parse_value("{}")
+	check(leer is Dictionary, "{} wird ein leeres Dictionary")
+	check_eq(CliParser.parse_value("{kaputt"), "{kaputt", "ungültiges JSON bleibt Text")
+	var r: Dictionary = CliParser.parse(PackedStringArray(["x", ""]))
+	check_eq(r["error"], "Parameter ohne '=': ", "leerer Teil ist ein Fehler")

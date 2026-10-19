@@ -132,7 +132,7 @@ func is_cancelled(id: String) -> bool:
 
 
 func list(state_filter: String = "") -> Array[Dictionary]:
-	var result := []
+	var result: Array[Dictionary] = []
 	for id in order:
 		if state_filter != "" and jobs[id]["state"] != state_filter:
 			continue
