@@ -1,6 +1,11 @@
 class_name SoundBank
 extends RefCounted
-## Fertige Spielklänge, alle mit SoundSynth erzeugt.
+## Fertige Spielklänge, mit SoundSynth erzeugt. Ausnahme: das Reifenquietschen ist eine echte Aufnahme.
+
+## „Tires Squealing“ von Mike Koenig (soundbible.com), Lizenz CC BY 3.0; Namensnennung im Hauptmenü
+## und in docs/QUELLEN.md. Auf eine nahtlose Schleife von 1,4 s geschnitten (Mono, OGG Vorbis).
+const SQUEAL_RECORDING: AudioStreamOggVorbis = preload("res://assets/sounds/reifen_quietschen.ogg")
+const SQUEAL_CREDIT := "Reifenquietschen: „Tires Squealing“ von Mike Koenig (soundbible.com), Lizenz CC BY 3.0"
 
 
 ## Motorbrummen, 1 Sekunde, nahtlose Schleife (ganze Schwingungen, ohne Blende).
@@ -10,11 +15,11 @@ static func engine_loop() -> AudioStreamWAV:
 	return SoundSynth.make_stream(SoundSynth.mix(low, high), true)
 
 
-## Reifenquietschen, 0,5 Sekunden, Schleife.
-static func squeal_loop() -> AudioStreamWAV:
-	var whine := SoundSynth.tone(1250.0, 0.5, SoundSynth.Wave.SINE, 0.25, false)
-	var hiss := SoundSynth.noise(0.5, 0.08, 7)
-	return SoundSynth.make_stream(SoundSynth.mix(whine, hiss), true)
+## Reifenquietschen als Schleife: echte Aufnahme (siehe SQUEAL_RECORDING), Wunsch des Nutzers vom 19.10.2026.
+static func squeal_loop() -> AudioStream:
+	var s := SQUEAL_RECORDING
+	s.loop = true
+	return s
 
 
 ## Kurzer Klick für Menüknöpfe.

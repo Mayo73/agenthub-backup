@@ -32,6 +32,15 @@ func _ready() -> void:
 	add_child(music)
 	music.play()
 
+	# Namensnennung für frei lizenzierte Klänge (CC BY verlangt sie im Spiel).
+	var credits := Label.new()
+	credits.name = "Credits"
+	credits.text = SoundBank.SQUEAL_CREDIT
+	credits.add_theme_font_size_override("font_size", 13)
+	credits.modulate = Color(1, 1, 1, 0.6)
+	add_child(credits)
+	credits.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 12)
+
 	UserSettings.load_from(settings_path).apply()
 	start_button.pressed.connect(start_game)
 	quit_button.pressed.connect(quit_game)

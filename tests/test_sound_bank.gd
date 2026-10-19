@@ -9,8 +9,10 @@ func test_motor() -> void:
 
 func test_quietschen() -> void:
 	var s := SoundBank.squeal_loop()
-	check(s.loop_mode == AudioStreamWAV.LOOP_FORWARD, "Quietschen-Schleife sollte LOOP_FORWARD sein")
-	check(s.data.size() == int(0.5 * SoundSynth.MIX_RATE) * 2, "Quietschen-Datenlänge sollte 0.5*SOUND_SYNTH_MIX_RATE*2 sein (%d)" % [int(0.5 * SoundSynth.MIX_RATE) * 2])
+	check(s is AudioStreamOggVorbis, "Quietschen ist die echte Aufnahme (OGG Vorbis)")
+	check((s as AudioStreamOggVorbis).loop, "Quietschen läuft als Schleife")
+	check(s.get_length() > 1.0 and s.get_length() < 2.0, "Schleife ist 1 bis 2 Sekunden lang (%.2f s)" % s.get_length())
+	check(SoundBank.SQUEAL_CREDIT.contains("Mike Koenig") and SoundBank.SQUEAL_CREDIT.contains("CC BY 3.0"), "Namensnennung vollständig")
 
 
 func test_klick() -> void:

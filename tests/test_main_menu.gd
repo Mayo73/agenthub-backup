@@ -100,3 +100,10 @@ func test_autobild() -> void:
 	menu._on_car_next()
 	var expected_texture := CarCatalog.sprite_of(GameSettings.car_id)
 	check(menu.car_preview.texture.resource_path == expected_texture, "car_preview.texture entspricht CarCatalog.sprite_of(GameSettings.car_id)")
+
+
+func test_namensnennung() -> void:
+	var c := menu.get_node_or_null("Credits") as Label
+	check(c != null, "Credits-Label im Hauptmenü vorhanden")
+	if c != null:
+		check(c.text.contains("Mike Koenig") and c.text.contains("CC BY 3.0"), "Namensnennung für das Reifenquietschen")
