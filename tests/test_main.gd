@@ -90,3 +90,56 @@ func test_zuruecksetzen() -> void:
 	check_eq(main.current_screen, "entdecken", "Zurücksetzen zeigt Entdecken")
 	check(StateStore.load_state(TEST_PATH).book.likes.is_empty(), "Gespeicherte Datei hat keine Likes")
 	DirAccess.remove_absolute(TEST_PATH)
+
+
+## Erzeugt das Match m1 zwischen p01 und p02 und speichert es.
+func make_match() -> void:
+	main.state.like("p02")
+	main.state.switch_to("p02")
+	main.state.like("p01")
+	main.state.switch_to("p01")
+	main.save()
+
+
+func test_matches_ist_echt() -> void:
+	main.use_store(TEST_PATH)
+	make_match()
+	main.show_screen("matches")
+	check(main.screen is MatchesScreen, "Matches zeigt den echten Bildschirm")
+	check_eq((main.screen as MatchesScreen).rows.size(), 1, "ein Match in der Liste")
+	DirAccess.remove_absolute(TEST_PATH)
+
+
+func test_chat_oeffnen_und_zurueck() -> void:
+	main.use_store(TEST_PATH)
+	make_match()
+	main.show_screen("matches")
+	(main.screen as MatchesScreen).rows["m1"].pressed.emit()
+	check(main.screen is ChatScreen, "Klick auf das Match öffnet den Chat")
+	check_eq(main.current_screen, "chat", "aktueller Bildschirm")
+	check(main.tab_buttons["matches"].disabled, "Reiter Matches bleibt aktiv markiert")
+	check(not main.tab_buttons["entdecken"].disabled, "Entdecken klickbar")
+	(main.screen as ChatScreen).back_button.pressed.emit()
+	check(main.screen is MatchesScreen, "Zurück führt zur Liste")
+	DirAccess.remove_absolute(TEST_PATH)
+
+
+func test_nachricht_gespeichert() -> void:
+	main.use_store(TEST_PATH)
+	make_match()
+	main.show_chat("m1")
+	var chat := main.screen as ChatScreen
+	chat.input.text = "Hallo"
+	chat.send_button.pressed.emit()
+	check_eq(StateStore.load_state(TEST_PATH).chat.count_for("m1"), 1, "Nachricht gespeichert")
+	DirAccess.remove_absolute(TEST_PATH)
+
+
+func test_wechsel_im_chat() -> void:
+	main.use_store(TEST_PATH)
+	make_match()
+	main.show_chat("m1")
+	main._on_switched("p03")
+	check_eq(main.current_screen, "matches", "Wechsel im Chat führt zur Liste")
+	check_eq((main.screen as MatchesScreen).rows.size(), 0, "p03 hat keine Matches")
+	DirAccess.remove_absolute(TEST_PATH)

@@ -20,6 +20,8 @@ var state: AppState
 var store_path := StateStore.DEFAULT_PATH
 ## Demo-Leiste zum Wechseln der Testperson.
 var perspective: PerspectiveBar
+## Match-ID des offenen Chats (nur wenn current_screen "chat" ist).
+var chat_id := ""
 
 
 func _ready() -> void:
@@ -65,6 +67,9 @@ func _ready() -> void:
 
 ## Zeigt einen Bildschirm im Inhaltsbereich; der vorherige wird entfernt.
 func show_screen(screen_name: String) -> void:
+	if screen_name == "chat":
+		show_chat(chat_id)
+		return
 	if screen != null:
 		content.remove_child(screen)
 		screen.queue_free()
@@ -76,12 +81,33 @@ func show_screen(screen_name: String) -> void:
 		(tab_buttons[n] as Button).disabled = n == screen_name
 
 
+## Zeigt den Chat zu einem Match; der Reiter „Matches“ bleibt als aktiv markiert.
+func show_chat(match_id: String) -> void:
+	if screen != null:
+		content.remove_child(screen)
+		screen.queue_free()
+	chat_id = match_id
+	var chat := ChatScreen.new(state, match_id)
+	chat.changed.connect(save)
+	chat.back.connect(show_screen.bind("matches"))
+	screen = chat
+	screen.set_anchors_preset(Control.PRESET_FULL_RECT)
+	content.add_child(screen)
+	current_screen = "chat"
+	for n in tab_buttons:
+		(tab_buttons[n] as Button).disabled = n == "matches"
+
+
 ## Wechselt die Testperson, speichert und baut den aktuellen Bildschirm neu auf.
+## Ein offener Chat geht zurück zur Liste, weil die neue Person vielleicht nicht beteiligt ist.
 func _on_switched(id: String) -> void:
 	state.switch_to(id)
 	save()
 	perspective.set_state(state)
-	show_screen(current_screen)
+	if current_screen == "chat":
+		show_screen("matches")
+	else:
+		show_screen(current_screen)
 
 
 func save() -> void:
@@ -119,6 +145,10 @@ func _make_screen(screen_name: String) -> Control:
 		var discover := DiscoverScreen.new(state)
 		discover.changed.connect(save)
 		return discover
+	if screen_name == "matches":
+		var matches := MatchesScreen.new(state)
+		matches.open_chat.connect(show_chat)
+		return matches
 	if screen_name == "profil":
 		var profile := ProfileScreen.new(state)
 		profile.changed.connect(_on_profile_changed)
