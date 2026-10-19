@@ -664,3 +664,21 @@ func test_ausgewachsen_meldung() -> void:
 	fish.eat_value(FishProgress.GROWTH_NEEDED[2])
 	check(fish.progress.is_final_stage(), "Fisch ist ausgewachsen")
 	check_eq(fish.hud.message_label.text, fish.GROWN_MESSAGE, "Meldung ist GROWN_MESSAGE")
+
+
+## Test: Der FadeIn-CanvasLayer und ColorRect werden angelegt.
+func test_fadein_angelegt() -> void:
+	check(fish.get_node("FadeIn") is CanvasLayer, "Knoten 'FadeIn' ist CanvasLayer")
+	check(fish.fade_rect != null, "fade_rect existiert")
+	check_eq(fish.fade_rect.color.a, 1.0, "fade_rect.color.a ist 1.0 am Anfang")
+	check(fish.fade_rect.visible, "fade_rect.visible ist wahr zu Beginn")
+
+
+## Test: FadeIn blendet während _process() aus und wird unsichtbar.
+func test_einblenden() -> void:
+	check_eq(fish.fade_rect.color.a, 1.0, "fade_rect.color.a ist 1.0 nach dem Start")
+	fish._process(0.4)
+	var alpha_nach_04: float = fish.fade_rect.color.a
+	check(alpha_nach_04 > 0.4 && alpha_nach_04 < 0.6, "nach _process(0.4) ist Alpha ca. 0.5 (ist %f)" % [alpha_nach_04])
+	fish._process(0.5)
+	check(not fish.fade_rect.visible, "fade_rect.visible ist falsch nach vollständiger Einblendung")
