@@ -1,6 +1,7 @@
 extends "res://tests/base_test.gd"
 
 var editor: CellEditor
+var timeline: EvolutionTimeline
 var unlocks: PartUnlocks
 var progress: CellProgress
 var start: CellBuild
@@ -8,6 +9,7 @@ var start: CellBuild
 
 func setup() -> void:
 	editor = CellEditor.new()
+	timeline = EvolutionTimeline.new()
 	unlocks = PartUnlocks.new()
 	unlocks.unlock("geissel")
 	progress = CellProgress.new()
@@ -84,3 +86,15 @@ func test_symmetrie_schalter() -> void:
 	var prev := editor.canvas.symmetry
 	editor.symmetry_button.button_pressed = not prev
 	check(editor.canvas.symmetry != prev, "symmetrie_gespiegelt")
+
+
+## Hilfsfunktion zum Hinzufügen von zwei Timeline-Einträgen.
+func _add_two_timeline_entries() -> void:
+	timeline.add_without_phase("start", "Start", Diet.PFLANZENFRESSER, 0.0, Color.WHITE)
+	timeline.add_without_phase("stage", "Größe 1", Diet.PFLANZENFRESSER, 10.0, Color(0.5, 0.8, 0.3))
+
+
+func test_zeitstrahl() -> void:
+	_add_two_timeline_entries()
+	editor.show_timeline(timeline)
+	check_eq(editor.timeline_view.item_count(), 2, "timeline_item_count")

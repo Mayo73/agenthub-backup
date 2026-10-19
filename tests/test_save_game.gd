@@ -55,3 +55,28 @@ func test_unbekannte_teile_ignoriert() -> void:
 	var u := PartUnlocks.new()
 	check(SaveGame.apply({"version": 1, "unlocked": ["filtermaul", "gibtsnicht", "filtermaul"]}, CellProgress.new(), CellHealth.new(), u), "apply sollte wahr sein")
 	check_eq(u.unlocked.size(), 1, "nur filtermaul unlocked")
+
+
+func test_zeitstrahl_speichern() -> void:
+	var timeline := EvolutionTimeline.new()
+	timeline.add_without_phase(EvolutionTimeline.START, "Start", Diet.PFLANZENFRESSER, 0.0, CellLook.DEFAULT_COLOR)
+	timeline.add_without_phase(EvolutionTimeline.STAGE, "Größe 2", Diet.PFLANZENFRESSER, 120.5, Color.RED)
+
+	var p := CellProgress.new()
+	var h := CellHealth.new()
+	var b := CellBuild.new()
+	var u := PartUnlocks.new()
+
+	var d := SaveGame.to_dict(p, h, b, u, timeline)
+	check(d.has("timeline"), "to_dict sollte timeline enthalten")
+
+	var loaded_timeline := SaveGame.read_timeline(d)
+	check_eq(loaded_timeline.size(), 2, "read_timeline hat 2 Einträge")
+	check_eq(loaded_timeline.entries[0]["kind"], EvolutionTimeline.START, "erster Eintrag START")
+	check_eq(loaded_timeline.entries[1]["kind"], EvolutionTimeline.STAGE, "zweiter Eintrag STAGE")
+
+
+func test_zeitstrahl_fehlt() -> void:
+	var d := {}
+	var timeline := SaveGame.read_timeline(d)
+	check_eq(timeline.size(), 0, "read_timeline({}) sollte 0 Einträge haben")
