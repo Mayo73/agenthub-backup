@@ -13,19 +13,15 @@ func describe() -> String:
 	return "Blockieren beendet jeden Kontakt, aus beiden Perspektiven"
 
 
-func setup() -> void:
-	# Store am Anfang löschen, falls vorhanden
-	if FileAccess.file_exists(STORE):
-		DirAccess.remove_absolute(STORE)
-
-
-func teardown() -> void:
-	# Store am Ende wieder löschen
-	if FileAccess.file_exists(STORE):
-		DirAccess.remove_absolute(STORE)
+func _remove_store() -> void:
+	var path := ProjectSettings.globalize_path(STORE)
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(path)
 
 
 func run() -> void:
+	_remove_store()
+	scene.use_store(STORE)
 	await wait(0.3)
 
 	# 1. Match p01/p02 direkt über den Zustand aufbauen
@@ -70,3 +66,5 @@ func run() -> void:
 	scene.tab_buttons["entdecken"].pressed.emit()
 	await wait(0.3)
 	shot("entdecken_sam")
+
+	_remove_store()
