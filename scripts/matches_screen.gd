@@ -14,6 +14,9 @@ var list: VBoxContainer
 var empty_icon: Label
 var empty_label: Label
 var title_label: Label
+var new_section: VBoxContainer
+var new_row: HBoxContainer
+var new_buttons: Dictionary = {}
 
 
 func _init(app_state: AppState) -> void:
@@ -40,6 +43,21 @@ func _init(app_state: AppState) -> void:
 
 	title_label = UiStyle.label("Deine Matches", UiStyle.SIZE_TITLE)
 	box.add_child(title_label)
+
+	var new_title := UiStyle.label("Neue Matches", UiStyle.SIZE_SMALL, UiStyle.MUTED)
+	new_section = VBoxContainer.new()
+	new_section.add_theme_constant_override("separation", UiStyle.GAP)
+	new_section.add_child(new_title)
+	box.add_child(new_section)
+
+	var new_scroll := ScrollContainer.new()
+	new_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	new_scroll.custom_minimum_size = Vector2(0, 150)
+	new_section.add_child(new_scroll)
+
+	new_row = HBoxContainer.new()
+	new_row.add_theme_constant_override("separation", UiStyle.GAP)
+	new_scroll.add_child(new_row)
 
 	empty_icon = UiStyle.empty_icon("♥")
 	box.add_child(empty_icon)
@@ -108,3 +126,44 @@ func refresh() -> void:
 
 	empty_icon.visible = matches.is_empty()
 	empty_label.visible = matches.is_empty()
+
+	# Neue Matches Sektion leeren
+	for child in new_row.get_children():
+		new_row.remove_child(child)
+		child.free()
+	new_buttons.clear()
+
+	var new_matches: Array = []
+	for m in matches:
+		var id: String = m["id"]
+		if m.get("ended_by", "") == "" and state.chat.last_message(id).is_empty():
+			new_matches.append(m)
+
+	for m in new_matches:
+		var id: String = m["id"]
+		var other := state.profile(state.book.other(m, state.active_id))
+
+		var button := Button.new()
+		button.flat = true
+		button.custom_minimum_size = Vector2(112, 140)
+
+		var vbox := VBoxContainer.new()
+		vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+		var avatar := AvatarView.new()
+		avatar.set_diameter(96)
+		avatar.set_profile(other)
+		avatar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		vbox.add_child(avatar)
+
+		var name_label := UiStyle.label(other.name, UiStyle.SIZE_SMALL)
+		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		vbox.add_child(name_label)
+
+		button.add_child(vbox)
+		button.pressed.connect(open_chat.emit.bind(id))
+		new_row.add_child(button)
+		new_buttons[id] = button
+
+	new_section.visible = not new_buttons.is_empty()
