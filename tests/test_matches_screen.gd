@@ -86,3 +86,29 @@ func test_tippen_oeffnet_chat() -> void:
 	screen.open_chat.connect(_on_open_chat)
 	(screen.rows["m1"] as Button).pressed.emit()
 	check_eq(received_id, "m1", "empfangene Match-ID")
+
+
+func test_ueberschrift() -> void:
+	build()
+	check_eq(screen.title_label.text, "Deine Matches", "title_label zeigt „Deine Matches\" auch ohne Matches")
+	check(not screen.title_label.visible == false, "title_label ist sichtbar")
+
+
+func test_leer_mit_symbol() -> void:
+	build()
+	check(screen.empty_icon.visible, "empty_icon.visible wahr wenn leer")
+	check(screen.empty_icon.text == "♥", "empty_icon.text ist ♥")
+
+	var id := make_match("p01", "p02")
+	screen.refresh()
+	check(not screen.empty_icon.visible, "empty_icon.visible falsch nach Match")
+
+
+func test_zeile_als_karte() -> void:
+	make_match("p01", "p02")
+	build()
+	var btn := screen.rows["m1"] as Button
+	check(btn.alignment == HORIZONTAL_ALIGNMENT_LEFT, "Zeilen-Button ist linksbündig")
+	var sb := btn.get_theme_stylebox("normal") as StyleBoxFlat
+	check(sb != null, "normal stylebox existiert")
+	check(sb.shadow_size > 0, "Zeile hat weichen Schatten (shadow_size > 0)")
