@@ -4,3 +4,4 @@
 *.tmp
 .verify.log
 /build/
+.jest.json

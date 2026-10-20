@@ -1,79 +1,63 @@
 # Sparring – Regeln für Agents
 
-Android-Prototyp in Godot 4.7 mit GDScript: Kampfsportpartner finden sich über gegenseitige Swipe-Matches, schreiben sich im Demochat und vereinbaren ein freiwilliges Training draußen. **Alles sind fiktive, lokale Testdaten**: kein Konto, kein Server, kein Netzwerk, keine Standortabfrage. Die Oberfläche ist deutsch, Hochformat 720 × 1280.
+Android-App-Prototyp mit **React Native 0.88 und TypeScript**: Kampfsportpartner finden sich über gegenseitige Swipe-Matches, schreiben sich im Demochat und vereinbaren ein freiwilliges Training draußen. **Alles sind fiktive, lokale Testdaten**: kein Konto, kein Server, kein Netzwerk, keine Standortabfrage. Die Oberfläche ist deutsch.
 
-## Architektur (wichtig)
+**Die App liegt komplett im Ordner `app/`.** Alles andere im Hauptordner (`project.godot`, `scripts/`, `scenes/`, `tests/`, `playtests/`, `assets/`, `docs/`) ist die alte Godot-Fassung. Sie bleibt nur als Referenz stehen: nicht ändern, nicht löschen, nicht davon importieren. Man darf dort nachlesen, wie etwas früher gelöst war (z. B. `scripts/meeting_book.gd`).
 
-- Logik gehört in testbare Klassen (`extends RefCounted`) ohne Nodes. Bildschirme (`extends Control`) zeigen nur an und melden Klicks.
-- Alle Bedienelemente entstehen **im Code** (`Button.new()`, `add_child(...)`), nicht in `.tscn`-Dateien. Die einzige Szene ist `scenes/main.tscn` mit `Main`.
-- Aussehen nur über `UiStyle` (Farben, Schriftgrößen, `UiStyle.label()`, `UiStyle.button()`, `UiStyle.panel()`), keine eigenen Farbwerte in Bildschirmen.
-- Jeder Knopf, den ein Test drückt, ist als Variable erreichbar; Tests lösen ihn mit `button.pressed.emit()` aus.
-- Bildschirme ändern den Zustand nicht selbst, sondern über `AppState`, und senden danach das Signal `changed`. `Main` speichert dann mit `StateStore.save()`.
-- **Perspektivwechsel:** Jede der acht Testpersonen kann die „aktive“ Person sein (`AppState.active_id`). So lassen sich beide Seiten eines Matches durchspielen. Das ist eine Demofunktion und wird immer als solche beschriftet (Farbe `UiStyle.DEMO`).
-- Neue Klassen bekommen ein `class_name`.
+## Aufbau von `app/`
 
-## Datenmodell
-
-- `SparProfile`: `id` („p01“ … „p08“), `name`, `art` (Kampfsportart), `level` (0 Einsteiger, 1 Fortgeschritten, 2 Erfahren), `years`, `age` (mindestens 18), `bio`, `color` (Avatarfarbe). `to_dict()`, `SparProfile.from_dict()`.
-- `MatchBook`: Interessen (`like`), Überspringen (`pass_on`), Matches als Dictionary `{"id": "m1", "a": "p01", "b": "p02", "ended_by": ""}`, Blockieren.
-- `ChatLog`: Nachrichten `{"match_id": "m1", "from": "p01", "text": "…", "n": 1}`.
-- `MeetingBook`: je Match ein Treffvorschlag `{"place", "date", "time", "form", "intensity", "rules", "approved": [ids], "cancelled_by": ""}`. Jede Änderung setzt die Zustimmung zurück.
-- `AppState`: hält alles und die aktive Person, `AppState.demo()` liefert den Ausgangszustand.
-- `StateStore`: speichert `AppState` als JSON unter `user://sparring.json`.
-
-## Dateien
-
-| Datei | Aufgabe |
+| Pfad | Inhalt |
 |---|---|
-| `scripts/main.gd` | `Main`: Kopfzeile `banner` (Prototyp-Hinweis), Inhaltsbereich `content` mit dem aktuellen Bildschirm `screen`, Reiterleiste `tab_bar`/`tab_buttons`; `show_screen(name)` für „entdecken“, „matches“, „profil“ |
-| `scripts/ui_style.gd` | `UiStyle`: Farben, Schriftgrößen, Bausteine |
+| `App.tsx` | `AppShell`: Kopfzeile `DemoBanner`, aktueller Bildschirm, Reiterleiste `TabBar`, Android-Zurück über `back()` aus `src/navigation.ts` |
+| `src/logic/` | **Reine Logik ohne React**: `types.ts` (Datenmodell), `demoData.ts` (8 Testprofile, Listen `ARTS`, `LEVELS`, `FORMS` …), weitere Module laut Tickets |
+| `src/state/` | React-Kontext mit dem App-Zustand und dem Speichern |
+| `src/screens/` | Bildschirme (`DiscoverScreen`, `MatchesScreen`, `ChatScreen`, `MeetingScreen`, `ProfileScreen`) |
+| `src/components/` | Bausteine (`DemoBanner`, `TabBar`, `Avatar`, `ProfileCard`, `PerspectiveBar`, `ConfirmDialog` …) |
+| `src/navigation.ts` | Reiter (`entdecken`, `matches`, `profil`) und Stapel darübergelegter Bildschirme (`push`, `back`) |
+| `src/theme.ts` | Farben `colors` und Größen `sizes` |
+| `__tests__/` | Jest-Tests, Dateien `<thema>.test.ts` bzw. `.test.tsx` |
+| `android/` | natives Android-Projekt (nur Claude ändert es) |
 
-Geplante Klassen (entstehen durch Tickets, Namen genau so verwenden): `SparProfile`, `DemoData`, `MatchBook`, `ChatLog`, `MeetingBook`, `AppState`, `StateStore`, `AvatarView`, `SwipeGesture`, `ProfileCard`, `DiscoverScreen`, `PerspectiveBar`, `MatchesScreen`, `ChatScreen`, `MeetingScreen`, `ProfileScreen`, `ConfirmDialog`, `PlaceSketch`.
+## Datenmodell (`src/logic/types.ts`)
+
+- Der ganze Zustand ist ein `AppData`-Objekt: aktive Person `activeId`, `profiles`, `likes`/`passes`/`blocks` (Schlüssel `"von>an"`, z. B. `"p01>p02"`), `matches`, `messages`, `meetings`, `nextMatchNo`.
+- **Logikfunktionen ändern nie das übergebene Objekt**, sondern geben ein neues `AppData` zurück (`{ ...data, likes: [...data.likes, key] }`). Ist eine Aktion nicht erlaubt (z. B. Nachricht in beendetem Match), geben sie das unveränderte `data` zurück.
+- **Perspektivwechsel:** Jede der acht Testpersonen kann die aktive Person sein (`activeId`). So lassen sich beide Seiten eines Matches durchspielen. Das ist eine Demofunktion und wird immer als solche beschriftet (Farbe `colors.demo`).
 
 ## Regeln
 
-- GDScript 4 mit statischen Typen (`var x: int`, `func f() -> void`).
-- Einrückung **nur mit Tabs**, niemals mit Leerzeichen.
-- Kommentare beginnen mit `#` oder `##`. Es gibt keine Block-Kommentare mit `"""`.
-- Zu jeder neuen Logik gehört ein Test in `tests/test_<thema>.gd`:
+- TypeScript mit Typen für Parameter und Rückgaben. Einrückung 2 Leerzeichen, einfache Anführungszeichen, Semikolons.
+- Nur Funktionskomponenten mit Hooks. Aussehen über `StyleSheet.create` mit Werten aus `src/theme.ts`, keine eigenen Farbcodes.
+- Bildschirme rechnen nicht selbst, sondern rufen Funktionen aus `src/logic/` auf.
+- Alles, was ein Test drückt oder sucht, bekommt eine `testID` (Namen stehen im Ticket).
+- Nur die vorhandenen Pakete verwenden (`react`, `react-native`, `react-native-safe-area-context`, `@react-native-async-storage/async-storage`). Keine neuen Pakete, keine Netzwerkzugriffe (`fetch`), keine Bilder aus dem Internet. `package.json` nicht ändern.
+- Für Bestätigungen `ConfirmDialog` (eigenes `Modal`) statt `Alert.alert`, damit Tests ihn bedienen können.
+- Zu jeder neuen Logik gehört ein Test. Vorlage:
 
-  ```gdscript
-  extends "res://tests/base_test.gd"
+  ```ts
+  import { demoData } from '../src/logic/demoData';
+  import { like } from '../src/logic/matching';
 
-  var book: MatchBook
-
-  func setup() -> void:          # optional, läuft vor jedem Test
-  	book = MatchBook.new()
-
-  func test_beschreibung() -> void:
-  	check_eq(ist_wert, soll_wert, "was geprüft wird")
-  	check(bedingung, "was geprüft wird")
+  describe('matching', () => {
+    test('einseitiges Interesse ergibt kein Match', () => {
+      const d = like(demoData(), 'p01', 'p02');
+      expect(d.matches).toHaveLength(0);
+    });
+  });
   ```
-- Tests für Bildschirme hängen den Bildschirm an `(Engine.get_main_loop() as SceneTree).root` und geben ihn in `teardown()` mit `free()` frei (Vorlage: `tests/test_main.gd`).
-- Tests, die speichern, nutzen eigene Dateien `user://test_<thema>.json` und löschen sie in `teardown()` mit `DirAccess.remove_absolute(...)`. Nie `user://sparring.json` anfassen.
-- Bestehende Tests nicht löschen, umbenennen oder abschwächen.
-- Nicht ändern: `verify.cmd`, `tests/run_tests.gd`, `tests/base_test.gd`, `playtests/playtest.gd`.
-- Keine Netzwerkzugriffe (`HTTPRequest`), keine Plugins, keine externen Bilder. Avatare zeichnet `AvatarView` selbst.
+- Komponententests mit `@testing-library/react-native` (Vorlage: `__tests__/App.test.tsx`): `await render(<X />)`, `screen.getByTestId(...)`, `screen.getByText(...)`, `await fireEvent.press(...)`, `await fireEvent.changeText(...)`. `render` und `fireEvent` immer mit `await`.
+- Speichern in Tests: Der Speicher ist in Jest automatisch eine Attrappe (`jest.setup.js`). Logik, die speichert, bekommt den Speicher als Parameter, damit Tests einen eigenen übergeben können.
+- Bestehende Tests nicht löschen, umbenennen, überspringen (`skip`) oder abschwächen.
+- Nicht ändern: `verify.cmd`, `verify-ergebnis.js`, `app/package.json`, `app/jest.config.js`, `app/jest.setup.js`, `app/tsconfig.json`.
 
 ## Prüfen
 
-`verify.cmd` lädt alle Skripte, startet `scenes/main.tscn` kurz und führt alle `test_*`-Methoden aus. Bestanden nur bei `ERGEBNIS: <n> ok, 0 fehlgeschlagen`.
+`verify.cmd` führt die Typprüfung (`tsc --noEmit`) und alle Jest-Tests aus. Bestanden nur bei `ERGEBNIS: <n> ok, 0 fehlgeschlagen`; ein Typfehler zählt als fehlgeschlagen. Die Pakete liegen unter `AgentHub\envs\sparring\node_modules` (`app\node_modules` ist eine Verknüpfung dorthin).
 
-Spieltests in `playtests/` führt der Hub aus (`hub\tools\spieltest.ps1 -Projekt sparring`), nicht `verify.cmd`.
+## Android (nur Claude)
 
-## Android
+Mindestversion laut React-Native-Vorlage, Architekturen arm64-v8a und x86_64 (`android/gradle.properties`), Release-APK mit dem Debug-Schlüssel signiert, JavaScript in die APK eingebettet (läuft ohne Entwicklungsserver). Bauen: in `app\android` mit `ANDROID_HOME=%LOCALAPPDATA%\Android\Sdk`, JDK 17 und Node im PATH `gradlew.bat assembleRelease` → `app\android\app\build\outputs\apk\release\app-release.apk`. Emulator `Sparring_Pixel` mit `-gpu host` starten.
 
-Mindestversion Android 7.0 (API 24, Godot-Standard), Renderer „Compatibility“, Hochformat. Export: Vorlage „Android“ in `export_presets.cfg` (arm64-v8a und x86_64, ohne Gradle, signiert mit dem Debug-Schlüssel, keine Internet-Berechtigung, ohne `tests/` und `playtests/`). Bauen macht Claude: `godot --headless --path . --export-debug Android build/sparring.apk` (Ordner `build/` ist ignoriert). Im Emulator `Sparring_Pixel` nur mit `-gpu host` starten; mit der Software-Grafik (SwiftShader, Standard bei `-no-window`) bleibt der Bildschirm leer. Icon: `assets/icon/icon.png` (selbst gezeichnet).
+## Stil
 
-## Stil (seit 20.10.2026)
-
-Vorbild sind moderne Dating-Apps, aber ohne deren Marken, Logos oder Farben.
-
-- Fast schwarzer Hintergrund (`UiStyle.BG`), dunkle Flächen (`CARD`, `RAISED`) mit weichen Schatten (`UiStyle.card_panel()`), große runde Ecken (`RADIUS`, `RADIUS_CARD`), Abstände `UiStyle.GAP`.
-- Akzent violett `ACCENT` mit türkisem `ACCENT_2` (Verläufe mit `UiStyle.vertical_gradient()`), Ja grün `LIKE`, Nein rot `PASS`, Demo-Hinweise gelb `DEMO`.
-- Bausteine: `UiStyle.round_button(symbol, farbe)` für runde Aktionsknöpfe, `UiStyle.chip(text, farbe)` für Merkmale (Beschriftung ist `chip.get_child(0)`), `UiStyle.overlay_label()` für Text auf Bildern, `UiStyle.style_option()` für Auswahlfelder.
-- `UiStyle.labeled(knopf, text)` setzt eine kleine Beschriftung unter runde Knöpfe („Überspringen“, „Interesse“). `UiStyle.tab_button(text)` für Reiter: Der aktive Reiter ist `disabled` und wird mit Akzentbalken hervorgehoben.
-- Text auf Bildern (`overlay_label`) nur mit dezentem Schatten; die Lesbarkeit trägt der dunkle Verlauf.
-- `ProfileCard`: Porträt füllt die Karte (`AvatarView.set_fill(true)`, `avatar.shade = true` für den dunklen Verlauf innerhalb der runden Ecken), darauf Name (`SIZE_HERO`), Chips, Kurzbeschreibung, Merkmale.
-- `AvatarView` zeichnet ein illustriertes Porträt mit erwachsenen Proportionen (Verlauf der Profilfarbe, Kopf mit Kieferlinie, Augen mit Iris, Brauen, Nase, Lippen, 5 Frisuren, Schultern im Shirt); Licht von oben links. Rund in Listen, als Fläche auf der Karte.
-- Spieltest `karten` macht Bilder von 4 Profilkarten (Material für Design-Prüfungen).
+Vorbild sind moderne Swipe-Apps, aber ohne deren Marken, Logos oder Farben: fast schwarzer Hintergrund `colors.bg`, dunkle Flächen `card`/`raised`, große runde Ecken (`sizes.radius`, `sizes.radiusCard`), Akzent violett `accent` mit türkisem `accent2`, Interesse/Zustimmung grün `like`, Überspringen/Absagen rot `pass`, Demo-Hinweise gelb `demo`. Große Profilkarten, runde Aktionsknöpfe (`sizes.roundButton`) mit kleiner Beschriftung darunter, Knöpfe mindestens `sizes.button` hoch.

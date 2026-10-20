@@ -1,36 +1,33 @@
 @echo off
-rem Automatische Pruefung des Projekts. Der Worker fuehrt sie nach jedem Agentenlauf aus,
+rem Automatische Pruefung der React-Native-App in app\. Der Worker fuehrt sie nach jedem Agentenlauf aus,
 rem du kannst sie auch selbst starten. Exit-Code 0 = alles in Ordnung.
 rem Bestanden ist nur ein Lauf, der am Ende "ERGEBNIS: ... ok, 0 fehlgeschlagen" meldet.
 setlocal
-cd /d "%~dp0"
+cd /d "%~dp0app"
 
-rem Godot-Konsolenversion finden (der Worker setzt GODOT_BIN, sonst Suche im WinGet-Ordner)
-if not defined GODOT_BIN for /d %%D in ("%LOCALAPPDATA%\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_*") do for %%E in ("%%D\Godot_*_console.exe") do set "GODOT_BIN=%%~E"
-if not defined GODOT_BIN set "GODOT_BIN=godot"
+rem Node.js finden (PATH, sonst WinGet-Ordner)
+where node >nul 2>nul
+if errorlevel 1 for /d %%D in ("%LOCALAPPDATA%\Microsoft\WinGet\Packages\OpenJS.NodeJS.LTS_*") do for /d %%E in ("%%D\node-v*-win-x64") do set "PATH=%%~E;%PATH%"
+where node >nul 2>nul
+if errorlevel 1 (
+  echo Node.js nicht gefunden.
+  exit /b 1
+)
 
-rem Protokoll im Projektordner: Jede Arbeitskopie hat ihr eigenes, parallele Laeufe stoeren sich nicht.
+rem Pakete liegen gemeinsam unter AgentHub\envs\sparring (Arbeitskopie und Worker-Worktree)
+if not exist node_modules mklink /J node_modules "%~dp0..\..\envs\sparring\node_modules" >nul
+
 set "LOG=%~dp0.verify.log"
-
-echo == Import (aktualisiert den Klassen-Cache) == > "%LOG%" || goto :logfail
-"%GODOT_BIN%" --headless --path . --import >> "%LOG%" 2>&1
-echo == Testlauf == >> "%LOG%"
-"%GODOT_BIN%" --headless --path . --script res://tests/run_tests.gd >> "%LOG%" 2>&1
+echo == Typpruefung == > "%LOG%" || goto :logfail
+call node_modules\.bin\tsc.cmd --noEmit >> "%LOG%" 2>&1
+set "TSC=%ERRORLEVEL%"
+echo == Tests == >> "%LOG%"
+if exist "%~dp0.jest.json" del "%~dp0.jest.json"
+call node_modules\.bin\jest.cmd --ci --silent --json --outputFile="%~dp0.jest.json" >> "%LOG%" 2>&1
+echo == Auswertung == >> "%LOG%"
+node "%~dp0verify-ergebnis.js" "%~dp0.jest.json" %TSC% >> "%LOG%" 2>&1
 set "RC=%ERRORLEVEL%"
 type "%LOG%"
-
-findstr /C:"SCRIPT ERROR" /C:"Parse Error" /C:"Failed to load script" "%LOG%" >nul
-if not errorlevel 1 (
-  echo.
-  echo == Skriptfehler in der Godot-Ausgabe gefunden ==
-  set "RC=1"
-)
-findstr /R /C:"^ERGEBNIS: [0-9]* ok, 0 fehlgeschlagen" "%LOG%" >nul
-if errorlevel 1 (
-  echo.
-  echo == Kein vollstaendiges Testergebnis: Der Testlauf ist nicht bis zum Ende gekommen ==
-  set "RC=1"
-)
 exit /b %RC%
 
 :logfail
