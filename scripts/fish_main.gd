@@ -4,6 +4,8 @@ extends Node3D
 ## Koordinaten und Maße stehen in FishWorld (Meter, y nach oben).
 
 const MAIN_SCENE := "res://scenes/main.tscn"
+## Dauer der Einblendung aus dem Wasserblau in Sekunden.
+const FADE_IN := 0.8
 ## Reichweite des Mauls beim Fressen in Metern (wächst mit der Größe des Fischs).
 const MOUTH_REACH := 0.5
 ## Raubfische in diesem Umkreis (Meter) verschwinden beim Wiedereinstieg.
@@ -39,10 +41,13 @@ var food := FishFood.new()
 var food_view: FishFoodView
 var save_path := ""
 var respawn_timer := 0.0
+var fade_rect: ColorRect
+var fade_left := FADE_IN
 var settings := UserSettings.new()
 
 
 func _ready() -> void:
+	SetupFadeIn()
 	Controls.setup()
 	settings.load_from(UserSettings.DEFAULT_PATH)
 	audio = GameAudio.new()
@@ -128,6 +133,19 @@ func _ready() -> void:
 	camera.current = true
 
 
+func SetupFadeIn() -> void:
+	var layer := CanvasLayer.new()
+	layer.name = "FadeIn"
+	layer.layer = 20
+	add_child(layer)
+	fade_rect = ColorRect.new()
+	fade_rect.size = Vector2(1, 1)
+	fade_rect.color = FishWorld.WATER_COLOR
+	fade_rect.color.a = 1.0
+	fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(fade_rect)
+
+
 ## Tiefblaues Wasser mit Nebel: Die Ferne verschwimmt wie unter Wasser.
 static func make_environment() -> Environment:
 	var env := Environment.new()
@@ -191,6 +209,12 @@ func _physics_process(delta: float) -> void:
 
 ## Kamera folgt weich und schaut auf den Fisch; die Schwebeteilchen bleiben bei der Kamera.
 func _process(delta: float) -> void:
+	if fade_left > 0:
+		fade_left -= delta
+		var alpha := clampf(fade_left / FADE_IN, 0.0, 1.0)
+		fade_rect.color.a = alpha
+		if fade_left <= 0:
+			fade_rect.visible = false
 	var target := ChaseCamera.target_position(player.motion.position, player.motion.yaw, player.size)
 	camera.position = ChaseCamera.follow(camera.position, target, delta)
 	camera.look_at(player.motion.position)
@@ -375,7 +399,7 @@ func save_now() -> bool:
 	return SaveGame.write_file(save_path, data)
 
 
-## Zeigt „E: Verbesserung möglich“, solange die DNA für mindestens eine Verbesserung reicht.
+## Zeigt „E: Verbesserung möglich", solange die DNA für mindestens eine Verbesserung reicht.
 func update_upgrade_hint() -> void:
 	hud.show_upgrade_hint(FishUpgrades.any_affordable(player.build, progress))
 
