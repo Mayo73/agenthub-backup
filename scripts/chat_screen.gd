@@ -176,7 +176,7 @@ func refresh() -> void:
 		closed_label.visible = false
 	else:
 		closed_label.visible = true
-		var ended_by_id: String = m["ended_by"]
+		var ended_by_id: String = "" if not m.has("ended_by") else m["ended_by"]
 		if ended_by_id != "":
 			if ended_by_id == state.active_id:
 				closed_label.text = "Beendet von dir. Neue Nachrichten und Treffen sind nicht mehr möglich."

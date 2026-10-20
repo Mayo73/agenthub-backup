@@ -162,6 +162,7 @@ func _make_screen(screen_name: String) -> Control:
 	if screen_name == "entdecken":
 		var discover := DiscoverScreen.new(state)
 		discover.changed.connect(save)
+		discover.open_chat.connect(show_chat)
 		return discover
 	if screen_name == "matches":
 		var matches := MatchesScreen.new(state)

@@ -190,3 +190,42 @@ func test_stempel_nach_loslassen() -> void:
 	check(not screen.card.pass_stamp.visible, "pass_stamp soll nach Loslassen unsichtbar sein")
 	# current().id soll weiter p02 sein (keine Entscheidung)
 	check_eq(screen.current().id, "p02", "current().id bleibt p02 nach zu kurzem Drag")
+
+
+func test_match_bildschirm() -> void:
+	# Jiu-Jitsu (p01) und MMA (p02) sollen matchen
+	state.switch_to("p02")
+	state.like("p01")  # p02 likes p01
+
+	state.switch_to("p01")
+	var new_screen := DiscoverScreen.new(state)
+	(Engine.get_main_loop() as SceneTree).root.add_child(new_screen)
+
+	var counter := _Counter.new()
+	new_screen.open_chat.connect(func(_match_id: String) -> void: counter.count += 1)
+
+	new_screen.like_button.pressed.emit()
+
+	check(new_screen.match_overlay.visible, "match_overlay.visible soll wahr sein")
+	check(new_screen.match_overlay.text_label.text.contains("Sam"), "Text enthält 'Sam'")
+	new_screen.match_overlay.write_button.pressed.emit()
+	# Signale sind synchron
+	check_eq(counter.count, 1, "open_chat einmal gesendet")
+	check(not new_screen.match_overlay.visible, "match_overlay.visible soll falsch sein nach Klick auf Write")
+
+	new_screen.free()
+
+
+func test_kein_match_kein_bildschirm() -> void:
+	state.switch_to("p02")
+	# Kein Like von p02 zu p01 im Demozustand
+
+	state.switch_to("p01")
+	var new_screen := DiscoverScreen.new(state)
+	(Engine.get_main_loop() as SceneTree).root.add_child(new_screen)
+
+	new_screen.like_button.pressed.emit()
+
+	check(not new_screen.match_overlay.visible, "match_overlay.visible soll falsch sein")
+
+	new_screen.free()
