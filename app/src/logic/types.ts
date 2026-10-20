@@ -47,6 +47,15 @@ export type Meeting = {
   cancelledBy: string; // "" oder Profil-ID
 };
 
+export type MeetingDetails = {
+  place: string; // Outdoor-Ort als Text
+  date: string; // "TT.MM.JJJJ"
+  time: string; // "HH:MM"
+  form: string; // eine aus FORMS
+  intensity: string; // eine aus INTENSITIES
+  rules: string; // gemeinsam vereinbarte Regeln, darf leer sein
+};
+
 export type AppData = {
   version: 1;
   activeId: string; // aktive Testperson (Demo-Perspektivwechsel)
