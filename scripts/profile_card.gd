@@ -6,7 +6,6 @@ extends PanelContainer
 
 var demo_tag: Label
 var avatar: AvatarView
-var shade: TextureRect
 var name_label: Label
 var art_chip: PanelContainer
 var art_label: Label
@@ -25,15 +24,8 @@ func _init():
 
 	avatar = AvatarView.new()
 	avatar.set_fill(true)
+	avatar.shade = true
 	add_child(avatar)
-
-	shade = TextureRect.new()
-	shade.texture = UiStyle.vertical_gradient(Color(0, 0, 0, 0), Color(0, 0, 0, 0.92))
-	(shade.texture as GradientTexture2D).gradient.offsets = PackedFloat32Array([0.4, 1.0])
-	shade.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	shade.stretch_mode = TextureRect.STRETCH_SCALE
-	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(shade)
 
 	var margin := MarginContainer.new()
 	for side in ["left", "right", "top", "bottom"]:

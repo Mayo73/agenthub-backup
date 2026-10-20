@@ -71,7 +71,7 @@ func _init(app_state: AppState) -> void:
 	match_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	vbox.add_child(match_label)
 
-	# Runde Aktionsknöpfe unter der Karte: Nein links, Ja rechts
+	# Runde Aktionsknöpfe unter der Karte mit kleiner Beschriftung: Nein links, Ja rechts
 	var hbox := HBoxContainer.new()
 	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	hbox.add_theme_constant_override("separation", 72)
@@ -80,12 +80,12 @@ func _init(app_state: AppState) -> void:
 	pass_button = UiStyle.round_button("✕", UiStyle.PASS)
 	pass_button.tooltip_text = "Überspringen"
 	pass_button.pressed.connect(decide_pass)
-	hbox.add_child(pass_button)
+	hbox.add_child(UiStyle.labeled(pass_button, "Überspringen"))
 
 	like_button = UiStyle.round_button("♥", UiStyle.LIKE)
 	like_button.tooltip_text = "Interesse"
 	like_button.pressed.connect(decide_like)
-	hbox.add_child(like_button)
+	hbox.add_child(UiStyle.labeled(like_button, "Interesse"))
 
 	refresh()
 

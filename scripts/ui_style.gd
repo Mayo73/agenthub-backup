@@ -50,11 +50,46 @@ static func label(text: String, size: int = SIZE_NORMAL, color: Color = TEXT) ->
 ## Beschriftung mit Schatten, gut lesbar auf Bildern.
 static func overlay_label(text: String, size: int = SIZE_NORMAL) -> Label:
 	var l := label(text, size, TEXT)
-	l.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.6))
+	l.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.35))
 	l.add_theme_constant_override("shadow_offset_x", 0)
-	l.add_theme_constant_override("shadow_offset_y", 2)
-	l.add_theme_constant_override("shadow_outline_size", 6)
+	l.add_theme_constant_override("shadow_offset_y", 1)
+	l.add_theme_constant_override("shadow_outline_size", 2)
 	return l
+
+
+## Runder Aktionsknopf mit kleiner Beschriftung darunter (z. B. „Überspringen“, „Interesse“).
+static func labeled(b: Button, text: String) -> VBoxContainer:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 6)
+	box.add_child(b)
+	var l := label(text, SIZE_SMALL, MUTED)
+	l.autowrap_mode = TextServer.AUTOWRAP_OFF
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(l)
+	return box
+
+
+## Reiter der unteren Leiste. Der aktive Reiter ist gesperrt (`disabled`) und wird dann
+## hervorgehoben: Akzentbalken oben, getönte Fläche, helle Schrift. Inaktive Reiter sind ruhig.
+static func tab_button(text: String) -> Button:
+	var b := Button.new()
+	b.text = text
+	b.custom_minimum_size = Vector2(0, BUTTON_HEIGHT)
+	b.add_theme_font_size_override("font_size", SIZE_NORMAL)
+	b.add_theme_color_override("font_color", MUTED)
+	b.add_theme_color_override("font_hover_color", TEXT)
+	b.add_theme_color_override("font_pressed_color", TEXT)
+	b.add_theme_color_override("font_disabled_color", TEXT)
+	var idle := panel(CARD, 0)
+	b.add_theme_stylebox_override("normal", idle)
+	b.add_theme_stylebox_override("hover", panel(RAISED, 0))
+	b.add_theme_stylebox_override("pressed", panel(RAISED, 0))
+	var active := panel(CARD.lerp(ACCENT, 0.22), 0)
+	active.border_width_top = 5
+	active.border_color = ACCENT
+	b.add_theme_stylebox_override("disabled", active)
+	b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	return b
 
 
 static func button(text: String, color: Color = CARD) -> Button:

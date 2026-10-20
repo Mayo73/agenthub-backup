@@ -54,8 +54,9 @@ func _ready() -> void:
 	layout.add_child(content)
 
 	tab_bar = HBoxContainer.new()
+	tab_bar.add_theme_constant_override("separation", 0)
 	for screen_name in SCREENS:
-		var b := UiStyle.button(TAB_TITLES[screen_name])
+		var b := UiStyle.tab_button(TAB_TITLES[screen_name])
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.pressed.connect(show_screen.bind(screen_name))
 		tab_bar.add_child(b)

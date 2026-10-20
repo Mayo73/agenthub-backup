@@ -72,5 +72,8 @@ Vorbild sind moderne Dating-Apps, aber ohne deren Marken, Logos oder Farben.
 - Fast schwarzer Hintergrund (`UiStyle.BG`), dunkle Flächen (`CARD`, `RAISED`) mit weichen Schatten (`UiStyle.card_panel()`), große runde Ecken (`RADIUS`, `RADIUS_CARD`), Abstände `UiStyle.GAP`.
 - Akzent violett `ACCENT` mit türkisem `ACCENT_2` (Verläufe mit `UiStyle.vertical_gradient()`), Ja grün `LIKE`, Nein rot `PASS`, Demo-Hinweise gelb `DEMO`.
 - Bausteine: `UiStyle.round_button(symbol, farbe)` für runde Aktionsknöpfe, `UiStyle.chip(text, farbe)` für Merkmale (Beschriftung ist `chip.get_child(0)`), `UiStyle.overlay_label()` für Text auf Bildern, `UiStyle.style_option()` für Auswahlfelder.
-- `ProfileCard`: Porträt füllt die Karte (`AvatarView.set_fill(true)`), unten dunkler Verlauf mit Name (`SIZE_HERO`), Chips, Kurzbeschreibung, Merkmalen.
-- `AvatarView` zeichnet ein illustriertes Porträt (Verlauf der Profilfarbe, Kopf, Frisur, Schultern); rund in Listen, als Fläche auf der Karte.
+- `UiStyle.labeled(knopf, text)` setzt eine kleine Beschriftung unter runde Knöpfe („Überspringen“, „Interesse“). `UiStyle.tab_button(text)` für Reiter: Der aktive Reiter ist `disabled` und wird mit Akzentbalken hervorgehoben.
+- Text auf Bildern (`overlay_label`) nur mit dezentem Schatten; die Lesbarkeit trägt der dunkle Verlauf.
+- `ProfileCard`: Porträt füllt die Karte (`AvatarView.set_fill(true)`, `avatar.shade = true` für den dunklen Verlauf innerhalb der runden Ecken), darauf Name (`SIZE_HERO`), Chips, Kurzbeschreibung, Merkmale.
+- `AvatarView` zeichnet ein illustriertes Porträt mit erwachsenen Proportionen (Verlauf der Profilfarbe, Kopf mit Kieferlinie, Augen mit Iris, Brauen, Nase, Lippen, 5 Frisuren, Schultern im Shirt); Licht von oben links. Rund in Listen, als Fläche auf der Karte.
+- Spieltest `karten` macht Bilder von 4 Profilkarten (Material für Design-Prüfungen).
