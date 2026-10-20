@@ -494,6 +494,7 @@ func evolve_to_fish(build: CellBuild) -> void:
 	add_timeline(EvolutionTimeline.FISH, "Fisch")
 	autosave_now()
 	editor.morph_finished.connect(go_to_fish)
+	audio.play("verwandlung")
 	editor.play_morph()
 
 

@@ -3,7 +3,7 @@ extends "res://tests/base_test.gd"
 
 func test_alle() -> void:
 	var a := CellSounds.all()
-	check_eq(a.size(), 9, "a.size() ist 9")
+	check_eq(a.size(), 10, "a.size() ist 10")
 	check(a.has("wachsen"), "a.has(\"wachsen\") wahr")
 	check(a.has("zuschnappen"), "a.has(\"zuschnappen\") wahr")
 	for v in a.values():
@@ -36,3 +36,10 @@ func test_fressen_und_biss() -> void:
 	check_eq(CellSounds.eat_meat().data.size(), (int(0.17 * SoundSynth.MIX_RATE) + int(0.05 * SoundSynth.MIX_RATE)) * 2, "Schlucken mit Bläschen dauert 0,22 s")
 	check_eq(CellSounds.bite().data.size(), int(0.09 * SoundSynth.MIX_RATE) * 2, "Zuschnappen dauert 0,09 s")
 	check_eq(CellSounds.delayed(PackedFloat32Array([0.5]), 0.01).size(), int(0.01 * SoundSynth.MIX_RATE) + 1, "Stille davor")
+
+
+func test_verwandlung() -> void:
+	var a := CellSounds.all()
+	check(a.has("verwandlung"), "Klang verwandlung vorhanden")
+	var length := (a["verwandlung"] as AudioStreamWAV).get_length()
+	check(length > 2.3 and length < 2.7, "Dauer zwischen 2,3 und 2,7 Sekunden (%.2f s)" % length)

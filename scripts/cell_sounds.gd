@@ -45,6 +45,13 @@ static func grow() -> AudioStreamWAV:
 	return SoundSynth.make_stream(SoundSynth.fade_out(SoundSynth.mix(a, b)), false)
 
 
+## Verwandlung in den Fisch: langsam steigendes, schimmerndes Anschwellen über 2,5 Sekunden.
+static func transform() -> AudioStreamWAV:
+	var a := SoundSynth.sweep(220.0, 660.0, 2.5, SoundSynth.Wave.SINE, 0.3)
+	var b := SoundSynth.sweep(330.0, 990.0, 2.5, SoundSynth.Wave.SINE, 0.12)
+	return SoundSynth.make_stream(SoundSynth.fade_out(SoundSynth.mix(a, b)), false)
+
+
 ## Tod: langer, fallender Ton.
 static func death() -> AudioStreamWAV:
 	return SoundSynth.make_stream(SoundSynth.fade_out(SoundSynth.sweep(400.0, 80.0, 0.8, SoundSynth.Wave.SAW, 0.3)), false)
@@ -84,4 +91,5 @@ static func all() -> Dictionary:
 		"klick": click(),
 		"teil_setzen": place_part(),
 		"teil_entfernen": remove_part(),
+		"verwandlung": transform(),
 	}

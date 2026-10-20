@@ -12,7 +12,7 @@ func teardown() -> void:
 
 
 func test_aufbau() -> void:
-	check_eq(audio.streams.size(), 9, "streams.size() ist 9")
+	check_eq(audio.streams.size(), 10, "streams.size() ist 10")
 	check_eq(audio.voices.size(), 6, "voices.size() ist 6")
 	check(str(audio.music.bus) == "Musik", "str(audio.music.bus) ist Musik")
 	check(str(audio.voices[0].bus) == "Effekte", "str(audio.voices[0].bus) ist Effekte")
