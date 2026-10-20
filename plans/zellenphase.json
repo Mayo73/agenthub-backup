@@ -550,10 +550,8 @@
                            "id":  "M26",
                            "title":  "Übergang zum Fisch im Editor",
                            "description":  "Rückmeldung vom 19.10.2026: Im letzten Größenabschnitt mit mindestens 6 von 8 Teilen zeigt der Editor „Zum Fisch entwickeln“; die Zelle verwandelt sich fließend in den Fisch. Prüfbar: Tests für Bedingung, Knopf und Übergang.",
-                           "tickets":  [
-
-                                       ],
-                           "estimate":  6,
+                           "tickets":  ["T-0431", "T-0432", "T-0433", "T-0434", "T-0435", "T-0436", "T-0437", "T-0438", "T-0450", "T-0455", "T-0460"],
+                           "estimate":  1,
                            "tasks":  [
                                          {
                                              "text":  "Übergang im Editor ansehen: fließend?",
@@ -565,10 +563,8 @@
                            "id":  "M27",
                            "title":  "Entwicklungszeitstrahl",
                            "description":  "Rückmeldung vom 19.10.2026: Zeitstrahl wie in Spore mit einem Bild je Entwicklungsschritt, nach Ernährung gefärbt, gespeichert. Prüfbar: Tests für Einträge und Speichern.",
-                           "tickets":  [
-
-                                       ],
-                           "estimate":  6,
+                           "tickets":  ["T-0426", "T-0427", "T-0428", "T-0429", "T-0430", "T-0439", "T-0448", "T-0454", "T-0456", "T-0457", "T-0458", "T-0459"],
+                           "estimate":  0,
                            "tasks":  [
                                          {
                                              "text":  "Zeitstrahl ansehen",
@@ -580,13 +576,24 @@
                            "id":  "M28",
                            "title":  "Fischphase: unendliche Welt",
                            "description":  "Rückmeldung vom 19.10.2026: Prozedurale Welt aus Kacheln mit Höhenprofil, ohne Ränder; Kacheln werden nachgeladen. Prüfbar: Tests für Kacheln, Seeds und Grenzen, Leistungstest.",
-                           "tickets":  [
-
-                                       ],
-                           "estimate":  8,
+                           "tickets":  ["T-0440", "T-0441", "T-0442", "T-0443", "T-0444", "T-0451", "T-0452", "T-0453"],
+                           "estimate":  3,
                            "tasks":  [
                                          {
                                              "text":  "Weit schwimmen: Wirkt die Welt endlos und abwechslungsreich?",
+                                             "done":  false
+                                         }
+                                     ]
+                       },
+                       {
+                           "id":  "M29",
+                           "title":  "Fischphase: Nachbesserungen aus P-0011",
+                           "description":  "Befunde von ChatGPT vom 19.10.2026: Augenstufen deutlich sichtbar (Variante A), Bodenübergang in den Fernnebel, gebogene Pflanzen, Silhouette der Schwanzflosse, Ablauf des Bisses und aktive Menüknöpfe per Spieltest nachweisen.",
+                           "tickets":  ["T-0445", "T-0446", "T-0447", "T-0449"],
+                           "estimate":  2,
+                           "tasks":  [
+                                         {
+                                             "text":  "Augenstufen, Bodenübergang, Pflanzen und Schwanzflosse ansehen (neue Bilder)",
                                              "done":  false
                                          }
                                      ]

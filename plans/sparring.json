@@ -127,21 +127,54 @@
                            "title":  "Modernes Design",
                            "description":  "Rückmeldung vom 19.10.2026: Gestaltung nach dem Vorbild moderner Dating-Apps (große Profilkarten, runde Aktionsknöpfe, Stempel beim Wischen, Match-Bildschirm, Symbolleiste, eigene Akzentfarbe), Avatare weiter selbst gezeichnet.",
                            "tickets":  [
-
+                                           "T-0461",
+                                           "T-0462",
+                                           "T-0463",
+                                           "T-0464",
+                                           "T-0465",
+                                           "T-0466",
+                                           "T-0467",
+                                           "T-0468",
+                                           "T-0469",
+                                           "T-0470",
+                                           "T-0471",
+                                           "T-0472",
+                                           "T-0473",
+                                           "T-0474",
+                                           "T-0475",
+                                           "T-0476",
+                                           "T-0477",
+                                           "T-0478",
+                                           "T-0479",
+                                           "T-0480",
+                                           "T-0481",
+                                           "T-0482"
                                        ],
-                           "estimate":  12,
+                           "estimate":  22,
                            "tasks":  [
                                          {
                                              "text":  "Neues Design ansehen (Screenshots)",
+                                             "done":  true,
+                                             "punkt":  "P-0012"
+                                         },
+                                         {
+                                             "text":  "Musterkarte mit überarbeiteten Porträts ansehen",
+                                             "done":  true,
+                                             "punkt":  "P-0013"
+                                         },
+                                         {
+                                             "text":  "Alle Bildschirme im neuen Stil ansehen (Bilder aus den Spieltests design, design_leer und neue_matches)",
                                              "done":  false
                                          }
                                      ]
                        },
                        {
                            "id":  "M5",
+                           "done":  true,
+                           "by":  "Claude",
                            "title":  "Android-APK und Anleitung",
                            "description":  "Export als APK (Android 7.0 und neuer), Installation in einem Android-Emulator geprüft, kurze Anleitung für Installation, Perspektivwechsel, Testablauf und Zurücksetzen. Braucht Android-SDK, JDK und Godot-Exportvorlagen.",
-                           "estimate":  3,
+                           "estimate":  0,
                            "tickets":  [
                                            "T-0350"
                                        ],
