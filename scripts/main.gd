@@ -4,6 +4,7 @@ extends Control
 ## und Reiterleiste. Alle Bedienelemente entstehen im Code.
 
 const SCREENS: Array[String] = ["entdecken", "matches", "profil"]
+const TAB_ICONS := {"entdecken": "✦", "matches": "♥", "profil": "●"}
 const TAB_TITLES := {"entdecken": "Entdecken", "matches": "Matches", "profil": "Profil"}
 
 var banner: Label
@@ -56,7 +57,7 @@ func _ready() -> void:
 	tab_bar = HBoxContainer.new()
 	tab_bar.add_theme_constant_override("separation", 0)
 	for screen_name in SCREENS:
-		var b := UiStyle.tab_button(TAB_TITLES[screen_name])
+		var b := UiStyle.icon_tab(TAB_ICONS[screen_name], TAB_TITLES[screen_name])
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.pressed.connect(show_screen.bind(screen_name))
 		tab_bar.add_child(b)
@@ -64,6 +65,7 @@ func _ready() -> void:
 	layout.add_child(tab_bar)
 
 	show_screen("entdecken")
+	update_badges()
 
 
 ## Zeigt einen Bildschirm im Inhaltsbereich; der vorherige wird entfernt.
@@ -80,9 +82,10 @@ func show_screen(screen_name: String) -> void:
 	current_screen = screen_name
 	for n in tab_buttons:
 		(tab_buttons[n] as Button).disabled = n == screen_name
+	update_badges()
 
 
-## Zeigt den Chat zu einem Match; der Reiter „Matches“ bleibt als aktiv markiert.
+## Zeigt den Chat zu einem Match; der Reiter „Matches" bleibt als aktiv markiert.
 func show_chat(match_id: String) -> void:
 	if screen != null:
 		content.remove_child(screen)
@@ -98,6 +101,7 @@ func show_chat(match_id: String) -> void:
 	current_screen = "chat"
 	for n in tab_buttons:
 		(tab_buttons[n] as Button).disabled = n == "matches"
+	update_badges()
 
 
 ## Zeigt das Treffen zu einem Match; der Reiter „Matches" bleibt als aktiv markiert.
@@ -126,6 +130,7 @@ func _on_switched(id: String) -> void:
 		show_screen("matches")
 	else:
 		show_screen(current_screen)
+	update_badges()
 
 
 func save() -> void:
@@ -145,6 +150,7 @@ func reset_demo() -> void:
 	state = StateStore.reset(store_path)
 	perspective.set_state(state)
 	show_screen("entdecken")
+	update_badges()
 
 
 func _on_reset_demo() -> void:
@@ -155,6 +161,21 @@ func _on_reset_demo() -> void:
 func _on_profile_changed() -> void:
 	save()
 	perspective.set_state(state)
+
+
+## Badge der Reiter aktualisieren: zeigt Anzahl der laufenden Matches beim aktuellen Reiter an.
+func update_badges() -> void:
+	## Zählt die Matches aus state.my_matches() ohne ended_by (leer oder fehlend) und setzt
+	## tab_buttons["matches"].text auf TAB_ICONS["matches"] + "\n" + TAB_TITLES["matches"],
+	## bei mindestens einem Match ergänzt um " · %d" % anzahl.
+	## bei mindestens einem Match ergänzt um " · %d" % anzahl.
+	var matches := state.my_matches()
+	var anzahl := 0
+	for m in matches:
+		if m.get("ended_by", "") == "":
+			anzahl += 1
+	var base_text := TAB_ICONS["matches"] + "\n" + TAB_TITLES["matches"]
+	tab_buttons["matches"].text = base_text if anzahl == 0 else base_text + " · %d" % anzahl
 
 
 ## Baut den Bildschirm zu einem Namen. Noch nicht umgesetzte Bildschirme zeigen nur den Titel.
