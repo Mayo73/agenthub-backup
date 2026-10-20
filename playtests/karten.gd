@@ -34,6 +34,7 @@ func run() -> void:
 		seen.append(p.id)
 		check(d.card.avatar.shade, "Porträt mit dunklem Verlauf unten")
 		shot("karte-%d" % (i + 1))
+		await wait(0.3)
 		d.pass_button.pressed.emit()
 		await wait(0.3)
 	measure("karten", seen.size())
