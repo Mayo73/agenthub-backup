@@ -21,7 +21,7 @@ func run() -> void:
 
 	scene.use_store(STORE)
 
-	var d := scene.screen as DiscoverScreen
+	var d: DiscoverScreen = scene.screen as DiscoverScreen
 
 	# 1. Boxen filtern (Index 3 = Boxen, Level 0 = Jede Erfahrung)
 	d.set_filter(3, 0)

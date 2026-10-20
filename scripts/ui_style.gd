@@ -105,7 +105,7 @@ static func button(text: String, color: Color = CARD) -> Button:
 	return b
 
 
-## Runder Aktionsknopf mit Symbol (z. B. „✕“ für Nein, „♥“ für Ja): dunkle Fläche,
+## Runder Aktionsknopf mit Symbol (z. B. „✕" für Nein, „♥" für Ja): dunkle Fläche,
 ## farbiger Ring und Symbol in der Farbe der Aktion.
 static func round_button(symbol: String, color: Color, diameter: int = ROUND_BUTTON) -> Button:
 	var b := Button.new()
@@ -178,7 +178,7 @@ static func chip(text: String, color: Color = ACCENT) -> PanelContainer:
 	return c
 
 
-## Schräger Stempel auf der Profilkarte („SPARRING“, „NEIN“): durchsichtige Fläche mit
+## Schräger Stempel auf der Profilkarte („SPARRING", „NEIN"): durchsichtige Fläche mit
 ## farbigem Rahmen, die Beschriftung ist das einzige Kind (stamp.get_child(0)).
 static func stamp(text: String, color: Color) -> PanelContainer:
 	var c := PanelContainer.new()
@@ -192,6 +192,64 @@ static func stamp(text: String, color: Color) -> PanelContainer:
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	c.add_child(l)
 	return c
+
+## Neuer Reiter mit Symbol und Text. Ruft tab_button auf, setzt Symbol + Text (durch Zeilenumbruch),
+## minimale Höhe 104 und kleine Schriftgröße. Gibt den Button zurück. Aktive Reiter bleiben wie bei
+## tab_button hervorgehoben (Akzentbalken oben, getönte Fläche).
+static func icon_tab(symbol: String, text: String) -> Button:
+	var b := tab_button(symbol + "\n" + text)
+	b.custom_minimum_size = Vector2(0, 104)
+	b.add_theme_font_size_override("font_size", SIZE_SMALL)
+	return b
+
+## Zeile in einer Liste (z. B. Profilname). Ähnlich wie button(), aber linksbündig und mit
+## minimalem Schatten für weichen Rahmen. Gibt den Button zurück.
+static func row_button(text: String) -> Button:
+	var b := button(text)
+	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	b.custom_minimum_size = Vector2(0, 104)
+	_states(b, CARD, RADIUS)
+	b.add_theme_stylebox_override("normal", card_panel(CARD, RADIUS))
+	return b
+
+## Sprechblase für Chat-Nachrichten (links oder rechts). Mine=true → rechte Blase in Akzentfarbe,
+## mine=false → linke Blase in RAISED. Minimale Breite 480 für gute Lesbarkeit. Gibt das Label zurück.
+static func bubble(text: String, mine: bool) -> Label:
+	var l := label(text, SIZE_NORMAL, TEXT)
+	if mine:
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		l.size_flags_horizontal = Control.SIZE_SHRINK_END
+	else:
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		l.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	l.custom_minimum_size = Vector2(480, 0)
+	var style := panel(ACCENT if mine else RAISED, 22)
+	l.add_theme_stylebox_override("normal", style)
+	return l
+
+## Eingabefeld im Stil der App (farbiger Rahmen beim Fokus, weiche Schatten). Ruft StyleBoxFlat mit
+## verschiedenen Stilen für normal/focus/read-only ab. Gibt den editierten LineEdit zurück.
+static func style_input(e: LineEdit) -> void:
+	e.custom_minimum_size = Vector2(0, 72)
+	e.add_theme_font_size_override("font_size", SIZE_NORMAL)
+	e.add_theme_color_override("font_color", TEXT)
+	e.add_theme_color_override("font_placeholder_color", MUTED)
+	var normal := panel(RAISED, RADIUS)
+	e.add_theme_stylebox_override("normal", normal)
+	var focus := panel(RAISED, RADIUS)
+	focus.set_border_width_all(2)
+	focus.border_color = ACCENT
+	e.add_theme_stylebox_override("focus", focus)
+	var read_only := panel(CARD, RADIUS)
+	e.add_theme_stylebox_override("read_only", read_only)
+
+## Symbol für Leerzustände (großes Icon über Hinweistext).
+## label(symbol, 96, ACCENT)
+static func empty_icon(symbol: String) -> Label:
+	var l := label(symbol, 96, ACCENT)
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.autowrap_mode = TextServer.AUTOWRAP_OFF
+	return l
 
 ## Senkrechter Verlauf als Textur, von `top` nach `bottom`.
 static func vertical_gradient(top: Color, bottom: Color) -> GradientTexture2D:
