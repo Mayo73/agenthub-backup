@@ -38,3 +38,14 @@ func test_hat_fisch() -> void:
 	check(FishSave.has_fish({"fish": {}}), "hat_fisch wahr bei Dictionary als fish-Wert")
 	check(not FishSave.has_fish({}), "hat_fisch falsch bei leerem Dictionary")
 	check(not FishSave.has_fish({"fish": 3}), "hat_fisch falsch bei Integer als fish-Wert")
+
+
+func test_zeitstrahl() -> void:
+	var t := EvolutionTimeline.new()
+	t.add(EvolutionTimeline.START, "Start", Diet.PFLANZENFRESSER, 0.0, Color.WHITE)
+	t.add(EvolutionTimeline.UPGRADE, "Kiefer", Diet.PFLANZENFRESSER, 42.0, Color.WHITE, "fisch")
+	var d := FishSave.to_dict(FishBuild.new(), FishProgress.new(), t)
+	var back := FishSave.read_timeline(JSON.parse_string(JSON.stringify(d)))
+	check_eq(back.size(), 2, "zwei Einträge gelesen")
+	check_eq(back.last().get("phase", ""), "fisch", "Phase bleibt erhalten")
+	check_eq(FishSave.read_timeline({}).size(), 0, "ohne Zeitstrahl leer")

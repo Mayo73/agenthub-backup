@@ -682,3 +682,29 @@ func test_einblenden() -> void:
 	check(alpha_nach_04 > 0.4 && alpha_nach_04 < 0.6, "nach _process(0.4) ist Alpha ca. 0.5 (ist %f)" % [alpha_nach_04])
 	fish._process(0.5)
 	check(not fish.fade_rect.visible, "fade_rect.visible ist falsch nach vollständiger Einblendung")
+
+
+func test_zeitstrahl_verbesserung() -> void:
+	fish.progress.dna = 50
+	fish.evolve.open(fish.player.build, fish.progress)
+	fish.evolve.buttons["schwanz"].pressed.emit()
+	check_eq(fish.timeline.last().get("kind", ""), EvolutionTimeline.UPGRADE, "letzter Eintrag ist eine Verbesserung")
+	check_eq(fish.timeline.last().get("phase", ""), "fisch", "Eintrag gehört zur Fischphase")
+
+
+func test_zeitstrahl_wachsen() -> void:
+	var before: int = fish.timeline.size()
+	for i in 200:
+		fish.eat_value(5)
+		if fish.progress.stage > 0:
+			break
+	check_eq(fish.timeline.size(), before + 1, "neue Fischgröße im Zeitstrahl")
+	check_eq(fish.timeline.last().get("kind", ""), EvolutionTimeline.FISH_SIZE, "Art Fischgröße")
+
+
+func test_zeitstrahl_taste() -> void:
+	check(not fish.timeline_view.visible, "Zeitstrahl anfangs verborgen")
+	fish.toggle_timeline()
+	check(fish.timeline_view.visible, "toggle_timeline zeigt den Zeitstrahl")
+	fish.toggle_timeline()
+	check(not fish.timeline_view.visible, "und verbirgt ihn wieder")

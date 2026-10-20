@@ -44,6 +44,10 @@ var respawn_timer := 0.0
 var fade_rect: ColorRect
 var fade_left := FADE_IN
 var settings := UserSettings.new()
+var timeline := EvolutionTimeline.new()
+var timeline_view: TimelineView
+## Spielzeit für den Zeitstrahl; läuft dort weiter, wo der geladene Zeitstrahl endet.
+var play_time := 0.0
 
 
 func _ready() -> void:
@@ -90,6 +94,12 @@ func _ready() -> void:
 		player.set_build(FishSave.apply(FishStart.pending_fish, progress))
 		player.set_size(progress.size())
 	save_path = FishStart.pending_save_path
+	if not FishStart.pending_timeline.is_empty():
+		timeline = EvolutionTimeline.from_dict(FishStart.pending_timeline)
+	elif not FishStart.pending_fish.is_empty():
+		timeline = FishSave.read_timeline(FishStart.pending_fish)
+	if timeline.size() > 0:
+		play_time = float(timeline.last().get("time", 0.0))
 	FishStart.clear()
 	apply_sight()
 
@@ -127,10 +137,39 @@ func _ready() -> void:
 	intro.name = "Intro"
 	add_child(intro)
 	intro.open(player.build)
+	setup_timeline_view()
 
 	camera.position = ChaseCamera.target_position(player.motion.position, player.motion.yaw, player.size)
 	camera.look_at(player.motion.position)
 	camera.current = true
+
+
+## Zeitstrahl auf eigener Ebene über dem Spiel, anfangs unsichtbar (Taste T).
+func setup_timeline_view() -> void:
+	var layer := CanvasLayer.new()
+	layer.name = "TimelineLayer"
+	layer.layer = 8
+	add_child(layer)
+	timeline_view = TimelineView.new()
+	timeline_view.name = "TimelineView"
+	timeline_view.use_fullscreen()
+	timeline_view.visible = false
+	layer.add_child(timeline_view)
+
+
+## Öffnet oder schließt den Zeitstrahl.
+func toggle_timeline() -> void:
+	if timeline_view.visible:
+		timeline_view.visible = false
+	else:
+		timeline_view.show_timeline(timeline)
+		timeline_view.show_stats(timeline.summary_lines())
+		timeline_view.visible = true
+
+
+## Neuer Eintrag im Zeitstrahl, Phase "fisch", mit Farbe und Ernährung des Fisches.
+func add_timeline(kind: String, label: String) -> void:
+	timeline.add(kind, label, player.build.diet, play_time, player.build.color, "fisch")
 
 
 ## Wasserblaue Fläche über dem ganzen Bildschirm; _process blendet sie aus.
@@ -210,6 +249,7 @@ func _physics_process(delta: float) -> void:
 
 ## Kamera folgt weich und schaut auf den Fisch; die Schwebeteilchen bleiben bei der Kamera.
 func _process(delta: float) -> void:
+	play_time += delta
 	if fade_left > 0:
 		fade_left -= delta
 		var alpha := clampf(fade_left / FADE_IN, 0.0, 1.0)
@@ -237,6 +277,7 @@ func feed_player() -> void:
 func eat_value(value: int) -> void:
 	if progress.eat(value):
 		player.set_size(progress.size())
+		add_timeline(EvolutionTimeline.FISH_SIZE, "Größe %d" % (progress.stage + 1))
 		if progress.is_final_stage():
 			hud.show_message(GROWN_MESSAGE, 6.0)
 		else:
@@ -264,6 +305,7 @@ func toggle_evolve() -> void:
 ## Nach einer Verbesserung: Aussehen und Fähigkeiten neu, Anzeige aktualisieren.
 func _on_upgraded(slot: String) -> void:
 	audio.play("verbessern")
+	add_timeline(EvolutionTimeline.UPGRADE, FishBuild.NAMES[slot])
 	player.set_build(player.build)
 	hud.show_progress(progress)
 	# Bei offenem Menü zeigt die Zeile selbst die neue Stufe; die Meldung schiene nur durch.
@@ -371,6 +413,8 @@ func back_to_menu() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause"):
 		toggle_pause()
+	elif event.is_action_pressed("zeitstrahl") and not paused:
+		toggle_timeline()
 
 
 ## Nach dem Tod taucht der Fisch an der Startstelle wieder auf: DNA, Größe und Ausbau bleiben.
@@ -396,7 +440,7 @@ func save_now() -> bool:
 	if save_path == "":
 		return false
 	var data := SaveGame.read_file(save_path)
-	data[FishSave.KEY] = FishSave.to_dict(player.build, progress)
+	data[FishSave.KEY] = FishSave.to_dict(player.build, progress, timeline)
 	return SaveGame.write_file(save_path, data)
 
 
