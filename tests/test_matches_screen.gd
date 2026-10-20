@@ -112,3 +112,32 @@ func test_zeile_als_karte() -> void:
 	var sb := btn.get_theme_stylebox("normal") as StyleBoxFlat
 	check(sb != null, "normal stylebox existiert")
 	check(sb.shadow_size > 0, "Zeile hat weichen Schatten (shadow_size > 0)")
+
+
+func test_neue_matches_reihe() -> void:
+	make_match("p01", "p02")
+	build()
+	check(screen.new_buttons.has("m1"), "new_buttons enthält Match-ID")
+	check(screen.new_section.visible, "new_section sichtbar wenn neue Matches vorhanden")
+
+
+func test_neue_matches_nach_nachricht() -> void:
+	make_match("p01", "p02")
+	state.send_message("m1", "Hallo Sam")
+	build()
+	check(screen.new_buttons.is_empty(), "new_buttons leer nach Nachricht")
+	check(not screen.new_section.visible, "new_section unsichtbar nach Nachricht")
+
+
+func test_neue_matches_oeffnet_chat() -> void:
+	make_match("p01", "p02")
+	build()
+	screen.open_chat.connect(_on_open_chat)
+	var btn := screen.new_buttons.get("m1") as Button
+	btn.pressed.emit()
+	check_eq(received_id, "m1", "empfangene Match-ID beim Tipp auf neues Match")
+
+
+func test_ohne_matches_keine_reihe() -> void:
+	build()
+	check(not screen.new_section.visible, "new_section unsichtbar ohne Matches")
