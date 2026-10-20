@@ -23,6 +23,19 @@ func test_am_boden() -> void:
 		check(absf(item["position"].x) <= FishWorld.HALF_SIZE - 5.0, "absf(position.x) sollte <= FishWorld.HALF_SIZE - 5.0 sein")
 
 
+func test_biegung() -> void:
+	var l := ReefLayout.new()
+	var bend_found := false
+	for item in l.items:
+		if item["kind"] == "seegras":
+			check(item["bend"] >= -0.6 && item["bend"] <= 0.6, "Seegras bend sollte zwischen -0.6 und 0.6 sein")
+			if item["bend"] != 0.0:
+				bend_found = true
+		else:
+			check(item["bend"] == 0.0, "Fels bend sollte 0.0 sein")
+	check(bend_found, "mindestens ein Seegras sollte ungleich 0 bent haben")
+
+
 func test_gleicher_seed() -> void:
 	var items_3a := ReefLayout.new(3).items
 	var items_3b := ReefLayout.new(3).items
@@ -36,7 +49,7 @@ func test_ansicht() -> void:
 	check_eq(v.get_child_count(), 200, "Gesamtanzahl Kinder sollte 200 sein")
 	check_eq(v.weeds.size(), 160, "weeds size sollte 160 sein")
 	var first: Dictionary = v.layout.items[0]
-	var expected_pos: Vector3 = first["position"] + Vector3(0.0, first["height"] * 0.5, 0.0)
+	var expected_pos: Vector3 = first["position"]
 	check((v.get_child(0) as MeshInstance3D).position.is_equal_approx(expected_pos), "erste Position sollte stimmen")
 	v.free()
 

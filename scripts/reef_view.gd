@@ -15,13 +15,12 @@ func _init() -> void:
 		var h: float = item["height"]
 		var p: Vector3 = item["position"]
 		if item["kind"] == "seegras":
-			var c := CylinderMesh.new()
-			c.top_radius = 0.05
-			c.bottom_radius = 0.18
-			c.height = h
-			m.mesh = c
-			m.material_override = weed_mat
-			m.position = p + Vector3(0.0, h * 0.5, 0.0)
+			var bend: float = item["bend"]
+			m.mesh = SeaweedShape.build_mesh(h, bend)
+			var mat := weed_mat.duplicate()
+			mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+			m.material_override = mat
+			m.position = p
 			weeds.append(m)
 		else:
 			m.mesh = FishModel.sphere(1.0)
