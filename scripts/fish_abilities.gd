@@ -32,9 +32,10 @@ static func defense(b: FishBuild) -> float:
 	return 0.15 * b.level("stacheln")
 
 
-## Sichtweite im trüben Wasser in Metern: 25 + 10 je Stufe der Augen.
+## Sichtweite im trüben Wasser in Metern: 20 + 22 je Stufe der Augen.
+## Stufe 0: 20 m, Stufe 1: 42 m, Stufe 2: 64 m, Stufe 3: 86 m.
 static func sight(b: FishBuild) -> float:
-	return 25.0 + 10.0 * b.level("augen")
+	return 20.0 + 22.0 * b.level("augen")
 
 
 ## Überträgt Tempo, Beschleunigung, Drehen und Neigen auf die Bewegung.
