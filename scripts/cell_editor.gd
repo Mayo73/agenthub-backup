@@ -6,6 +6,8 @@ extends Node
 signal finished(build: CellBuild)
 ## Klick auf „Zum Fisch entwickeln“: der aktuelle Aufbau (DNA ist schon verrechnet).
 signal evolve_requested(build: CellBuild)
+## Die Verwandlung ist durchgelaufen und das Bild ganz im Wasserblau.
+signal morph_finished
 
 const COLORS := [Color("#7FE0D0"), Color("#6CCB5F"), Color("#E0C060"), Color("#D98FE0"), Color("#E07F7F"), Color("#7FA8E0")]
 
@@ -31,6 +33,11 @@ var look_box: VBoxContainer
 var color_buttons: Array[Button] = []
 var pattern_option: OptionButton
 var stretch_slider: HSlider
+## Verwandlung zum Fisch nach „Zum Fisch entwickeln“ (play_morph), danach Blende ins Wasserblau.
+var morph := FishMorph.new()
+## Wasserblaue Blende über allem (eigene Ebene über der Bedienleiste), Alpha folgt morph.fade().
+var fade_rect: ColorRect
+var morph_sent := false
 
 
 func _init() -> void:
@@ -126,6 +133,17 @@ func _init() -> void:
 	pattern_option.item_selected.connect(set_pattern_index)
 	stretch_slider.value_changed.connect(set_stretch)
 
+	var fade_layer := CanvasLayer.new()
+	fade_layer.name = "FadeLayer"
+	fade_layer.layer = 6
+	add_child(fade_layer)
+	fade_rect = ColorRect.new()
+	fade_rect.name = "Fade"
+	fade_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	fade_rect.color = Color(FishWorld.WATER_COLOR, 0.0)
+	fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	fade_layer.add_child(fade_rect)
+
 
 func open(build: CellBuild, unlocks: PartUnlocks, p_progress: CellProgress, stage: int) -> void:
 	session = EditorSession.new(build, unlocks)
@@ -210,6 +228,8 @@ func set_stretch(s: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if canvas.morph != null:
+		return
 	if event is InputEventKey and event.pressed and event.ctrl_pressed:
 		if event.physical_keycode == KEY_Z:
 			undo()
@@ -237,3 +257,28 @@ func evolve() -> void:
 		return
 	confirmed = true
 	evolve_requested.emit(b)
+
+
+## Startet die Verwandlung der Zelle zum Fisch auf der Arbeitsfläche; alle Knöpfe sind dabei gesperrt.
+func play_morph() -> void:
+	morph.start()
+	morph_sent = false
+	canvas.morph = morph
+	canvas.place_id = ""
+	canvas.selected = -1
+	for b: Button in [evolve_button, undo_button, redo_button, symmetry_button, panel.confirm_button, panel.cancel_button]:
+		b.disabled = true
+	for b: Button in panel.part_buttons.values():
+		b.disabled = true
+	canvas.queue_redraw()
+
+
+func _process(delta: float) -> void:
+	if not morph.running and (morph_sent or not morph.is_done()):
+		return
+	morph.tick(delta)
+	canvas.queue_redraw()
+	fade_rect.color.a = morph.fade()
+	if morph.is_done() and not morph_sent:
+		morph_sent = true
+		morph_finished.emit()

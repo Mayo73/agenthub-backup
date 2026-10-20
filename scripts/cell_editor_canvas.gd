@@ -19,6 +19,8 @@ var symmetry := true
 var dragging := false
 ## Aussehen des Körpers; ohne look wird ein Kreis gezeichnet.
 var look: CellLook
+## Läuft die Verwandlung zum Fisch: Körper gestreckt, Schwanzflosse, keine Teile.
+var morph: FishMorph = null
 
 
 func setup(p_session: EditorSession, p_history: EditorHistory) -> void:
@@ -96,10 +98,10 @@ func remove_selected() -> void:
 func _draw() -> void:
 	if session == null:
 		return
-	if look != null:
-		CellPainter.draw_cell(self, CENTER, look, SCALE, 0.0)
-	else:
-		draw_circle(CENTER, SCALE, BODY_COLOR)
+	if morph != null:
+		_draw_morph()
+		return
+	_draw_body()
 	for i in session.working.parts.size():
 		var part: Dictionary = session.working.parts[i]
 		var points := PackedVector2Array()
@@ -109,8 +111,32 @@ func _draw() -> void:
 		draw_colored_polygon(points, color)
 
 
+func _draw_body() -> void:
+	if look != null:
+		CellPainter.draw_cell(self, CENTER, look, SCALE, 0.0)
+	else:
+		draw_circle(CENTER, SCALE, BODY_COLOR)
+
+
+## Zelle in x um morph.stretch() gestreckt (um CENTER), dahinter (Seite −x) eine wachsende Schwanzflosse.
+func _draw_morph() -> void:
+	var stretch := morph.stretch()
+	var color: Color = look.color if look != null else BODY_COLOR
+	var back := CENTER.x - SCALE * stretch
+	var tail := morph.tail() * SCALE
+	if tail > 1.0:
+		draw_colored_polygon(PackedVector2Array([
+			Vector2(back + SCALE * 0.2, CENTER.y),
+			Vector2(back - tail, CENTER.y - tail * 0.6),
+			Vector2(back - tail, CENTER.y + tail * 0.6),
+		]), color)
+	draw_set_transform_matrix(Transform2D(Vector2(stretch, 0.0), Vector2(0.0, 1.0), Vector2(CENTER.x * (1.0 - stretch), 0.0)))
+	_draw_body()
+	draw_set_transform(Vector2.ZERO)
+
+
 func _unhandled_input(event: InputEvent) -> void:
-	if session == null:
+	if session == null or morph != null:
 		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:

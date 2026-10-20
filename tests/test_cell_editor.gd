@@ -124,3 +124,29 @@ func test_fischknopf_bereit() -> void:
 	check_eq(got[0].parts.size(), 4, "Aufbau mit den neuen Teilen")
 	check(editor.confirmed, "confirmed wahr")
 	check_eq(finished_got.size(), 0, "finished nicht gesendet")
+
+
+## Verwandlung zum Fisch: Zelle streckt sich, dann Blende ins Wasserblau, morph_finished genau einmal.
+func test_verwandlung() -> void:
+	var got: Array = []
+	editor.morph_finished.connect(func() -> void: got.append(true))
+	editor.play_morph()
+	check(editor.evolve_button.disabled, "Knöpfe während der Verwandlung gesperrt")
+	editor._process(1.0)
+	check(editor.canvas.morph != null, "Ansicht zeigt die Verwandlung")
+	check_eq(editor.fade_rect.color.a, 0.0, "noch keine Blende")
+	editor._process(2.3)
+	check_eq(got.size(), 1, "morph_finished einmal gesendet")
+	check_eq(editor.fade_rect.color.a, 1.0, "ganz im Wasserblau")
+	editor._process(1.0)
+	check_eq(got.size(), 1, "morph_finished nicht noch einmal")
+
+
+## Ohne play_morph tut _process nichts.
+func test_ohne_verwandlung() -> void:
+	var got: Array = []
+	editor.morph_finished.connect(func() -> void: got.append(true))
+	editor._process(5.0)
+	check_eq(got.size(), 0, "kein morph_finished")
+	check_eq(editor.fade_rect.color.a, 0.0, "keine Blende")
+	check(editor.canvas.morph == null, "keine Verwandlung in der Ansicht")
