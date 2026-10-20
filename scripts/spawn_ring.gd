@@ -5,7 +5,6 @@ extends RefCounted
 const MIN_DISTANCE := 40.0
 const MAX_DISTANCE := 110.0
 const DESPAWN_DISTANCE := 160.0
-const TAU := 2.0 * PI
 
 var rng := RandomNumberGenerator.new()
 

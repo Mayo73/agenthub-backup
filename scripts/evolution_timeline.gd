@@ -81,7 +81,7 @@ func summary_lines() -> Array[String]:
 	lines.append("Editorbesuche: %d" % count(EDITOR))
 	lines.append("Zeit als Zelle: %s" % time_text(phase_time("zelle")))
 
-	if has_entries_with_phase(FISH):
+	if has_entries_with_phase("fisch"):
 		lines.append("Fischgrößen: %d" % count(FISH_SIZE))
 		lines.append("Verbesserungen: %d" % count(UPGRADE))
 

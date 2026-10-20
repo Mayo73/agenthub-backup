@@ -25,7 +25,7 @@ func run() -> void:
 	felsen.mesh = FishModel.sphere(1.0)
 	felsen.material_override = FishTextures.rock_material()
 	felsen.scale = Vector3(4, 4, 4)
-	felsen.global_position = scene.player.global_position + Vector3(0, -20, -45)
+	felsen.global_position = scene.player.global_position + Vector3(0, 0, -45)
 	scene.world.add_child(felsen)
 
 	scene.hud.clear_message()
@@ -41,7 +41,7 @@ func run() -> void:
 		if stufe < 3:
 			scene.progress.dna = 50
 			scene.evolve.open(scene.player.build, scene.progress)
-			scene.buttons["augen"].pressed.emit()
+			scene.evolve.buttons["augen"].pressed.emit()
 			scene.evolve.close()
 			scene.hud.clear_message()
 			await wait(0.1)

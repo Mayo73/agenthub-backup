@@ -16,14 +16,13 @@ func _init(c: Vector2i, floor: SeafloorHeight) -> void:
 	rng.seed = seed_for(c)
 
 	for i in WEEDS:
-		if _try_add_seagrass(rng, floor):
-			pass
+		_try_add_seagrass(rng, floor)
 
 	for i in ROCKS:
 		_add_rock(rng, floor)
 
 
-func seed_for(c: Vector2i, world_seed: int = 7) -> int:
+static func seed_for(c: Vector2i, world_seed: int = 7) -> int:
 	return hash([c.x, c.y, world_seed])
 
 
