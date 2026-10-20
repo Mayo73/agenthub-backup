@@ -10,7 +10,7 @@ func test_anfang() -> void:
 	check_eq(FishAbilities.pitch_rate(build), 1.4, "pitch_rate")
 	check_eq(FishAbilities.bite_damage(build), 10.0, "bite_damage")
 	check_eq(FishAbilities.defense(build), 0.0, "defense")
-	check_eq(FishAbilities.sight(build), 25.0, "sight")
+	check_eq(FishAbilities.sight(build), 20.0, "sight")
 
 
 func test_schwanz() -> void:
@@ -37,7 +37,14 @@ func test_kiefer_stacheln_augen() -> void:
 	build.upgrade("augen")
 	check_eq(FishAbilities.bite_damage(build), 18.0, "bite_damage nach 1 Stufe Kiefer")
 	check_eq(FishAbilities.defense(build), 0.15, "defense nach 1 Stufe Stacheln")
-	check_eq(FishAbilities.sight(build), 35.0, "sight nach 1 Stufe Augen")
+	check_eq(FishAbilities.sight(build), 42.0, "sight nach 1 Stufe Augen")
+
+
+func test_augen_3_stufen() -> void:
+	build = FishBuild.new()
+	for _i in range(3):
+		build.upgrade("augen")
+	check_eq(FishAbilities.sight(build), 86.0, "sight nach 3 Stufen Augen")
 
 
 func test_anwenden() -> void:

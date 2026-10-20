@@ -153,7 +153,7 @@ func test_nebel_formel() -> void:
 
 
 func test_nebel_anfang() -> void:
-	check_eq(fish.water.environment.fog_density, 0.025, "fog_density am Anfang ist 0.025")
+	check_eq(fish.water.environment.fog_density, 0.03125, "fog_density am Anfang ist 0.03125")
 
 
 func test_augen_lichten_nebel() -> void:
