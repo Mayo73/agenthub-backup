@@ -23,6 +23,16 @@ func test_startet_mit_entdecken() -> void:
 	check(main.tab_buttons["entdecken"].disabled, "aktiver Reiter ist gesperrt")
 
 
+func test_reiter_symbole() -> void:
+	check(main.tab_buttons["matches"].text.contains("♥"), "Matches-Button enthält Symbol ♥")
+	check(main.tab_buttons["matches"].text.contains("Matches"), "Matches-Button enthält Text Matches")
+	check(main.tab_buttons["entdecken"].text.contains("✦"), "Entdecken-Button enthält Symbol ✦")
+	check(main.tab_buttons["entdecken"].text.contains("Entdecken"), "Entdecken-Button enthält Text Entdecken")
+	check(main.tab_buttons["profil"].text.contains("●"), "Profil-Button enthält Symbol ●")
+	check(main.tab_buttons["profil"].text.contains("Profil"), "Profil-Button enthält Text Profil")
+	check(main.tab_buttons["entdecken"].disabled, "Entdecken-Reiter ist gesperrt am Start")
+
+
 func test_reiter_wechselt_bildschirm() -> void:
 	main.tab_buttons["profil"].pressed.emit()
 	check_eq(main.current_screen, "profil", "nach Klick auf Profil")
@@ -167,4 +177,24 @@ func test_treffen_gespeichert() -> void:
 	meeting.form_picker.select(1)
 	meeting.propose_button.pressed.emit()
 	check_eq(StateStore.load_state(TEST_PATH).meetings.get_meeting("m1").get("place", ""), "Stadtpark", "Treffvorschlag gespeichert")
+	DirAccess.remove_absolute(TEST_PATH)
+
+
+func test_match_oeffnet_chat() -> void:
+	main.use_store(TEST_PATH)
+	main.state.switch_to("p02")
+	main.state.like("p01")  # p02 likes p01
+	main.state.switch_to("p01")
+
+	main.show_screen("entdecken")
+	var discover := main.screen as DiscoverScreen
+	discover.like_button.pressed.emit()  # P01 liket p02 → neues Match m2
+
+	check(discover.match_overlay.visible, "match_overlay soll sichtbar sein")
+	check(discover.match_overlay.text_label.text.contains("Sam"), "Text enthält 'Sam'")
+	discover.match_overlay.write_button.pressed.emit()
+
+	# current_screen sollte auf "chat" wechseln
+	check_eq(main.current_screen, "chat", "current_screen ist 'chat' nach Write-Klick")
+
 	DirAccess.remove_absolute(TEST_PATH)

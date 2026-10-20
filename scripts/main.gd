@@ -4,6 +4,7 @@ extends Control
 ## und Reiterleiste. Alle Bedienelemente entstehen im Code.
 
 const SCREENS: Array[String] = ["entdecken", "matches", "profil"]
+const TAB_ICONS := {"entdecken": "✦", "matches": "♥", "profil": "●"}
 const TAB_TITLES := {"entdecken": "Entdecken", "matches": "Matches", "profil": "Profil"}
 
 var banner: Label
@@ -56,7 +57,7 @@ func _ready() -> void:
 	tab_bar = HBoxContainer.new()
 	tab_bar.add_theme_constant_override("separation", 0)
 	for screen_name in SCREENS:
-		var b := UiStyle.tab_button(TAB_TITLES[screen_name])
+		var b := UiStyle.icon_tab(TAB_ICONS[screen_name], TAB_TITLES[screen_name])
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.pressed.connect(show_screen.bind(screen_name))
 		tab_bar.add_child(b)
@@ -82,7 +83,7 @@ func show_screen(screen_name: String) -> void:
 		(tab_buttons[n] as Button).disabled = n == screen_name
 
 
-## Zeigt den Chat zu einem Match; der Reiter „Matches“ bleibt als aktiv markiert.
+## Zeigt den Chat zu einem Match; der Reiter „Matches" bleibt als aktiv markiert.
 func show_chat(match_id: String) -> void:
 	if screen != null:
 		content.remove_child(screen)
@@ -162,6 +163,7 @@ func _make_screen(screen_name: String) -> Control:
 	if screen_name == "entdecken":
 		var discover := DiscoverScreen.new(state)
 		discover.changed.connect(save)
+		discover.open_chat.connect(show_chat)
 		return discover
 	if screen_name == "matches":
 		var matches := MatchesScreen.new(state)
