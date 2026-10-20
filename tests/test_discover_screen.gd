@@ -229,3 +229,23 @@ func test_kein_match_kein_bildschirm() -> void:
 	check(not new_screen.match_overlay.visible, "match_overlay.visible soll falsch sein")
 
 	new_screen.free()
+
+
+func test_leer_mit_symbol() -> void:
+	# Alle Kandidaten überspringen, bis current() null ist
+	for i in range(10):
+		if screen.current() == null:
+			break
+		screen.pass_button.pressed.emit()
+
+	check(screen.empty_icon.visible, "empty_icon.visible soll wahr sein wenn leer")
+	check(screen.empty_icon.text == "✦", "empty_icon.text ist Symbol")
+
+	# Neuen Bildschirm mit Profil neu aufbauen und prüfen dass empty_icon unsichtbar ist
+	state = AppState.demo()
+	var new_screen := DiscoverScreen.new(state)
+	(Engine.get_main_loop() as SceneTree).root.add_child(new_screen)
+
+	check(not new_screen.empty_icon.visible, "empty_icon.visible soll falsch sein bei aktivem Kandidaten")
+
+	new_screen.free()

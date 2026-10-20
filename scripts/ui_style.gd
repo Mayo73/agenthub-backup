@@ -243,6 +243,14 @@ static func style_input(e: LineEdit) -> void:
 	var read_only := panel(CARD, RADIUS)
 	e.add_theme_stylebox_override("read_only", read_only)
 
+## Symbol für Leerzustände (großes Icon über Hinweistext).
+## label(symbol, 96, ACCENT)
+static func empty_icon(symbol: String) -> Label:
+	var l := label(symbol, 96, ACCENT)
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.autowrap_mode = TextServer.AUTOWRAP_OFF
+	return l
+
 ## Senkrechter Verlauf als Textur, von `top` nach `bottom`.
 static func vertical_gradient(top: Color, bottom: Color) -> GradientTexture2D:
 	var g := Gradient.new()

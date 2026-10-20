@@ -36,7 +36,7 @@ func run() -> void:
 	await wait(0.3)
 	(scene.screen as MatchesScreen).rows["m1"].pressed.emit()
 	await wait(0.3)
-	var chat := scene.screen as ChatScreen
+	var chat: ChatScreen = scene.screen as ChatScreen
 	check(chat != null, "Chat geöffnet")
 	await wait(0.3)
 

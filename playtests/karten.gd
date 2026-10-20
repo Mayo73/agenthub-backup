@@ -22,11 +22,11 @@ func run() -> void:
 
 	var seen: Array[String] = []
 	for i in CARDS:
-		var d := scene.screen as DiscoverScreen
+		var d: DiscoverScreen = scene.screen as DiscoverScreen
 		check(d != null, "Entdecken ist offen")
 		if d == null:
 			return
-		var p := d.card.profile
+		var p: SparProfile = d.card.profile
 		check(p != null, "Karte %d zeigt ein Profil" % (i + 1))
 		if p == null:
 			return
