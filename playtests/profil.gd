@@ -14,7 +14,7 @@ func describe() -> String:
 
 func run() -> void:
 	# Zu Beginn löschen, falls vorhanden
-	var dir := DirAccess.open("user://")
+	var dir: DirAccess = DirAccess.open("user://")
 	if dir.file_exists(STORE):
 		dir.remove(STORE)
 
@@ -23,7 +23,7 @@ func run() -> void:
 	# 1. Profil-Reiter öffnen
 	scene.tab_buttons["profil"].pressed.emit()
 	await wait(0.3)
-	var ps := scene.screen as ProfileScreen
+	var ps: ProfileScreen = scene.screen as ProfileScreen
 	check(ps != null, "Profil-Reiter zeigt das Profil")
 
 	# 2. Werte ändern und speichern

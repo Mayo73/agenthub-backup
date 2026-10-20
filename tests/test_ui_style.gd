@@ -43,3 +43,11 @@ func test_style_input() -> void:
 	var focus_sb := e.get_theme_stylebox("focus") as StyleBoxFlat
 	check(focus_sb.border_color == UiStyle.ACCENT, "focus border color ist ACCENT")
 	e.free()
+
+
+func test_empty_icon() -> void:
+	var l := UiStyle.empty_icon("♥")
+	check(l.text == "♥", "text ist Symbol")
+	check(l.horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER, "horizontal_alignment ist CENTER")
+	check(l.get_theme_color("font_color") == UiStyle.ACCENT, "font_color ist ACCENT")
+	l.free()

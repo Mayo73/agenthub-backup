@@ -160,7 +160,7 @@ func _on_profile_changed() -> void:
 ## Baut den Bildschirm zu einem Namen. Noch nicht umgesetzte Bildschirme zeigen nur den Titel.
 func _make_screen(screen_name: String) -> Control:
 	if screen_name == "entdecken":
-		var discover := DiscoverScreen.new(state)
+		var discover: DiscoverScreen = DiscoverScreen.new(state)
 		discover.changed.connect(save)
 		discover.open_chat.connect(show_chat)
 		return discover
