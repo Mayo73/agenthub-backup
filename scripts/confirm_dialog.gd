@@ -18,27 +18,35 @@ func _init() -> void:
 
 	shade = ColorRect.new()
 	shade.set_anchors_preset(Control.PRESET_FULL_RECT)
-	shade.color = Color(0, 0, 0, 0.6)
+	shade.color = Color(0, 0, 0, 0.7)
 	add_child(shade)
 
 	box = PanelContainer.new()
 	box.set_anchors_preset(Control.PRESET_CENTER)
-	box.add_theme_stylebox_override("panel", UiStyle.panel(UiStyle.CARD, 24))
+	var panel := UiStyle.card_panel(UiStyle.CARD, UiStyle.RADIUS_CARD)
+	panel.content_margin_left = 32
+	panel.content_margin_right = 32
+	panel.content_margin_top = 32
+	panel.content_margin_bottom = 32
+	box.add_theme_stylebox_override("panel", panel)
 	box.custom_minimum_size = Vector2(600, 0)
 	add_child(box)
 
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 16)
+	vbox.add_theme_constant_override("separation", 24)
 	box.add_child(vbox)
 
 	question_label = UiStyle.label("", UiStyle.SIZE_NORMAL)
+	question_label.add_theme_font_size_override("font_size", 34)
+	question_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	question_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(question_label)
 
 	var hbox := HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 16)
+	hbox.add_theme_constant_override("separation", UiStyle.GAP)
 	vbox.add_child(hbox)
 
-	cancel_button = UiStyle.button("Abbrechen")
+	cancel_button = UiStyle.button("Abbrechen", UiStyle.RAISED)
 	cancel_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hbox.add_child(cancel_button)
 
