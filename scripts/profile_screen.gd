@@ -7,6 +7,7 @@ signal reset_requested
 
 var state: AppState
 var avatar: AvatarView
+var name_label: Label
 var demo_hint: Label
 var name_edit: LineEdit
 var art_picker: OptionButton
@@ -31,41 +32,58 @@ func _init(app_state: AppState) -> void:
 	scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(scroll)
 
-	# VBoxContainer mit SIZE_EXPAND_FILL in der Breite
-	var vbox := VBoxContainer.new()
-	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(vbox)
+	# MarginContainer mit GAP-Rand auf allen Seiten, vbox als Kind
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", UiStyle.GAP)
+	margin.add_theme_constant_override("margin_top", UiStyle.GAP)
+	margin.add_theme_constant_override("margin_right", UiStyle.GAP)
+	margin.add_theme_constant_override("margin_bottom", UiStyle.GAP)
+	scroll.add_child(margin)
 
-	# AvatarView (Durchmesser 160, SIZE_SHRINK_CENTER)
+	# VBoxContainer mit SIZE_EXPAND_FILL in der Breite und separation 12
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 12)
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	margin.add_child(vbox)
+
+	# AvatarView (großes Porträt, set_fill, shade, 360 Höhe)
 	avatar = AvatarView.new()
-	avatar.diameter = 160.0
-	avatar.custom_minimum_size = Vector2(160, 160)
-	avatar.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	avatar.set_fill(true)
+	avatar.shade = true
+	avatar.custom_minimum_size = Vector2(0, 360)
+	avatar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	vbox.add_child(avatar)
+
+	# Name-Label mit großer Schrift (zeigt nach Füllen: Name, Alter)
+	name_label = UiStyle.overlay_label("", UiStyle.SIZE_HERO)
+	vbox.add_child(name_label)
 
 	# Demo-Hinweis (Text, UiStyle.SIZE_SMALL, Farbe UiStyle.DEMO)
 	demo_hint = UiStyle.label("Du bearbeitest das Demoprofil der aktiven Testperson.", UiStyle.SIZE_SMALL, UiStyle.DEMO)
 	vbox.add_child(demo_hint)
 
-	# Name-Label und Eingabe
+	# Name-Label und Eingabe (mit style_input)
 	vbox.add_child(UiStyle.label("Name"))
 	name_edit = LineEdit.new()
 	name_edit.max_length = ProfileForm.NAME_MAX
 	name_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	UiStyle.style_input(name_edit)
 	vbox.add_child(name_edit)
 
-	# Kampfsportart-Label und Picker
+	# Kampfsportart-Label und Picker (mit style_option)
 	vbox.add_child(UiStyle.label("Kampfsportart"))
 	art_picker = OptionButton.new()
 	for art in DemoData.ARTS:
 		art_picker.add_item(art)
+	UiStyle.style_option(art_picker)
 	vbox.add_child(art_picker)
 
-	# Erfahrung-Label und Picker
+	# Erfahrung-Label und Picker (mit style_option)
 	vbox.add_child(UiStyle.label("Erfahrung"))
 	level_picker = OptionButton.new()
 	for level in SparProfile.LEVELS:
 		level_picker.add_item(level)
+	UiStyle.style_option(level_picker)
 	vbox.add_child(level_picker)
 
 	# Alter-Label und SpinBox
@@ -84,12 +102,13 @@ func _init(app_state: AppState) -> void:
 	years_spin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	vbox.add_child(years_spin)
 
-	# Gewichtsklasse-Label und Picker
+	# Gewichtsklasse-Label und Picker (mit style_option)
 	vbox.add_child(UiStyle.label("Gewichtsklasse"))
 	weight_picker = OptionButton.new()
 	weight_picker.add_item("keine Angabe")
 	for clazz in SparProfile.WEIGHT_CLASSES:
 		weight_picker.add_item(clazz)
+	UiStyle.style_option(weight_picker)
 	vbox.add_child(weight_picker)
 
 	# Verfügbar an-Label und CheckBoxes für Tage
@@ -116,11 +135,12 @@ func _init(app_state: AppState) -> void:
 		equip_flow.add_child(cb)
 	vbox.add_child(equip_flow)
 
-	# Über-mich-Label und Eingabe
+	# Über-mich-Label und Eingabe (mit style_input)
 	vbox.add_child(UiStyle.label("Über mich"))
 	bio_edit = LineEdit.new()
 	bio_edit.max_length = ProfileForm.BIO_MAX
 	bio_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	UiStyle.style_input(bio_edit)
 	vbox.add_child(bio_edit)
 
 	# Error-Label (Farbe UiStyle.PASS, zunächst leer)
@@ -186,6 +206,7 @@ func load_profile() -> void:
 			equipment_boxes[name].button_pressed = p.equipment.has(name)
 	bio_edit.text = p.bio
 	avatar.set_profile(p)
+	name_label.text = "%s, %d" % [p.name, p.age]
 	error_label.text = ""
 
 
@@ -224,5 +245,6 @@ func save_profile() -> bool:
 	error_label.text = "Gespeichert."
 	error_label.add_theme_color_override("font_color", UiStyle.LIKE)
 	avatar.set_profile(state.active())
+	name_label.text = "%s, %d" % [p.name, p.age]
 	changed.emit()
 	return true
