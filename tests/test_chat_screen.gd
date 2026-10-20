@@ -198,3 +198,32 @@ func test_treffen_status() -> void:
 	screen.refresh()
 	var expected := "Wartet auf die Zustimmung von Sam."
 	check_eq(screen.meeting_label.text, expected, "meeting_label zeigt Wartestatus als p01")
+
+
+func test_sprechblasen() -> void:
+	# Als p01 eine Nachricht in "m1" senden
+	state.switch_to("p01")
+	state.send_message("m1", "Hallo von p01")
+	screen.refresh()
+
+	# messages_box.get_child(0) ist Label mit ACCENT-Bereichfarbe
+	var label_as_p01 := screen.messages_box.get_child(0) as Label
+	check(label_as_p01 != null, "messages_box.get_child(0) ist nicht null")
+	var style := label_as_p01.get_theme_stylebox("normal") as StyleBoxFlat
+	check(style.bg_color == UiStyle.ACCENT, "Label als eigene Person hat ACCENT-Bereichfarbe")
+
+	# Zu p02 wechseln und refresh() → fremde Blase mit RAISED-Farbe
+	state.switch_to("p02")
+	screen.refresh()
+	var label_as_p02 := screen.messages_box.get_child(0) as Label
+	style = label_as_p02.get_theme_stylebox("normal") as StyleBoxFlat
+	check(style.bg_color == UiStyle.RAISED, "Label als fremde Person hat RAISED-Bereichfarbe")
+
+
+func test_runde_knoepfe() -> void:
+	# back_button.text ist "‹"
+	check(screen.back_button.text == "‹", "back_button.text ist '‹'")
+	# send_button.text ist "➤"
+	check(screen.send_button.text == "➤", "send_button.text ist '➤'")
+	# send_button.custom_minimum_size.x ist 72
+	check(screen.send_button.custom_minimum_size.x == 72, "send_button.custom_minimum_size.x ist 72")
