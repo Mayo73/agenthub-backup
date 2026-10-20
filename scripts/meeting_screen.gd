@@ -15,6 +15,8 @@ var days_label: Label
 var status_card: PanelContainer
 var status_label: Label
 var summary_label: Label
+var status_vbox: VBoxContainer
+var place_card: PanelContainer
 var place_view: PlaceView
 var place_edit: LineEdit
 var date_edit: LineEdit
@@ -70,7 +72,7 @@ func _init(app_state: AppState, id: String) -> void:
 	status_card.add_theme_stylebox_override("panel", panel_style)
 	vbox.add_child(status_card)
 
-	var status_vbox := VBoxContainer.new()
+	status_vbox = VBoxContainer.new()
 	status_vbox.add_theme_constant_override("separation", 12)
 	status_card.add_child(status_vbox)
 
@@ -85,9 +87,25 @@ func _init(app_state: AppState, id: String) -> void:
 	place_edit = _line_edit(vbox, "Ort draußen", "z. B. Stadtpark, Wiese am Teich")
 	place_edit.text_changed.connect(func(new_text: String) -> void: place_view.set_place(new_text))
 
+	place_card = PanelContainer.new()
+	var place_panel_style := UiStyle.card_panel(UiStyle.RAISED, UiStyle.RADIUS)
+	place_panel_style.set_content_margin_all(12)
+	place_card.add_theme_stylebox_override("panel", place_panel_style)
+	place_card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.add_child(place_card)
+
+	var place_vbox := VBoxContainer.new()
+	place_vbox.add_theme_constant_override("separation", 8)
+	place_card.add_child(place_vbox)
+
+	var place_title := UiStyle.label("Ortsskizze", UiStyle.SIZE_SMALL, UiStyle.MUTED)
+	place_vbox.add_child(place_title)
+
 	place_view = PlaceView.new()
+	place_view.custom_minimum_size = Vector2(0, 260)
 	place_view.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	vbox.add_child(place_view)
+	place_vbox.add_child(place_view)
+
 	date_edit = _line_edit(vbox, "Datum", "TT.MM.JJJJ")
 	time_edit = _line_edit(vbox, "Uhrzeit", "HH:MM")
 	form_picker = _picker(vbox, "Trainingsform", MeetingBook.FORMS)
