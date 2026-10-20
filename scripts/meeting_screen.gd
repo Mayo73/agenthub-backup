@@ -12,6 +12,7 @@ var back_button: Button
 var title_label: Label
 var hint_label: Label
 var days_label: Label
+var status_card: PanelContainer
 var status_label: Label
 var summary_label: Label
 var place_view: PlaceView
@@ -33,13 +34,23 @@ func _init(app_state: AppState, id: String) -> void:
 
 	var scroll := ScrollContainer.new()
 	scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(scroll)
+
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", UiStyle.GAP)
+	margin.add_theme_constant_override("margin_top", UiStyle.GAP)
+	margin.add_theme_constant_override("margin_right", UiStyle.GAP)
+	margin.add_theme_constant_override("margin_bottom", UiStyle.GAP)
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(margin)
 
 	var vbox := VBoxContainer.new()
 	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(vbox)
+	vbox.add_theme_constant_override("separation", 12)
+	margin.add_child(vbox)
 
-	back_button = UiStyle.button("‹ Zurück zum Chat")
+	back_button = UiStyle.round_button("‹", UiStyle.TEXT, 64)
 	back_button.pressed.connect(func() -> void: back.emit())
 	vbox.add_child(back_button)
 
@@ -54,13 +65,22 @@ func _init(app_state: AppState, id: String) -> void:
 	days_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(days_label)
 
+	status_card = PanelContainer.new()
+	var panel_style := UiStyle.card_panel(UiStyle.CARD, UiStyle.RADIUS)
+	status_card.add_theme_stylebox_override("panel", panel_style)
+	vbox.add_child(status_card)
+
+	var status_vbox := VBoxContainer.new()
+	status_vbox.add_theme_constant_override("separation", 12)
+	status_card.add_child(status_vbox)
+
 	status_label = UiStyle.label("")
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	vbox.add_child(status_label)
+	status_vbox.add_child(status_label)
 
 	summary_label = UiStyle.label("", UiStyle.SIZE_NORMAL, UiStyle.ACCENT)
 	summary_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	vbox.add_child(summary_label)
+	status_vbox.add_child(summary_label)
 
 	place_edit = _line_edit(vbox, "Ort draußen", "z. B. Stadtpark, Wiese am Teich")
 	place_edit.text_changed.connect(func(new_text: String) -> void: place_view.set_place(new_text))
@@ -173,6 +193,7 @@ func _line_edit(parent: VBoxContainer, caption: String, placeholder: String) -> 
 	var edit := LineEdit.new()
 	edit.placeholder_text = placeholder
 	edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	UiStyle.style_input(edit)
 	parent.add_child(edit)
 	return edit
 
@@ -182,5 +203,6 @@ func _picker(parent: VBoxContainer, caption: String, items: Array[String]) -> Op
 	var picker := OptionButton.new()
 	for item in items:
 		picker.add_item(item)
+	UiStyle.style_option(picker)
 	parent.add_child(picker)
 	return picker
