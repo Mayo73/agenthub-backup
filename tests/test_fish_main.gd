@@ -708,3 +708,11 @@ func test_zeitstrahl_taste() -> void:
 	check(fish.timeline_view.visible, "toggle_timeline zeigt den Zeitstrahl")
 	fish.toggle_timeline()
 	check(not fish.timeline_view.visible, "und verbirgt ihn wieder")
+
+
+func test_zeitstrahl_aus_pause() -> void:
+	fish.toggle_pause()
+	fish.pause_menu.timeline_button.pressed.emit()
+	check(fish.timeline_view.visible, "Zeitstrahl sichtbar")
+	check(not fish.pause_menu.visible, "Pausemenü geschlossen")
+	check(not fish.paused, "Pause aufgehoben")

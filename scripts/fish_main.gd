@@ -133,6 +133,7 @@ func _ready() -> void:
 	pause_menu.resume.connect(toggle_pause)
 	pause_menu.to_main_menu.connect(back_to_menu)
 	pause_menu.quit_game.connect(func() -> void: get_tree().quit())
+	pause_menu.open_timeline.connect(_on_pause_open_timeline)
 	intro = FishIntro.new()
 	intro.name = "Intro"
 	add_child(intro)
@@ -410,9 +411,19 @@ func back_to_menu() -> void:
 	get_tree().change_scene_to_file(MAIN_SCENE)
 
 
+## Knopf „Zeitstrahl“ im Pausemenü: Pause aufheben, dann den Zeitstrahl zeigen.
+func _on_pause_open_timeline() -> void:
+	if paused:
+		toggle_pause()
+	toggle_timeline()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause"):
-		toggle_pause()
+		if timeline_view.visible:
+			toggle_timeline()
+		else:
+			toggle_pause()
 	elif event.is_action_pressed("zeitstrahl") and not paused:
 		toggle_timeline()
 
