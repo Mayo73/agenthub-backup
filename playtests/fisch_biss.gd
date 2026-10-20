@@ -22,14 +22,13 @@ func run() -> void:
 	measure("rand_vorher", rand_vorher)
 	check(rand_vorher < 0.1, "Der rote Rand ist vorher kaum sichtbar")
 
-	# 2. Biss simulieren: flash() und Meldung mit Priorität
+	# 2. Biss simulieren: flash() zeigt den Rand und die Bissmeldung (2 s Vorrang)
 	scene.hud.flash()
-	scene.hud.show_message(FishHud.BITE_MESSAGE, 4.0, 1)
 	await wait(0.05)
 	shot("biss")
 	var rand_biss: float = scene.hud.flash_rect.color.a
 	measure("rand_biss", rand_biss)
-	check(rand_biss > 0.5, "Der rote Rand beim Biss liegt über 0.5")
+	check(rand_biss > 0.25, "Der rote Rand beim Biss ist deutlich (über 0.25, Höchstwert 0.35)")
 	check(scene.hud.message_label.text == FishHud.BITE_MESSAGE, "Die Bissmeldung ist noch aktiv")
 
 	# 3. Gewöhnliche Meldung zeigt, dass Bissmeldung noch aktiv ist

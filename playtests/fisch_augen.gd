@@ -25,8 +25,8 @@ func run() -> void:
 	felsen.mesh = FishModel.sphere(1.0)
 	felsen.material_override = FishTextures.rock_material()
 	felsen.scale = Vector3(4, 4, 4)
-	felsen.global_position = scene.player.global_position + Vector3(0, 0, -45)
 	scene.world.add_child(felsen)
+	felsen.global_position = scene.player.global_position + Vector3(0, 0, -45)
 
 	scene.hud.clear_message()
 
