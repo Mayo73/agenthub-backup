@@ -14,6 +14,7 @@ var avatar: AvatarView
 var title_label: Label
 var demo_hint: Label
 var messages_box: VBoxContainer
+var empty_icon: Label
 var empty_label: Label
 var closed_label: Label
 var input: LineEdit
@@ -87,8 +88,11 @@ func _init(app_state: AppState, id: String) -> void:
 	messages_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(messages_box)
 
-	# Leerzustand
+	# Leerzustand mit Symbol (T-0475)
+	empty_icon = UiStyle.empty_icon("💬")
+	layout.add_child(empty_icon)
 	empty_label = UiStyle.label("Noch keine Nachrichten. Schreib die erste!", UiStyle.SIZE_NORMAL, UiStyle.MUTED)
+	empty_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	layout.add_child(empty_label)
 
 	# Geschlossen-Hinweis
@@ -157,8 +161,10 @@ func refresh() -> void:
 	# Nachrichten anzeigen als Sprechblasen
 	var msgs := state.chat.messages_for(match_id)
 	if msgs.is_empty():
+		empty_icon.visible = true
 		empty_label.visible = true
 	else:
+		empty_icon.visible = false
 		empty_label.visible = false
 		for msg in msgs:
 			var label := UiStyle.bubble(msg["text"], msg["from"] == state.active_id)
