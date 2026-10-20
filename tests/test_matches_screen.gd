@@ -94,6 +94,16 @@ func test_ueberschrift() -> void:
 	check(not screen.title_label.visible == false, "title_label ist sichtbar")
 
 
+func test_leer_mit_symbol() -> void:
+	build()
+	check(screen.empty_icon.visible, "empty_icon.visible wahr wenn leer")
+	check(screen.empty_icon.text == "♥", "empty_icon.text ist ♥")
+
+	var id := make_match("p01", "p02")
+	screen.refresh()
+	check(not screen.empty_icon.visible, "empty_icon.visible falsch nach Match")
+
+
 func test_zeile_als_karte() -> void:
 	make_match("p01", "p02")
 	build()
