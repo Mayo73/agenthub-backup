@@ -12,6 +12,7 @@ var state: AppState
 var rows: Dictionary = {}
 var list: VBoxContainer
 var empty_label: Label
+var title_label: Label
 
 
 func _init(app_state: AppState) -> void:
@@ -23,9 +24,21 @@ func _init(app_state: AppState) -> void:
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(scroll)
 
+	var margin := MarginContainer.new()
+	margin.set("margin_top", UiStyle.GAP)
+	margin.set("margin_bottom", UiStyle.GAP)
+	margin.set("margin_left", UiStyle.GAP)
+	margin.set("margin_right", UiStyle.GAP)
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(margin)
+
 	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", UiStyle.GAP)
 	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(box)
+	margin.add_child(box)
+
+	title_label = UiStyle.label("Deine Matches", UiStyle.SIZE_TITLE)
+	box.add_child(title_label)
 
 	empty_label = UiStyle.label("Noch keine Matches. Bekunde unter „Entdecken“ Interesse – ein Match entsteht, wenn es beide wollen.", UiStyle.SIZE_NORMAL, UiStyle.MUTED)
 	empty_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -33,7 +46,7 @@ func _init(app_state: AppState) -> void:
 
 	list = VBoxContainer.new()
 	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	list.add_theme_constant_override("separation", 12)
+	list.add_theme_constant_override("separation", UiStyle.GAP)
 	box.add_child(list)
 
 	refresh()
@@ -68,14 +81,14 @@ func refresh() -> void:
 	for m in matches:
 		var id: String = m["id"]
 		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 12)
+		row.add_theme_constant_override("separation", UiStyle.GAP)
 
 		var avatar := AvatarView.new()
-		avatar.set_diameter(72)
+		avatar.set_diameter(88)
 		avatar.set_profile(state.profile(state.book.other(m, state.active_id)))
 		row.add_child(avatar)
 
-		var button := UiStyle.button(row_text(state, m))
+		var button := UiStyle.row_button(row_text(state, m))
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		button.pressed.connect(open_chat.emit.bind(id))
