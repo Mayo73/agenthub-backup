@@ -50,3 +50,14 @@ func test_abbrechen() -> void:
 func test_standardtext() -> void:
 	dialog.ask("X?")
 	check_eq(dialog.ok_button.text, "Ja", "OK-Button soll Standardtext 'Ja' zeigen")
+
+
+func test_karte_mit_schatten() -> void:
+	var panel := dialog.box.get_theme_stylebox("panel") as StyleBoxFlat
+	check(panel.shadow_size > 0, "Schattengröße muss größer 0 sein")
+	check_eq(panel.content_margin_left, 32, "content_margin_left muss 32 sein")
+
+
+func test_frage_zentriert() -> void:
+	check(dialog.question_label.horizontal_alignment == HORIZONTAL_ALIGNMENT_CENTER, "Frage soll zentriert sein")
+	check_eq(dialog.question_label.get_theme_font_size("font_size"), 34, "Schriftgröße muss 34 sein")
