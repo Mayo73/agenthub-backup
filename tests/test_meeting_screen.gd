@@ -143,4 +143,24 @@ func test_gemeinsame_tage() -> void:
 
 ## Reihenfolge der Elemente
 func test_reihenfolge() -> void:
-	check(screen.place_view.get_index() == screen.place_edit.get_index() + 1, "place_view folgt direkt nach place_edit")
+	check(screen.place_card.get_index() == screen.place_edit.get_index() + 1, "place_card folgt direkt nach place_edit")
+
+
+## Status-Text und Zusammenfassung in einer Karte mit Schattenstilbox
+func test_status_karte() -> void:
+	check(screen.status_label.get_parent().get_parent() == screen.status_card, "status_label ist zweimal gekettet in status_card")
+	var panel := screen.status_card.get_theme_stylebox("panel") as StyleBoxFlat
+	check(panel.shadow_size > 0, "status_card hat Schattenstilbox mit shadow_size > 0")
+
+
+## Felder sind gestaltet: place_edit Mindesthöhe 72, back_button zeigt '‹'
+func test_felder_gestaltet() -> void:
+	check(screen.place_edit.custom_minimum_size.y == 72, "place_edit hat Mindesthöhe 72")
+	check(screen.back_button.text == "‹", "back_button Text ist '‹'")
+
+
+## Ortsskizze in einer Karte mit Schattenstilbox
+func test_ortsskizze_als_karte() -> void:
+	check(screen.place_view.get_parent().get_parent() == screen.place_card, "place_view ist zweimal gekettet in place_card")
+	var panel := screen.place_card.get_theme_stylebox("panel") as StyleBoxFlat
+	check(panel.shadow_size > 0, "place_card hat Schattenstilbox mit shadow_size > 0")
