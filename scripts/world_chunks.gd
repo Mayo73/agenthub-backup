@@ -32,16 +32,9 @@ func update(center: Vector3) -> Dictionary:
 		if not loaded.has(chunk):
 			load.append(chunk)
 
-	var to_remove := []
-	for key in loaded.keys():
-		to_remove.append(key)
-
-	for chunk in to_remove:
+	for chunk: Vector2i in loaded.keys():
 		if not needed_chunks.has(chunk):
 			unload.append(chunk)
-		else:
-			pass
-
 	unload.sort()
 
 	for chunk in load:
