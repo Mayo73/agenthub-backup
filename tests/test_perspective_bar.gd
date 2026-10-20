@@ -32,3 +32,15 @@ func test_wechsel_signal() -> void:
 	bar.picker.select(1)
 	bar.picker.item_selected.emit(1)
 	check_eq(received_id, "p02", "gewechselte ID")
+
+
+func test_demolinie() -> void:
+	var panel := bar.get_theme_stylebox("panel") as StyleBoxFlat
+	check(panel.border_width_bottom == 3, "Untere Linie Dicke = 3")
+	check(panel.border_color == UiStyle.DEMO, "Linienfarbe DEMO")
+
+
+func test_auswahl_abgerundet() -> void:
+	var normal := bar.picker.get_theme_stylebox("normal") as StyleBoxFlat
+	check(normal.corner_radius_top_left > 0, "Picker oben links abgerundet")
+	check(bar.picker.clip_text == true, "Picker text-clipping aktiv")
