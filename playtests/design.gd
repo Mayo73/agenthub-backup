@@ -50,6 +50,7 @@ func run() -> void:
 	await wait(0.3)
 	check(scene.screen is MatchesScreen, "Matches offen")
 	shot("matches")
+	await wait(0.3)  # das Bild entsteht erst im nächsten Frame
 
 	# Zeile des Matches drücken
 	var matches_screen := scene.screen as MatchesScreen
@@ -57,6 +58,7 @@ func run() -> void:
 	await wait(0.3)
 	check(scene.screen is ChatScreen, "Chat offen")
 	shot("chat")
+	await wait(0.3)  # das Bild entsteht erst im nächsten Frame
 
 	# Nachricht senden
 	var chat_screen := scene.screen as ChatScreen
@@ -69,12 +71,14 @@ func run() -> void:
 	await wait(0.3)
 	check(scene.screen is MeetingScreen, "Treffen offen")
 	shot("treffen")
+	await wait(0.3)  # das Bild entsteht erst im nächsten Frame
 
 	# ===== 3. Profil öffnen =====
 	scene.tab_buttons["profil"].pressed.emit()
 	await wait(0.3)
 	check(scene.screen is ProfileScreen, "Profil offen")
 	shot("profil")
+	await wait(0.3)  # das Bild entsteht erst im nächsten Frame
 
 	# Speicherdatei am Ende löschen
 	if FileAccess.file_exists(STORE):

@@ -54,6 +54,7 @@ func _init(app_state: AppState, id: String) -> void:
 
 	back_button = UiStyle.round_button("‹", UiStyle.TEXT, 64)
 	back_button.pressed.connect(func() -> void: back.emit())
+	back_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	vbox.add_child(back_button)
 
 	title_label = UiStyle.label("Treffen mit %s" % _other_name(), UiStyle.SIZE_TITLE)

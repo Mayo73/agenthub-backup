@@ -24,6 +24,7 @@ func run() -> void:
 	if (scene.screen as MatchesScreen).empty_label.visible:
 		check((scene.screen as MatchesScreen).empty_icon.visible, "Symbol bei leerer Matchliste")
 		shot("matches_leer")
+		await wait(0.3)  # das Bild entsteht erst im nächsten Frame
 
 	# 2. Reiter Entdecken öffnen, alle Kandidaten überspringen bis Leerzustand
 	scene.tab_buttons["entdecken"].pressed.emit()
@@ -36,6 +37,7 @@ func run() -> void:
 		await wait(0.3)
 	check((scene.screen as DiscoverScreen).empty_icon.visible, "Symbol bei leerem Entdecken")
 	shot("entdecken_leer")
+	await wait(0.3)  # das Bild entsteht erst im nächsten Frame
 
 	# 3. Reiter Profil öffnen, Reset-Dialog öffnen und wieder schließen
 	scene.tab_buttons["profil"].pressed.emit()
@@ -45,6 +47,7 @@ func run() -> void:
 	var dialog: ConfirmDialog = (scene.screen as ProfileScreen).dialog
 	check(dialog.visible, "Dialog offen")
 	shot("dialog")
+	await wait(0.3)  # das Bild entsteht erst im nächsten Frame
 	dialog.cancel_button.pressed.emit()
 
 	# Eigene Speicherdatei am Ende löschen

@@ -52,6 +52,7 @@ func run() -> void:
 	# Prüfen, dass Zahl im Reiter angezeigt wird
 	check(" · " in scene.tab_buttons["matches"].text, "Zahl im Reiter")
 	shot("neue_matches")
+	await wait(0.3)  # das Bild entsteht erst im nächsten Frame
 
 	# Ersten Knopf aus „new_buttons" drücken
 	(matches_screen.new_buttons.values()[0] as Button).pressed.emit()

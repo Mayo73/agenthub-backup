@@ -33,9 +33,13 @@ func _init(app_state: AppState, id: String) -> void:
 	match_id = id
 
 	set_anchors_preset(Control.PRESET_FULL_RECT)
+	var frame := MarginContainer.new()
+	frame.set_anchors_preset(Control.PRESET_FULL_RECT)
+	for side in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
+		frame.add_theme_constant_override(side, UiStyle.GAP)
+	add_child(frame)
 	var layout := VBoxContainer.new()
-	layout.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(layout)
+	frame.add_child(layout)
 
 	# Kopf: HBoxContainer mit Zurück-Button, Avatar und Titel
 	var header := HBoxContainer.new()
@@ -44,10 +48,12 @@ func _init(app_state: AppState, id: String) -> void:
 	layout.add_child(header)
 
 	back_button = UiStyle.round_button("‹", UiStyle.TEXT, 64)
+	back_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	header.add_child(back_button)
 
 	avatar = AvatarView.new()
 	avatar.set_diameter(64.0)
+	avatar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	header.add_child(avatar)
 
 	title_label = UiStyle.label("", UiStyle.SIZE_TITLE)

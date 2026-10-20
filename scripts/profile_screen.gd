@@ -30,6 +30,7 @@ func _init(app_state: AppState) -> void:
 	# ScrollContainer mit PRESET_FULL_RECT
 	var scroll := ScrollContainer.new()
 	scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	add_child(scroll)
 
 	# MarginContainer mit GAP-Rand auf allen Seiten, vbox als Kind
@@ -38,6 +39,7 @@ func _init(app_state: AppState) -> void:
 	margin.add_theme_constant_override("margin_top", UiStyle.GAP)
 	margin.add_theme_constant_override("margin_right", UiStyle.GAP)
 	margin.add_theme_constant_override("margin_bottom", UiStyle.GAP)
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(margin)
 
 	# VBoxContainer mit SIZE_EXPAND_FILL in der Breite und separation 12

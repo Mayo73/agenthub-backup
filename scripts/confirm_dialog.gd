@@ -21,8 +21,12 @@ func _init() -> void:
 	shade.color = Color(0, 0, 0, 0.7)
 	add_child(shade)
 
+	# Die CenterContainer hält den Kasten auch auf schmalen Bildschirmen mittig.
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(center)
+
 	box = PanelContainer.new()
-	box.set_anchors_preset(Control.PRESET_CENTER)
 	var panel := UiStyle.card_panel(UiStyle.CARD, UiStyle.RADIUS_CARD)
 	panel.content_margin_left = 32
 	panel.content_margin_right = 32
@@ -30,7 +34,7 @@ func _init() -> void:
 	panel.content_margin_bottom = 32
 	box.add_theme_stylebox_override("panel", panel)
 	box.custom_minimum_size = Vector2(600, 0)
-	add_child(box)
+	center.add_child(box)
 
 	var vbox := VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 24)
