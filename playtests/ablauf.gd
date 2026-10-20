@@ -31,7 +31,7 @@ func run() -> void:
 	await wait(0.3)
 
 	# Im Entdecken-Bildschirm so oft pass_button drücken, bis current().id == "p01" (höchstens 8-mal)
-	var discover := scene.screen as DiscoverScreen
+	var discover: DiscoverScreen = scene.screen as DiscoverScreen
 	var iterations := 0
 	while discover.current() != null and discover.current().id != "p01" and iterations < 8:
 		discover.pass_button.pressed.emit()
@@ -53,13 +53,13 @@ func run() -> void:
 	shot("matches")
 
 	# Zeile „m1" antippen
-	var matches_screen := scene.screen as MatchesScreen
+	var matches_screen: MatchesScreen = scene.screen as MatchesScreen
 	matches_screen.rows["m1"].pressed.emit()
 	await wait(0.3)
 	check(scene.screen is ChatScreen, "Chat öffnet sich")
 
 	# Nachricht senden
-	var chat_screen := scene.screen as ChatScreen
+	var chat_screen: ChatScreen = scene.screen as ChatScreen
 	chat_screen.input.text = "Hallo Alex, Lust auf Drills im Park?"
 	chat_screen.send_button.pressed.emit()
 	await wait(0.3)
@@ -69,7 +69,7 @@ func run() -> void:
 	chat_screen.meeting_button.pressed.emit()
 	await wait(0.3)
 
-	var meeting_screen := scene.screen as MeetingScreen
+	var meeting_screen: MeetingScreen = scene.screen as MeetingScreen
 	meeting_screen.place_edit.text = "Stadtpark, Wiese am Teich"
 	meeting_screen.date_edit.text = "24.10.2026"
 	meeting_screen.time_edit.text = "10:30"
@@ -94,7 +94,7 @@ func run() -> void:
 	await wait(0.3)
 
 	# Zu Meeting wechseln (ChatScreen hat button "Treffen")
-	var chat_screen_alex := scene.screen as ChatScreen
+	var chat_screen_alex: ChatScreen = scene.screen as ChatScreen
 	chat_screen_alex.meeting_button.pressed.emit()
 	await wait(0.3)
 

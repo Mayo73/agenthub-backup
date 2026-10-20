@@ -3,24 +3,25 @@ class_name DiscoverScreen
 
 signal changed
 signal matched(match_id: String)
+signal open_chat(match_id: String)
 
 var state: AppState
-var gesture := SwipeGesture.new()
+var gesture: SwipeGesture = SwipeGesture.new()
 
 var card: ProfileCard
+var empty_icon: Label
 var empty_label: Label
 var match_label: Label
+var match_overlay: MatchOverlay
 var pass_button: Button
 var like_button: Button
 
-# Filter-OptionButtons
 var art_filter: OptionButton
 var level_filter: OptionButton
 
 
 func _init(app_state: AppState) -> void:
 	state = app_state
-
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 
 	var margin := MarginContainer.new()
@@ -32,7 +33,6 @@ func _init(app_state: AppState) -> void:
 	vbox.add_theme_constant_override("separation", UiStyle.GAP)
 	margin.add_child(vbox)
 
-	# Filterleiste als erstes Kind der VBoxContainer
 	var filter_hbox := HBoxContainer.new()
 	filter_hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
 	filter_hbox.add_theme_constant_override("separation", 12)
@@ -50,28 +50,26 @@ func _init(app_state: AppState) -> void:
 	level_filter.item_selected.connect(func(index: int) -> void: set_filter(art_filter.get_selected_id(), level_filter.get_selected_id()))
 	filter_hbox.add_child(level_filter)
 
-	# Auswahl beim Aufbau aus state.filter übernehmen
 	_initialize_filters()
 
-	# Karte, die vertikal wächst
 	card = ProfileCard.new()
 	card.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	vbox.add_child(card)
 
-	# Leerschreiben-Label (zentriert)
+	empty_icon = UiStyle.empty_icon("✦")
+	vbox.add_child(empty_icon)
+
 	empty_label = UiStyle.label("Keine weiteren Testprofile. Wechsle die Testperson oder setze die Demo im Profil zurück.")
 	empty_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	empty_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	vbox.add_child(empty_label)
 
-	# Match-Label (zunächst unsichtbar, Farbe UiStyle.LIKE)
 	match_label = UiStyle.label("", UiStyle.SIZE_TITLE, UiStyle.LIKE)
 	match_label.visible = false
 	match_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	match_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	vbox.add_child(match_label)
 
-	# Runde Aktionsknöpfe unter der Karte mit kleiner Beschriftung: Nein links, Ja rechts
 	var hbox := HBoxContainer.new()
 	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	hbox.add_theme_constant_override("separation", 72)
@@ -89,19 +87,21 @@ func _init(app_state: AppState) -> void:
 
 	refresh()
 
+	match_overlay = MatchOverlay.new()
+	match_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(match_overlay)
+	match_overlay.write_requested.connect(func(mid: String) -> void: open_chat.emit(mid))
+
 
 func _initialize_filters() -> void:
-	# Sportarten einfügen
 	art_filter.add_item("Alle Sportarten")
 	for art in DemoData.ARTS:
 		art_filter.add_item(art)
 
-	# Erfahrung einfügen
 	level_filter.add_item("Jede Erfahrung")
 	for level_name in SparProfile.LEVELS:
 		level_filter.add_item(level_name)
 
-	# Auswahl aus state.filter übernehmen
 	var art_index := 0
 	if not state.filter.art.is_empty():
 		art_index = DemoData.ARTS.find(state.filter.art) + 1
@@ -114,23 +114,18 @@ func _initialize_filters() -> void:
 
 
 func set_filter(art_index: int, level_index: int) -> void:
-	# state.filter.art = "" bei Index 0, sonst DemoData.ARTS[art_index - 1]
 	if art_index == 0:
 		state.filter.art = ""
 	else:
 		state.filter.art = DemoData.ARTS[art_index - 1]
 
-	# state.filter.level = level_index - 1
 	state.filter.level = level_index - 1
 
-	# beide OptionButton entsprechend select(...)
 	art_filter.select(art_index)
 	level_filter.select(level_index)
 
-	# match_label unsichtbar
 	match_label.visible = false
 
-	# changed.emit() und refresh()
 	changed.emit()
 	refresh()
 
@@ -144,15 +139,16 @@ func refresh() -> void:
 		like_button.disabled = true
 		match_label.visible = false
 
-		# Leerzustandstext prüfen
 		if state.filter.is_active():
-			empty_label.text = "Keine Testprofile für „%s“. Ändere den Filter." % state.filter.describe()
+			empty_label.text = "Keine Testprofile für '%s'. Ändere den Filter." % state.filter.describe()
 		else:
 			empty_label.text = "Keine weiteren Testprofile. Wechsle die Testperson oder setze die Demo im Profil zurück."
 		empty_label.visible = true
+		empty_icon.visible = true
 	else:
 		card.visible = true
 		empty_label.visible = false
+		empty_icon.visible = false
 		pass_button.disabled = false
 		like_button.disabled = false
 		card.set_profile(profile)
@@ -174,7 +170,7 @@ func _on_card_gui_input(event: InputEvent) -> void:
 			_reset_card_position()
 	elif event is InputEventScreenDrag:
 		gesture.move(event.position)
-		# Visuelle Rückmeldung während des Wischens
+		card.show_stamp(gesture.stamp_kind(), gesture.stamp_strength())
 		card.position.x = gesture.offset.x
 		card.rotation = gesture.tilt()
 
@@ -182,6 +178,7 @@ func _on_card_gui_input(event: InputEvent) -> void:
 func _reset_card_position() -> void:
 	card.position.x = 0.0
 	card.rotation = 0.0
+	card.show_stamp(SwipeGesture.Result.NONE, 0.0)
 
 
 func current() -> SparProfile:
@@ -203,6 +200,7 @@ func decide_like() -> void:
 	if not id.is_empty():
 		match_label.text = "Match mit %s! Ihr könnt jetzt schreiben." % profile.name
 		match_label.visible = true
+		match_overlay.show_match(state.active(), profile, id)
 		matched.emit(id)
 	else:
 		match_label.visible = false

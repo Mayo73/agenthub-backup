@@ -15,7 +15,7 @@ func describe() -> String:
 
 func run() -> void:
 	# Speicher am Anfang löschen
-	var dir := DirAccess.open("")
+	var dir: DirAccess = DirAccess.open("")
 	if dir.file_exists(ProjectSettings.globalize_path(STORE)):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(STORE))
 	scene.use_store(STORE)
@@ -23,7 +23,7 @@ func run() -> void:
 	await wait(0.3)
 
 	# Alex (p01) ist aktiv
-	var d := scene.screen as DiscoverScreen
+	var d: DiscoverScreen = scene.screen as DiscoverScreen
 
 	# 1. Wischen nach rechts = Interesse
 	d.swipe(Vector2(100, 600), Vector2(450, 610))
@@ -76,6 +76,6 @@ func run() -> void:
 	shot("match")
 
 	# Am Ende Speicher wieder löschen
-	var dir_end := DirAccess.open("")
+	var dir_end: DirAccess = DirAccess.open("")
 	if dir_end.file_exists(ProjectSettings.globalize_path(STORE)):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(STORE))

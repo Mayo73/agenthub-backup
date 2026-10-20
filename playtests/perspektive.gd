@@ -24,7 +24,7 @@ func run() -> void:
 	shot("start")
 
 	# Schritt 2: Als p01 Interesse an erster Karte (p02) bekunden
-	var d := scene.screen as DiscoverScreen
+	var d: DiscoverScreen = scene.screen as DiscoverScreen
 	check(d.current().id == "p02", "erste Karte ist p02")
 	d.like_button.pressed.emit()
 	await wait(0.3)
