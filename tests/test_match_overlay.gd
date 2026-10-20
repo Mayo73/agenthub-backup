@@ -44,6 +44,7 @@ func test_schreiben() -> void:
 
 	check_eq(counter.count, 1, "write_requested wurde einmal emittiert")
 	check_eq(counter.last, "m7", "übergebene ID ist 'm7'")
+	check(not overlay.visible, "overlay nach Schreiben versteckt")
 
 
 func test_weiter() -> void:
@@ -56,6 +57,7 @@ func test_weiter() -> void:
 	overlay.continue_button.pressed.emit()
 
 	check_eq(counter.count, 1, "closed wurde einmal emittiert")
+	check(not overlay.visible, "overlay nach Weiter versteckt")
 
 
 func _on_write_requested(match_id: String, counter: _Counter) -> void:
