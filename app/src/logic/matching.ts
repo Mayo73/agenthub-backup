@@ -1,4 +1,4 @@
-import type { AppData, Match } from './types';
+import type { AppData, Match, Profile } from './types';
 
 /** Erzeugt einen Schlüssel für Interessen: `"von>an"`. */
 export function likeKey(from: string, to: string): string {
@@ -103,4 +103,72 @@ export function otherId(match: Match, userId: string): string {
 /** Prüft, ob ein Match noch aktiv ist. */
 export function isActive(match: Match): boolean {
   return match.endedBy === '';
+}
+
+/** Gibt alle Kandidaten zurück, die userId noch sieht (außer sich selbst, bewerteten, blockierten und gematchten Profilen). */
+export function candidates(data: AppData, userId: string): Profile[] {
+  return data.profiles.filter(p => {
+    // Sich selbst ausschließen
+    if (p.id === userId) {
+      return false;
+    }
+    // Bereits bewertet (Like oder Pass)
+    if (hasSwiped(data, userId, p.id)) {
+      return false;
+    }
+    // Blockiert von p → kein Kandidat mehr für userId
+    if (isBlocked(data, p.id, userId)) {
+      return false;
+    }
+    // Bereits ein Match existiert (auch beendet)
+    if (matchBetween(data, userId, p.id)) {
+      return false;
+    }
+    return true;
+  });
+}
+
+/** Beendet ein aktiv Match durch die angegebene Person. */
+export function endMatch(data: AppData, matchId: string, by: string): AppData {
+  const matchIndex = data.matches.findIndex(m => m.id === matchId);
+  if (matchIndex === -1) {
+    return data;
+  }
+  const match = data.matches[matchIndex];
+  // Nur wenn aktiv und person beendender ist
+  if (!isActive(match) || (match.a !== by && match.b !== by)) {
+    return data;
+  }
+  const updatedMatch: Match = { ...match, endedBy: by };
+  const newMatches = [...data.matches];
+  newMatches[matchIndex] = updatedMatch;
+  return { ...data, matches: newMatches };
+}
+
+/** Blockiert von person A nach person B und beendet ggf. aktives Match. */
+export function block(data: AppData, from: string, to: string): AppData {
+  if (from === to) {
+    return data;
+  }
+  const key = likeKey(from, to);
+  // Bereits blockiert → nichts tun
+  if (data.blocks.includes(key)) {
+    return data;
+  }
+  // Neues Blockieren einfügen
+  const newBlocks = [...data.blocks, key];
+
+  // Aktives Match zwischen beiden beenden
+  const existingMatch = matchBetween(data, from, to);
+  let matches = data.matches;
+  if (existingMatch && isActive(existingMatch)) {
+    const index = data.matches.findIndex(m => m.id === existingMatch.id);
+    if (index !== -1) {
+      const updatedMatch: Match = { ...existingMatch, endedBy: from };
+      matches = [...data.matches];
+      matches[index] = updatedMatch;
+    }
+  }
+
+  return { ...data, blocks: newBlocks, matches };
 }
