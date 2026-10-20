@@ -123,3 +123,15 @@ func test_merkmale_andere_perspektive() -> void:
 
 	new_screen.free()
 
+
+func test_grosses_portraet() -> void:
+	# Avatar soll großes Porträt sein: shade=true, custom_minimum_size.y=360
+	check(screen.avatar.shade == true, "avatar.shade ist wahr")
+	check_eq(screen.avatar.custom_minimum_size.y, 360, "avatar.custom_minimum_size.y ist 360")
+
+
+func test_name_gross() -> void:
+	# name_label soll nach dem Aufbau den Text "<Name>, <Alter>" von p01 zeigen
+	var profile := state.profile("p01")
+	check(screen.name_label.text == "%s, %d" % [profile.name, profile.age], "name_label zeigt '<name>, <age>' von p01")
+
