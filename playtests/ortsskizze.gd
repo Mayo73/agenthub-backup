@@ -16,7 +16,7 @@ func describe() -> String:
 func run() -> void:
 	await wait(0.3)
 
-	var da := DirAccess.open("user://")
+	var da: DirAccess = DirAccess.open("user://")
 	if da.file_exists("spieltest_ortsskizze.json"):
 		da.remove("spieltest_ortsskizze.json")
 

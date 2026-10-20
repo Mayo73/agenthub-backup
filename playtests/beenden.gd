@@ -29,7 +29,7 @@ func run() -> void:
 	# 2. Als Sam (p02): Chat öffnen und Nachricht senden
 	scene.show_chat("m1")
 	await wait(0.3)
-	var chat := scene.screen as ChatScreen
+	var chat: ChatScreen = scene.screen as ChatScreen
 	chat.input.text = "Hallo Alex"
 	chat.send_button.pressed.emit()
 	await wait(0.3)
@@ -49,7 +49,7 @@ func run() -> void:
 	await wait(0.3)
 	scene.show_meeting("m1")
 	await wait(0.3)
-	var meeting_screen := scene.screen as MeetingScreen
+	var meeting_screen: MeetingScreen = scene.screen as MeetingScreen
 	meeting_screen.place_edit.text = "Stadtpark, Wiese am Teich"
 	meeting_screen.date_edit.text = "24.10.2026"
 	meeting_screen.time_edit.text = "10:30"

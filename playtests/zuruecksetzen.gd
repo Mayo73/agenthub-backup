@@ -14,7 +14,7 @@ func describe() -> String:
 
 func run() -> void:
 	# Datei am Anfang löschen (falls vorhanden)
-	var dir := DirAccess.open("user://")
+	var dir: DirAccess = DirAccess.open("user://")
 	if dir.file_exists(STORE):
 		dir.remove(STORE)
 
@@ -25,7 +25,7 @@ func run() -> void:
 	scene.show_screen("profil")
 	await wait(0.3)
 	(scene.screen as ProfileScreen).name_edit.text = "Alexa"
-	var save_button := (scene.screen as ProfileScreen).save_button
+	var save_button: Button = (scene.screen as ProfileScreen).save_button
 	save_button.pressed.emit()
 	await wait(0.3)
 	check(scene.state.active().name == "Alexa", "Name geändert")
@@ -51,12 +51,12 @@ func run() -> void:
 	# 4. Zurücksetzen abbrechen
 	scene.show_screen("profil")
 	await wait(0.3)
-	var reset_button := (scene.screen as ProfileScreen).reset_button
+	var reset_button: Button = (scene.screen as ProfileScreen).reset_button
 	reset_button.pressed.emit()
 	await wait(0.3)
 	check((scene.screen as ProfileScreen).dialog.visible, "Rückfrage erscheint")
 	shot("rueckfrage")
-	var dialog := (scene.screen as ProfileScreen).dialog
+	var dialog: ConfirmDialog = (scene.screen as ProfileScreen).dialog
 	dialog.cancel_button.pressed.emit()
 	await wait(0.3)
 	check(scene.state.book.matches.size() == 1, "Abbrechen ändert nichts")
