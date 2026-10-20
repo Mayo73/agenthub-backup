@@ -11,7 +11,14 @@ var picker: OptionButton
 
 
 func _init() -> void:
-	add_theme_stylebox_override("panel", UiStyle.panel(UiStyle.CARD, 0))
+	var panel := UiStyle.panel(UiStyle.CARD, 0)
+	panel.border_width_bottom = 3
+	panel.border_color = UiStyle.DEMO
+	panel.content_margin_left = UiStyle.GAP
+	panel.content_margin_right = UiStyle.GAP
+	panel.content_margin_top = 8
+	panel.content_margin_bottom = 8
+	add_theme_stylebox_override("panel", panel)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
 	add_child(row)
@@ -22,12 +29,13 @@ func _init() -> void:
 	row.add_child(tag_label)
 
 	avatar = AvatarView.new()
-	avatar.set_diameter(56)
+	avatar.set_diameter(64)
 	avatar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	row.add_child(avatar)
 
 	picker = OptionButton.new()
 	picker.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	UiStyle.style_option(picker)
 	# Sonst erzwingt der längste Eintrag eine Mindestbreite über die Bildschirmbreite hinaus.
 	picker.fit_to_longest_item = false
 	picker.clip_text = true
