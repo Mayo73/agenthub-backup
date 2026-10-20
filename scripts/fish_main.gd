@@ -47,7 +47,7 @@ var settings := UserSettings.new()
 
 
 func _ready() -> void:
-	SetupFadeIn()
+	setup_fade_in()
 	Controls.setup()
 	settings.load_from(UserSettings.DEFAULT_PATH)
 	audio = GameAudio.new()
@@ -133,13 +133,14 @@ func _ready() -> void:
 	camera.current = true
 
 
-func SetupFadeIn() -> void:
+## Wasserblaue Fläche über dem ganzen Bildschirm; _process blendet sie aus.
+func setup_fade_in() -> void:
 	var layer := CanvasLayer.new()
 	layer.name = "FadeIn"
 	layer.layer = 20
 	add_child(layer)
 	fade_rect = ColorRect.new()
-	fade_rect.size = Vector2(1, 1)
+	fade_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
 	fade_rect.color = FishWorld.WATER_COLOR
 	fade_rect.color.a = 1.0
 	fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -399,7 +400,7 @@ func save_now() -> bool:
 	return SaveGame.write_file(save_path, data)
 
 
-## Zeigt „E: Verbesserung möglich", solange die DNA für mindestens eine Verbesserung reicht.
+## Zeigt „E: Verbesserung möglich“, solange die DNA für mindestens eine Verbesserung reicht.
 func update_upgrade_hint() -> void:
 	hud.show_upgrade_hint(FishUpgrades.any_affordable(player.build, progress))
 
