@@ -13,9 +13,9 @@ func _init(seed_value: int = 7) -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
 	for i in WEED_COUNT:
-		items.append({"kind": "seegras", "position": random_floor_point(rng), "height": rng.randf_range(3.0, 12.0)})
+		items.append({"kind": "seegras", "position": random_floor_point(rng), "height": rng.randf_range(3.0, 12.0), "bend": rng.randf_range(-0.6, 0.6)})
 	for i in ROCK_COUNT:
-		items.append({"kind": "fels", "position": random_floor_point(rng), "height": rng.randf_range(1.5, 6.0)})
+		items.append({"kind": "fels", "position": random_floor_point(rng), "height": rng.randf_range(1.5, 6.0), "bend": 0.0})
 
 
 ## Zufälliger Punkt auf dem Meeresboden, mindestens 5 m vom Rand.
