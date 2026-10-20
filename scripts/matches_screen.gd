@@ -1,6 +1,6 @@
 class_name MatchesScreen
 extends Control
-## Reiter „Matches“: alle Matches der aktiven Testperson mit Avatar, Name, Sportart und
+## Reiter "Matches": alle Matches der aktiven Testperson mit Avatar, Name, Sportart und
 ## letzter Nachricht. Beendete Matches bleiben sichtbar und sind abgeblendet.
 
 signal open_chat(match_id: String)
@@ -11,6 +11,7 @@ var state: AppState
 ## Match-ID -> Button der Zeile
 var rows: Dictionary = {}
 var list: VBoxContainer
+var empty_icon: Label
 var empty_label: Label
 var title_label: Label
 
@@ -40,7 +41,13 @@ func _init(app_state: AppState) -> void:
 	title_label = UiStyle.label("Deine Matches", UiStyle.SIZE_TITLE)
 	box.add_child(title_label)
 
-	empty_label = UiStyle.label("Noch keine Matches. Bekunde unter „Entdecken“ Interesse – ein Match entsteht, wenn es beide wollen.", UiStyle.SIZE_NORMAL, UiStyle.MUTED)
+	empty_icon = UiStyle.empty_icon("♥")
+	box.add_child(empty_icon)
+
+	empty_label = UiStyle.label(
+		"Noch keine Matches. Bekunde unter \"Entdecken\" Interesse – ein Match entsteht, wenn es beide wollen.",
+		UiStyle.SIZE_NORMAL, UiStyle.MUTED
+	)
 	empty_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(empty_label)
 
@@ -77,7 +84,7 @@ func refresh() -> void:
 		child.free()
 	rows.clear()
 
-	var matches := state.my_matches()
+	var matches: Array = state.my_matches()
 	for m in matches:
 		var id: String = m["id"]
 		var row := HBoxContainer.new()
@@ -99,4 +106,5 @@ func refresh() -> void:
 		list.add_child(row)
 		rows[id] = button
 
+	empty_icon.visible = matches.is_empty()
 	empty_label.visible = matches.is_empty()
