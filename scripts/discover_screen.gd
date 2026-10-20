@@ -3,6 +3,7 @@ class_name DiscoverScreen
 
 signal changed
 signal matched(match_id: String)
+signal open_chat(match_id: String)
 
 var state: AppState
 var gesture := SwipeGesture.new()
@@ -10,6 +11,7 @@ var gesture := SwipeGesture.new()
 var card: ProfileCard
 var empty_label: Label
 var match_label: Label
+var match_overlay: MatchOverlay
 var pass_button: Button
 var like_button: Button
 
@@ -88,6 +90,12 @@ func _init(app_state: AppState) -> void:
 	hbox.add_child(UiStyle.labeled(like_button, "Interesse"))
 
 	refresh()
+
+	# MatchOverlay als letztes Kind des Bildschirms anlegen
+	match_overlay = MatchOverlay.new()
+	match_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(match_overlay)
+	match_overlay.write_requested.connect(func(mid: String) -> void: open_chat.emit(mid))
 
 
 func _initialize_filters() -> void:
@@ -205,6 +213,7 @@ func decide_like() -> void:
 	if not id.is_empty():
 		match_label.text = "Match mit %s! Ihr könnt jetzt schreiben." % profile.name
 		match_label.visible = true
+		match_overlay.show_match(state.active(), profile, id)
 		matched.emit(id)
 	else:
 		match_label.visible = false
