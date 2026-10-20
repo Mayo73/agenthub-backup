@@ -454,6 +454,7 @@ func open_editor() -> void:
 	editor.show_timeline(timeline)
 	editor.set_look(player.look.copy())
 	editor.finished.connect(close_editor)
+	editor.evolve_requested.connect(evolve_to_fish)
 	editor.set_fish_ready(FishReadiness.is_ready(progress, unlocks), FishReadiness.missing_text(progress, unlocks))
 	hint("editor")
 	editor.canvas.changed.connect(func() -> void: audio.play("teil_setzen"))
@@ -462,11 +463,7 @@ func open_editor() -> void:
 
 ## Übernimmt das Ergebnis des Editors und kehrt ins Spiel zurück.
 func close_editor(build: CellBuild) -> void:
-	stats.editor_visits += 1
-	player.set_build(build)
-	if editor.confirmed:
-		player.set_look(editor.look)
-		add_timeline(EvolutionTimeline.EDITOR, "Editor")
+	apply_editor_result(build)
 	remove_child(editor)
 	editor.queue_free()
 	editor = null
@@ -476,6 +473,24 @@ func close_editor(build: CellBuild) -> void:
 	player.input_enabled = true
 	hud.show_progress(progress)
 	autosave_now()
+
+
+## Übernimmt Aufbau und (bei bestätigtem Editor) Aussehen; der Editor bleibt offen.
+func apply_editor_result(build: CellBuild) -> void:
+	stats.editor_visits += 1
+	player.set_build(build)
+	if editor.confirmed:
+		player.set_look(editor.look)
+		add_timeline(EvolutionTimeline.EDITOR, "Editor")
+
+
+## „Zum Fisch entwickeln“: Aufbau übernehmen, Verwandlung abspielen, danach in die Fischszene.
+func evolve_to_fish(build: CellBuild) -> void:
+	apply_editor_result(build)
+	add_timeline(EvolutionTimeline.FISH, "Fisch")
+	autosave_now()
+	editor.morph_finished.connect(go_to_fish)
+	editor.play_morph()
 
 
 ## Neue Partie mit Startaufbau passend zur Ernährung (Pflanzen- oder Fleischfresser).
@@ -753,6 +768,7 @@ func prepare_fish() -> void:
 	FishStart.pending_build = FishStart.from_cell(player.build, player.look, player.diet)
 	FishStart.pending_dna = progress.dna
 	FishStart.pending_save_path = save_path
+	FishStart.pending_timeline = timeline.to_dict()
 
 
 func go_to_fish() -> void:

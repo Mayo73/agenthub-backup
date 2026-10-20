@@ -385,3 +385,19 @@ func test_zeitstrahl_aktion() -> void:
 	main._unhandled_input(key_t_pressed)
 
 	check(timeline_layer.visible, "timeline_view sichtbar nach T-Taste")
+
+
+func test_zum_fisch_zeitstrahl() -> void:
+	main.start_new(Diet.PFLANZENFRESSER)
+	main.open_editor()
+	main.evolve_to_fish(main.player.build)
+	check_eq(main.timeline.entries[-1]["kind"], EvolutionTimeline.FISH, "letzter Eintrag ist Fisch")
+	check(main.editor.morph.running, "Verwandlung läuft")
+
+
+func test_fischstart_zeitstrahl() -> void:
+	main.start_new(Diet.PFLANZENFRESSER)
+	main.prepare_fish()
+	check(FishStart.pending_timeline.has("entries"), "Zeitstrahl übergeben")
+	FishStart.clear()
+	check(FishStart.pending_timeline.is_empty(), "nach clear leer")

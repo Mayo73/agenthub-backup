@@ -22,6 +22,8 @@ static var pending_dna := 0
 static var pending_save_path := ""
 ## Gespeicherter Stand der Fischphase (FishSave.to_dict), leer = neuer Fisch.
 static var pending_fish: Dictionary = {}
+## Zeitstrahl der Zellenphase (EvolutionTimeline.to_dict), von prepare_fish gesetzt.
+static var pending_timeline: Dictionary = {}
 
 
 ## Erster Fisch aus Aufbau, Aussehen und Ernährung der Zelle. Je passendem Teil eine Stufe, höchstens MAX_START_LEVEL.
@@ -56,3 +58,4 @@ static func clear() -> void:
 	pending_dna = 0
 	pending_save_path = ""
 	pending_fish = {}
+	pending_timeline = {}
