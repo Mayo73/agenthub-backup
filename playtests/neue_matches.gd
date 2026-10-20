@@ -54,7 +54,7 @@ func run() -> void:
 	shot("neue_matches")
 
 	# Ersten Knopf aus „new_buttons" drücken
-	matches_screen.new_buttons[0].pressed.emit()
+	(matches_screen.new_buttons.values()[0] as Button).pressed.emit()
 	await wait(0.3)
 
 	check(scene.screen is ChatScreen, "Chat offen")
