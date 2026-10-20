@@ -47,6 +47,8 @@ export type Meeting = {
   cancelledBy: string; // "" oder Profil-ID
 };
 
+export type Filter = { arts: string[]; levels: Level[] };
+
 export type AppData = {
   version: 1;
   activeId: string; // aktive Testperson (Demo-Perspektivwechsel)
