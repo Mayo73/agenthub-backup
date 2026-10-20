@@ -62,3 +62,20 @@ func test_abbrechen() -> void:
 	g.cancel()
 	var result := g.finish()
 	check_eq(result, SwipeGesture.Result.NONE, "finish nach cancel sollte NONE sein")
+
+func test_stempel_staerke() -> void:
+	g.begin(Vector2(100, 600))
+	g.move(Vector2(180, 600))
+	check_eq(g.stamp_strength(), 0.5, "halbe Mindeststrecke ergibt 0.5")
+	check_eq(g.stamp_kind(), SwipeGesture.Result.LIKE, "nach rechts: LIKE")
+	g.move(Vector2(-200, 600))
+	check_eq(g.stamp_strength(), 1.0, "über der Mindeststrecke höchstens 1.0")
+	check_eq(g.stamp_kind(), SwipeGesture.Result.PASS, "nach links: PASS")
+	g.finish()
+	check_eq(g.stamp_strength(), 0.0, "nach finish 0.0")
+	check_eq(g.stamp_kind(), SwipeGesture.Result.NONE, "nach finish NONE")
+
+
+func test_stempel_ohne_wischen() -> void:
+	check_eq(g.stamp_strength(), 0.0, "ohne begin 0.0")
+	check_eq(g.stamp_kind(), SwipeGesture.Result.NONE, "ohne begin NONE")

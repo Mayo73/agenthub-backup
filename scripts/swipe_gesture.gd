@@ -65,3 +65,19 @@ func preview() -> int:
 		return Result.PASS
 	else:
 		return Result.NONE
+
+
+## Wie deutlich der Stempel auf der Karte erscheint: 0 ohne Wischen, 1 ab der Mindeststrecke.
+func stamp_strength() -> float:
+	if not active:
+		return 0.0
+	return clampf(absf(offset.x) / THRESHOLD, 0.0, 1.0)
+
+
+## Welcher Stempel gilt: LIKE nach rechts, PASS nach links, NONE ohne Bewegung in x.
+func stamp_kind() -> int:
+	if not active or offset.x == 0.0:
+		return Result.NONE
+	if offset.x > 0.0:
+		return Result.LIKE
+	return Result.PASS

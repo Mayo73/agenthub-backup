@@ -178,6 +178,21 @@ static func chip(text: String, color: Color = ACCENT) -> PanelContainer:
 	return c
 
 
+## Schräger Stempel auf der Profilkarte („SPARRING“, „NEIN“): durchsichtige Fläche mit
+## farbigem Rahmen, die Beschriftung ist das einzige Kind (stamp.get_child(0)).
+static func stamp(text: String, color: Color) -> PanelContainer:
+	var c := PanelContainer.new()
+	var s := panel(Color(0, 0, 0, 0), 12)
+	s.set_border_width_all(5)
+	s.border_color = color
+	c.add_theme_stylebox_override("panel", s)
+	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var l := label(text, SIZE_TITLE, color)
+	l.autowrap_mode = TextServer.AUTOWRAP_OFF
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	c.add_child(l)
+	return c
+
 ## Senkrechter Verlauf als Textur, von `top` nach `bottom`.
 static func vertical_gradient(top: Color, bottom: Color) -> GradientTexture2D:
 	var g := Gradient.new()

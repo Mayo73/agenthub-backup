@@ -70,3 +70,22 @@ func test_merkmale_reihenfolge() -> void:
 	card.set_profile(sam)
 
 	check(card.facts_label.get_index() > card.bio_label.get_index(), "facts_label kommt nach bio_label in der VBoxContainer")
+
+func test_stempel_anfangs_unsichtbar() -> void:
+	check(not card.like_stamp.visible, "SPARRING-Stempel anfangs unsichtbar")
+	check(not card.pass_stamp.visible, "NEIN-Stempel anfangs unsichtbar")
+	check_eq((card.like_stamp.get_child(0) as Label).text, "SPARRING", "Text des Ja-Stempels")
+	check_eq((card.pass_stamp.get_child(0) as Label).text, "NEIN", "Text des Nein-Stempels")
+	check(card.get_child(card.get_child_count() - 1) == card.stamp_layer, "Stempel liegen zuoberst")
+
+
+func test_stempel_zeigen() -> void:
+	card.show_stamp(SwipeGesture.Result.LIKE, 0.6)
+	check(card.like_stamp.visible, "LIKE zeigt den Ja-Stempel")
+	check(is_equal_approx(card.like_stamp.modulate.a, 0.6), "Deckkraft folgt der Stärke")
+	check(not card.pass_stamp.visible, "LIKE versteckt den Nein-Stempel")
+	card.show_stamp(SwipeGesture.Result.PASS, 1.0)
+	check(card.pass_stamp.visible, "PASS zeigt den Nein-Stempel")
+	check(not card.like_stamp.visible, "PASS versteckt den Ja-Stempel")
+	card.show_stamp(SwipeGesture.Result.NONE, 0.0)
+	check(not card.like_stamp.visible and not card.pass_stamp.visible, "NONE versteckt beide")

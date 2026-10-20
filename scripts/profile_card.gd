@@ -13,6 +13,10 @@ var level_chip: PanelContainer
 var level_label: Label
 var bio_label: Label
 var facts_label: Label
+## Stempel beim Wischen, über Porträt und Text.
+var stamp_layer: Control
+var like_stamp: PanelContainer
+var pass_stamp: PanelContainer
 
 var profile: SparProfile = null
 
@@ -77,6 +81,20 @@ func _init():
 	facts_label = UiStyle.label("", UiStyle.SIZE_SMALL, UiStyle.TEXT.darkened(0.15))
 	vbox.add_child(facts_label)
 
+	stamp_layer = Control.new()
+	stamp_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(stamp_layer)
+	like_stamp = UiStyle.stamp("SPARRING", UiStyle.LIKE)
+	like_stamp.rotation = -0.3
+	like_stamp.position = Vector2(40, 120)
+	like_stamp.visible = false
+	stamp_layer.add_child(like_stamp)
+	pass_stamp = UiStyle.stamp("NEIN", UiStyle.PASS)
+	pass_stamp.rotation = 0.3
+	pass_stamp.position = Vector2(360, 100)
+	pass_stamp.visible = false
+	stamp_layer.add_child(pass_stamp)
+
 
 func set_profile(p: SparProfile) -> void:
 	profile = p
@@ -95,3 +113,12 @@ func set_profile(p: SparProfile) -> void:
 	bio_label.text = p.bio
 	facts_label.text = ProfileFacts.all_text(p)
 	avatar.set_profile(p)
+
+
+## Zeigt beim Wischen den passenden Stempel, umso deutlicher, je größer `strength` ist.
+func show_stamp(kind: int, strength: float) -> void:
+	var on := strength > 0.0
+	like_stamp.visible = on and kind == SwipeGesture.Result.LIKE
+	pass_stamp.visible = on and kind == SwipeGesture.Result.PASS
+	like_stamp.modulate.a = strength
+	pass_stamp.modulate.a = strength
