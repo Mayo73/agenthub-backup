@@ -34,7 +34,7 @@ func run() -> void:
 	scene.tab_buttons["entdecken"].pressed.emit()
 	await wait(0.3)
 
-	var discover := scene.screen as DiscoverScreen
+	var discover: DiscoverScreen = scene.screen as DiscoverScreen
 	discover.like_button.pressed.emit()  # Match mit Sam
 	await wait(0.3)
 	for _i in range(6):
@@ -55,7 +55,7 @@ func run() -> void:
 	# 4. Treffvorschlag öffnen → Hinweis kein Treffvorschlag
 	(scene.screen as ChatScreen).meeting_button.pressed.emit()
 	await wait(0.3)
-	var ms := scene.screen as MeetingScreen
+	var ms: MeetingScreen = scene.screen as MeetingScreen
 	check(ms.status_label.text == "Noch kein Treffvorschlag.", "Hinweis: noch kein Treffvorschlag")
 
 	# 5. Unvollständigen Vorschlag machen (nur Ort, kein Datum)
