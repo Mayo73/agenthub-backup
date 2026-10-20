@@ -57,6 +57,44 @@ static func time_text(seconds: float) -> String:
 	return "%d:%02d" % [minuten, sekunden]
 
 
+func count(kind: String) -> int:
+	var c := 0
+	for entry in entries:
+		if entry["kind"] == kind:
+			c += 1
+	return c
+
+
+func phase_time(phase: String) -> float:
+	var times: Array[float] = []
+	for entry in entries:
+		if entry["phase"] == phase:
+			times.append(entry["time"])
+	if times.is_empty():
+		return 0.0
+	return times.max() - times.min()
+
+
+func summary_lines() -> Array[String]:
+	var lines: Array[String] = []
+	lines.append("Entwicklungsschritte: %d" % size())
+	lines.append("Editorbesuche: %d" % count(EDITOR))
+	lines.append("Zeit als Zelle: %s" % time_text(phase_time("zelle")))
+
+	if has_entries_with_phase(FISH):
+		lines.append("Fischgrößen: %d" % count(FISH_SIZE))
+		lines.append("Verbesserungen: %d" % count(UPGRADE))
+
+	return lines
+
+
+func has_entries_with_phase(phase: String) -> bool:
+	for entry in entries:
+		if entry["phase"] == phase:
+			return true
+	return false
+
+
 func to_dict() -> Dictionary:
 	var result := {"entries": []}
 	for entry in entries:

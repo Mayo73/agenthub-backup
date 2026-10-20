@@ -61,3 +61,48 @@ func test_speichern() -> void:
 	check(last_color.r >= farbe.r - 0.001 && last_color.r <= farbe.r + 0.001, "rot farbe beim speichern")
 	check(last_color.g >= farbe.g - 0.001 && last_color.g <= farbe.g + 0.001, "gruen farbe beim speichern")
 	check(last_color.b >= farbe.b - 0.001 && last_color.b <= farbe.b + 0.001, "blau farbe beim speichern")
+
+
+func test_zaehlen() -> void:
+	timeline.add(EvolutionTimeline.START, "Start", Diet.PFLANZENFRESSER, 0.0, Color.WHITE)
+	timeline.add(EvolutionTimeline.STAGE, "Abschnitt", Diet.FLEISCHFRESSER, 60.0, Color.ORANGE)
+	timeline.add(EvolutionTimeline.EDITOR, "Editor", Diet.ALLESFRESSER, 30.0, Color.CYAN)
+	timeline.add(EvolutionTimeline.EDITOR, "Nochmal Editor", Diet.PFLANZENFRESSER, 90.0, Color.YELLOW)
+
+	check_eq(timeline.count(EvolutionTimeline.EDITOR), 2, "count(EDITOR) ist 2")
+	check_eq(timeline.count(EvolutionTimeline.FISH), 0, "count(FISH) ist 0")
+
+
+func test_zeit_als_zelle() -> void:
+	var timeline2 := EvolutionTimeline.new()
+	timeline2.add(EvolutionTimeline.START, "Start", Diet.PFLANZENFRESSER, 10.0, Color.WHITE, "zelle")
+	timeline2.add(EvolutionTimeline.STAGE, "Abschnitt", Diet.FLEISCHFRESSER, 130.0, Color.ORANGE, "zelle")
+
+	check_eq(timeline2.phase_time("zelle"), 120.0, "phase_time mit zwei Zelleinträgen")
+
+	var leere := EvolutionTimeline.new()
+	check_eq(leere.phase_time("zelle"), 0.0, "phase_time auf leerem Zeitstrahl ist 0.0")
+
+
+func test_zusammenfassung_zelle() -> void:
+	var timeline2 := EvolutionTimeline.new()
+	timeline2.add(EvolutionTimeline.START, "Start", Diet.PFLANZENFRESSER, 0.0, Color.WHITE)
+	timeline2.add(EvolutionTimeline.EDITOR, "Editorbesuch", Diet.FLEISCHFRESSER, 75.0, Color.ORANGE)
+
+	var lines: Array[String] = timeline2.summary_lines()
+	check_eq(lines.size(), 3, "genau 3 Zeilen")
+	check_eq(lines[0], "Entwicklungsschritte: 2", "erste zeile")
+	check_eq(lines[1], "Editorbesuche: 1", "zweite zeile")
+	check_eq(lines[2], "Zeit als Zelle: 1:15", "dritte zeile")
+
+
+func test_zusammenfassung_fisch() -> void:
+	var timeline2 := EvolutionTimeline.new()
+	timeline2.add(EvolutionTimeline.START, "Start", Diet.PFLANZENFRESSER, 0.0, Color.WHITE)
+	timeline2.add(EvolutionTimeline.EDITOR, "Editorbesuch", Diet.FLEISCHFRESSER, 75.0, Color.ORANGE)
+	timeline2.add(EvolutionTimeline.FISH_SIZE, "Großer Fisch", Diet.ALLESFRESSER, 100.0, Color.CYAN, "fisch")
+
+	var lines: Array[String] = timeline2.summary_lines()
+	check_eq(lines.size(), 5, "genau 5 Zeilen bei Fisch-Phase")
+	check_eq(lines[3], "Fischgrößen: 1", "vierte zeile")
+	check_eq(lines[4], "Verbesserungen: 0", "fünfte zeile")
