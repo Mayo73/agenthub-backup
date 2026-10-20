@@ -8,6 +8,7 @@ const TEXTS := {
 	"partner": "Du bist gewachsen! Drücke C oder die rechte Maustaste, um einen Partner zu rufen.",
 	"editor": "Im Zelleditor baust du deine Zelle um. Neue Teile kosten DNA.",
 	"gefahr": "Vorsicht! Andere Zellen können dich beißen. Flieh oder wehr dich.",
+	"zum_fisch": "Du kannst jetzt zum Fisch werden: Rufe einen Partner und wähle im Editor „Zum Fisch entwickeln“.",
 }
 
 var shown: Array[String] = []

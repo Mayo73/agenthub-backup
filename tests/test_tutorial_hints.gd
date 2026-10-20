@@ -31,4 +31,11 @@ func test_kaputte_daten() -> void:
 
 
 func test_alle_texte() -> void:
-	check_eq(TutorialHints.TEXTS.size(), 5, "fünf Hinweise definiert")
+	check_eq(TutorialHints.TEXTS.size(), 6, "sechs Hinweise definiert")
+
+
+func test_zum_fisch() -> void:
+	h = TutorialHints.new()
+	var text := h.trigger("zum_fisch")
+	check(text != "", "Hinweis zum_fisch existiert")
+	check(text.contains("Zum Fisch entwickeln"), "Text enthält „Zum Fisch entwickeln\"")

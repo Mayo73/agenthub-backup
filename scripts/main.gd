@@ -41,6 +41,7 @@ var audio: GameAudio
 var stats := RunStats.new()
 var end_screen: EndScreen
 var hints := TutorialHints.new()
+var zum_fisch_shown := false
 var slot_prefix := SaveSlots.PREFIX
 var slot_menu: SlotMenu
 ## Ernährung der gewünschten neuen Partie; "" = Fortsetzen.
@@ -249,6 +250,9 @@ func _process(delta: float) -> void:
 	hud.show_health(player_health)
 	hud.show_can_finish(PhaseEnd.can_finish(progress) and not finished)
 	hud.show_fish_hint(FishReadiness.hud_text(progress, unlocks))
+	if FishReadiness.is_ready(progress, unlocks) and not zum_fisch_shown:
+		hint("zum_fisch")
+		zum_fisch_shown = true
 
 
 ## Füllt die KI-Zellen auf EcoSpawner.TARGET_COUNT auf.
