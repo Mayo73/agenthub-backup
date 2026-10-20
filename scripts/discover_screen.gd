@@ -174,6 +174,7 @@ func _on_card_gui_input(event: InputEvent) -> void:
 			_reset_card_position()
 	elif event is InputEventScreenDrag:
 		gesture.move(event.position)
+		card.show_stamp(gesture.stamp_kind(), gesture.stamp_strength())
 		# Visuelle Rückmeldung während des Wischens
 		card.position.x = gesture.offset.x
 		card.rotation = gesture.tilt()
@@ -182,6 +183,7 @@ func _on_card_gui_input(event: InputEvent) -> void:
 func _reset_card_position() -> void:
 	card.position.x = 0.0
 	card.rotation = 0.0
+	card.show_stamp(SwipeGesture.Result.NONE, 0.0)
 
 
 func current() -> SparProfile:

@@ -145,3 +145,48 @@ func test_filter_aus_zustand() -> void:
 	check_eq(new_screen.art_filter.selected, 2, "art_filter.selected ist 2 für MMA")
 
 	new_screen.free()
+
+
+func test_stempel_beim_ziehen() -> void:
+	# Touch bei Vector2(100, 600)
+	var touch := InputEventScreenTouch.new()
+	touch.pressed = true
+	touch.position = Vector2(100.0, 600.0)
+	screen._on_card_gui_input(touch)
+
+	# Drag nach rechts → like_stamp sichtbar
+	var drag_right := InputEventScreenDrag.new()
+	drag_right.position = Vector2(180.0, 600.0)
+	screen._on_card_gui_input(drag_right)
+	check(screen.card.like_stamp.visible, "like_stamp soll sichtbar sein beim rechten Drag")
+	check(is_equal_approx(screen.card.like_stamp.modulate.a, 0.5), "like_stamp modulate.a ist 0.5")
+
+	# Drag nach links → pass_stamp sichtbar, like_stamp unsichtbar
+	var drag_left := InputEventScreenDrag.new()
+	drag_left.position = Vector2(-100.0, 600.0)
+	screen._on_card_gui_input(drag_left)
+	check(screen.card.pass_stamp.visible, "pass_stamp soll sichtbar sein beim linken Drag")
+	check(not screen.card.like_stamp.visible, "like_stamp soll unsichtbar sein nach linkem Drag")
+
+
+func test_stempel_nach_loslassen() -> void:
+	# Touch bei Vector2(100, 600)
+	var touch := InputEventScreenTouch.new()
+	touch.pressed = true
+	touch.position = Vector2(100.0, 600.0)
+	screen._on_card_gui_input(touch)
+
+	# Drag nach rechts (zu kurz für Entscheidung)
+	var drag_short := InputEventScreenDrag.new()
+	drag_short.position = Vector2(150.0, 600.0)
+	screen._on_card_gui_input(drag_short)
+
+	# Loslassen (pressed = false)
+	touch.pressed = false
+	screen._on_card_gui_input(touch)
+
+	# Beide Stempel unsichtbar
+	check(not screen.card.like_stamp.visible, "like_stamp soll nach Loslassen unsichtbar sein")
+	check(not screen.card.pass_stamp.visible, "pass_stamp soll nach Loslassen unsichtbar sein")
+	# current().id soll weiter p02 sein (keine Entscheidung)
+	check_eq(screen.current().id, "p02", "current().id bleibt p02 nach zu kurzem Drag")
