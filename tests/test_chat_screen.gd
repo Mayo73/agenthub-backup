@@ -53,6 +53,18 @@ func test_kopf() -> void:
 	check(not screen.closed_label.visible, "closed_label.visible falsch bei aktivem Match")
 
 
+func test_leer_mit_symbol() -> void:
+	# Leerer Chat → empty_icon.visible wahr
+	check(screen.empty_icon.visible, "empty_icon.visible wahr bei leerem Chat")
+
+	# Nachricht senden (wie in test_senden)
+	screen.input.text = "Hallo Sam"
+	screen.send_button.pressed.emit()
+
+	# Nach Senden → empty_icon.visible falsch
+	check(not screen.empty_icon.visible, "empty_icon.visible falsch nach Senden")
+
+
 func test_senden() -> void:
 	screen.input.text = "Hallo Sam"
 	screen.send_button.pressed.emit()
