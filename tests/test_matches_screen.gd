@@ -141,3 +141,11 @@ func test_neue_matches_oeffnet_chat() -> void:
 func test_ohne_matches_keine_reihe() -> void:
 	build()
 	check(not screen.new_section.visible, "new_section unsichtbar ohne Matches")
+
+
+func test_rand() -> void:
+	build()
+	var margin := screen.title_label.get_parent().get_parent() as MarginContainer
+	check(margin != null, "Überschrift liegt in einem MarginContainer")
+	check_eq(margin.get_theme_constant("margin_left"), UiStyle.GAP, "Rand links")
+	check_eq(margin.get_theme_constant("margin_top"), UiStyle.GAP, "Rand oben")

@@ -29,10 +29,10 @@ func _init(app_state: AppState) -> void:
 	add_child(scroll)
 
 	var margin := MarginContainer.new()
-	margin.set("margin_top", UiStyle.GAP)
-	margin.set("margin_bottom", UiStyle.GAP)
-	margin.set("margin_left", UiStyle.GAP)
-	margin.set("margin_right", UiStyle.GAP)
+	margin.add_theme_constant_override("margin_top", UiStyle.GAP)
+	margin.add_theme_constant_override("margin_bottom", UiStyle.GAP)
+	margin.add_theme_constant_override("margin_left", UiStyle.GAP)
+	margin.add_theme_constant_override("margin_right", UiStyle.GAP)
 	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(margin)
 
