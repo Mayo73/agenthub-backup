@@ -11,7 +11,8 @@ func setup() -> void:
 
 
 func teardown() -> void:
-	timeline_view.free()
+	if timeline_view and not timeline_view.is_inside_tree():
+		timeline_view.free()
 
 
 func test_eintraege() -> void:
@@ -46,3 +47,30 @@ func test_statistik() -> void:
 
 func test_titel() -> void:
 	check_eq(timeline_view.title_label.text, "Deine Entwicklung", "title_label.text ist 'Deine Entwicklung'")
+
+
+func test_viele_eintraege() -> void:
+	for i in range(20):
+		evolution_timeline.add_without_phase("schritt", "S%d" % i, Diet.PFLANZENFRESSER, float(i), Color.TURQUOISE)
+	timeline_view.show_timeline(evolution_timeline)
+	check_eq(timeline_view.item_count(), 12, "item_count() ist 12 bei 20 Einträgen")
+	check(timeline_view.more_label.visible, "more_label.visible ist wahr bei vielen Einträgen")
+	check_eq(timeline_view.more_label.text, "+8 frühere", "more_label.text ist '+8 frühere'")
+
+
+func test_wenige_eintraege() -> void:
+	evolution_timeline.add_without_phase("schritt", "S0", Diet.PFLANZENFRESSER, 0.0, Color.TURQUOISE)
+	evolution_timeline.add_without_phase("schritt", "S1", Diet.FLEISCHFRESSER, 1.0, Color.ORANGE)
+	evolution_timeline.add_without_phase("schritt", "S2", Diet.ALLESFRESSER, 2.0, Color.PINK)
+	timeline_view.show_timeline(evolution_timeline)
+	check_eq(timeline_view.item_count(), 3, "item_count() ist 3 bei 3 Einträgen")
+	check(not timeline_view.more_label.visible, "more_label.visible ist falsch bei wenigen Einträgen")
+
+
+func test_letzte_gezeigt() -> void:
+	for i in range(20):
+		evolution_timeline.add_without_phase("schritt", "S%d" % i, Diet.PFLANZENFRESSER, float(i), Color.TURQUOISE)
+	timeline_view.show_timeline(evolution_timeline)
+	var children := timeline_view.strip.get_children()
+	var last_item := children[children.size() - 1] as TimelineItem
+	check_eq(last_item.entry["label"], "S19", "letztes Kind ist TimelineItem mit label 'S19'")

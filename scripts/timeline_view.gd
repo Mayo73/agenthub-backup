@@ -5,12 +5,14 @@ extends Control
 
 const ITEM_SIZE := Vector2(96, 120)
 const GAP := 12.0
+const MAX_ITEMS := 12
 
 var timeline: EvolutionTimeline
 var backdrop: ColorRect
 var content: VBoxContainer
 var strip: HBoxContainer
 var title_label: Label
+var more_label: Label
 var stats_label: Label
 
 
@@ -36,6 +38,11 @@ func _init() -> void:
 	strip.name = "Strip"
 	strip.add_theme_constant_override("separation", int(GAP))
 	content.add_child(strip)
+	more_label = Label.new()
+	more_label.name = "More"
+	more_label.set("theme_override_colors/font_color", Color(1, 1, 1, 0.7))
+	more_label.add_theme_font_size_override("font_size", 22)
+	content.add_child(more_label)
 	stats_label = Label.new()
 	stats_label.name = "StatsLabel"
 	stats_label.add_theme_font_size_override("font_size", 22)
@@ -60,7 +67,15 @@ func show_timeline(t: EvolutionTimeline) -> void:
 	timeline = t
 	for child in strip.get_children():
 		child.free()
-	for entry in timeline.entries:
+	var entry_start := 0
+	if timeline.entries.size() > MAX_ITEMS:
+		entry_start = timeline.entries.size() - MAX_ITEMS
+		more_label.text = "+%d frühere" % (timeline.entries.size() - MAX_ITEMS)
+		more_label.visible = true
+	else:
+		more_label.visible = false
+	for i in range(entry_start, timeline.entries.size()):
+		var entry := timeline.entries[i]
 		var item := TimelineItem.create(entry)
 		item.custom_minimum_size = ITEM_SIZE
 		strip.add_child(item)
