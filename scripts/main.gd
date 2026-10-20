@@ -65,6 +65,7 @@ func _ready() -> void:
 	layout.add_child(tab_bar)
 
 	show_screen("entdecken")
+	update_badges()
 
 
 ## Zeigt einen Bildschirm im Inhaltsbereich; der vorherige wird entfernt.
@@ -81,6 +82,7 @@ func show_screen(screen_name: String) -> void:
 	current_screen = screen_name
 	for n in tab_buttons:
 		(tab_buttons[n] as Button).disabled = n == screen_name
+	update_badges()
 
 
 ## Zeigt den Chat zu einem Match; der Reiter „Matches" bleibt als aktiv markiert.
@@ -99,6 +101,7 @@ func show_chat(match_id: String) -> void:
 	current_screen = "chat"
 	for n in tab_buttons:
 		(tab_buttons[n] as Button).disabled = n == "matches"
+	update_badges()
 
 
 ## Zeigt das Treffen zu einem Match; der Reiter „Matches" bleibt als aktiv markiert.
@@ -127,6 +130,7 @@ func _on_switched(id: String) -> void:
 		show_screen("matches")
 	else:
 		show_screen(current_screen)
+	update_badges()
 
 
 func save() -> void:
@@ -146,6 +150,7 @@ func reset_demo() -> void:
 	state = StateStore.reset(store_path)
 	perspective.set_state(state)
 	show_screen("entdecken")
+	update_badges()
 
 
 func _on_reset_demo() -> void:
@@ -156,6 +161,21 @@ func _on_reset_demo() -> void:
 func _on_profile_changed() -> void:
 	save()
 	perspective.set_state(state)
+
+
+## Badge der Reiter aktualisieren: zeigt Anzahl der laufenden Matches beim aktuellen Reiter an.
+func update_badges() -> void:
+	## Zählt die Matches aus state.my_matches() ohne ended_by (leer oder fehlend) und setzt
+	## tab_buttons["matches"].text auf TAB_ICONS["matches"] + "\n" + TAB_TITLES["matches"],
+	## bei mindestens einem Match ergänzt um " · %d" % anzahl.
+	## bei mindestens einem Match ergänzt um " · %d" % anzahl.
+	var matches := state.my_matches()
+	var anzahl := 0
+	for m in matches:
+		if m.get("ended_by", "") == "":
+			anzahl += 1
+	var base_text := TAB_ICONS["matches"] + "\n" + TAB_TITLES["matches"]
+	tab_buttons["matches"].text = base_text if anzahl == 0 else base_text + " · %d" % anzahl
 
 
 ## Baut den Bildschirm zu einem Namen. Noch nicht umgesetzte Bildschirme zeigen nur den Titel.

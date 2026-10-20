@@ -198,3 +198,32 @@ func test_match_oeffnet_chat() -> void:
 	check_eq(main.current_screen, "chat", "current_screen ist 'chat' nach Write-Klick")
 
 	DirAccess.remove_absolute(TEST_PATH)
+
+
+func test_reiter_zahl_start() -> void:
+	## Nach dem Start mit frischem Demozustand ist tab_buttons["matches"].text gleich
+	## "♥\nMatches", ergänzt um " · n", wenn n (Zahl der laufenden Matches aus state.my_matches()) größer 0 ist.
+	main.reset_demo()
+	var anzahl := 0
+	for m in main.state.my_matches():
+		if m.get("ended_by", "") == "":
+			anzahl += 1
+	var expected := Main.TAB_ICONS["matches"] + "\n" + Main.TAB_TITLES["matches"]
+	if anzahl > 0:
+		expected += " · %d" % anzahl
+	check_eq(main.tab_buttons["matches"].text, expected, "Reiter zeigt korrekte Anzahl am Start")
+
+
+func test_reiter_zaehlt_match() -> void:
+	## Zwei Testpersonen gegenseitig liken (wie in den bestehenden Tests), danach update_badges() → Text endet auf " · %d" % n mit n ≥ 1 aus state.my_matches().
+	main.use_store(TEST_PATH)
+	make_match()
+	var anzahl := 0
+	for m in main.state.my_matches():
+		if m.get("ended_by", "") == "":
+			anzahl += 1
+	check(anzahl >= 1, "es gibt mindestens ein laufendes Match")
+	main.update_badges()
+	var expected_suffix := " · %d" % anzahl
+	check(main.tab_buttons["matches"].text.ends_with(expected_suffix), "Reiter zeigt korrekte Anzahl nach update_badges()")
+	DirAccess.remove_absolute(TEST_PATH)
