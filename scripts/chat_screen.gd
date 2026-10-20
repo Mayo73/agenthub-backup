@@ -39,18 +39,19 @@ func _init(app_state: AppState, id: String) -> void:
 	# Kopf: HBoxContainer mit Zurück-Button, Avatar und Titel
 	var header := HBoxContainer.new()
 	header.custom_minimum_size = Vector2(0, 100)
+	header.add_theme_constant_override("separation", UiStyle.GAP)
 	layout.add_child(header)
 
-	back_button = UiStyle.button("‹ Zurück")
-	back_button.custom_minimum_size = Vector2(0, 64)
+	back_button = UiStyle.round_button("‹", UiStyle.TEXT, 64)
 	header.add_child(back_button)
 
 	avatar = AvatarView.new()
 	avatar.set_diameter(64.0)
 	header.add_child(avatar)
 
-	title_label = UiStyle.label("", UiStyle.SIZE_NORMAL)
+	title_label = UiStyle.label("", UiStyle.SIZE_TITLE)
 	title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title_label)
 
 	# Demo-Hinweis
@@ -78,9 +79,12 @@ func _init(app_state: AppState, id: String) -> void:
 	# ScrollContainer mit messages_box
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	layout.add_child(scroll)
 
 	messages_box = VBoxContainer.new()
+	messages_box.add_theme_constant_override("separation", 10)
+	messages_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(messages_box)
 
 	# Leerzustand
@@ -105,8 +109,9 @@ func _init(app_state: AppState, id: String) -> void:
 	input.max_length = ChatLog.MAX_LENGTH
 	input.placeholder_text = "Nachricht schreiben …"
 	input_hbox.add_child(input)
+	UiStyle.style_input(input)
 
-	send_button = UiStyle.button("Senden", UiStyle.ACCENT)
+	send_button = UiStyle.round_button("➤", UiStyle.ACCENT, 72)
 	input_hbox.add_child(send_button)
 
 	# ConfirmDialog als letztes Kind direkt am Bildschirm
@@ -128,10 +133,10 @@ func _init(app_state: AppState, id: String) -> void:
 
 func other() -> SparProfile:
 	var m := state.book.get_match(match_id)
-	if m.is_empty():
-		return null
-	var other_id := state.book.other(m, state.active_id)
-	return state.profile(other_id)
+	if not m.is_empty():
+		var other_id := state.book.other(m, state.active_id)
+		return state.profile(other_id)
+	return null
 
 
 func refresh() -> void:
@@ -149,20 +154,14 @@ func refresh() -> void:
 		messages_box.remove_child(c)
 		c.free()
 
-	# Nachrichten anzeigen
+	# Nachrichten anzeigen als Sprechblasen
 	var msgs := state.chat.messages_for(match_id)
 	if msgs.is_empty():
 		empty_label.visible = true
 	else:
 		empty_label.visible = false
 		for msg in msgs:
-			var label := UiStyle.label(msg["text"])
-			if msg["from"] == state.active_id:
-				label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-				label.add_theme_color_override("font_color", UiStyle.ACCENT)
-			else:
-				label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-				label.add_theme_color_override("font_color", UiStyle.TEXT)
+			var label := UiStyle.bubble(msg["text"], msg["from"] == state.active_id)
 			messages_box.add_child(label)
 
 	# Writable prüfen und geschlossene Matches anzeigen
