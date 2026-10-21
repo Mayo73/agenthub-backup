@@ -63,9 +63,9 @@ func test_to_dict() -> void:
 	camera.position = Vector2(3.0, 4.0)
 	camera.bounds = Rect2(-10.0, -5.0, 100.0, 50.0)
 	var d: Dictionary = camera.to_dict()
-	check_eq(d["position"], Vector2(3.0, 4.0), "position in Dictionary")
-	check_eq(d["view_size"], camera.view_size, "view_size in Dictionary")
-	check_eq(d["dead_zone"], camera.dead_zone, "dead_zone in Dictionary")
+	check_eq(d["position"], [3.0, 4.0], "position in Dictionary")
+	check_eq(d["view_size"], [20.0, 11.25], "view_size in Dictionary")
+	check_eq(d["dead_zone"], [2.0, 1.5], "dead_zone in Dictionary")
 	check_eq(d["smoothing"], 8.0, "smoothing in Dictionary")
 	check_eq(d["bounds"].get("position_x"), -10.0, "bounds position_x in Dictionary")
 	check_eq(d["bounds"].get("size_x"), 100.0, "bounds size_x in Dictionary")
@@ -93,3 +93,20 @@ func test_from_dict() -> void:
 	## bounds werden aus den vier Feldern korrekt gesetzt
 	check_eq(cam.bounds.position.x, -5.0, "bounds position_x aus Dictionary")
 	check_eq(cam.bounds.size.x, 200.0, "bounds size_x aus Dictionary")
+
+
+func test_schmal_in_einer_achse() -> void:
+	## Level breiter als das Bild, aber niedriger: x wird begrenzt, y in die Mitte
+	camera.bounds = Rect2(0.0, 0.0, 100.0, 5.0)
+	var result: Vector2 = camera.clamp_to_bounds(Vector2(-40.0, 40.0))
+	check_eq(result, Vector2(10.0, 2.5), "x an der Grenze, y in der Mitte")
+
+
+func test_speichern_json() -> void:
+	camera.position = Vector2(3.0, 4.0)
+	camera.bounds = Rect2(-10.0, -5.0, 100.0, 50.0)
+	var text := JSON.stringify(camera.to_dict())
+	var cam: FollowCamera2D = FollowCamera2D.from_dict(JSON.parse_string(text))
+	check_eq(cam.position, Vector2(3.0, 4.0), "position aus JSON")
+	check_eq(cam.view_size, camera.view_size, "view_size aus JSON")
+	check_eq(cam.bounds.size.x, 100.0, "bounds aus JSON")

@@ -52,18 +52,19 @@ func clamp_to_bounds(p: Vector2) -> Vector2:
 	var half_view: Vector2 = view_size * 0.5
 	var half_bounds: Vector2 = bounds.size * 0.5
 
-	if half_bounds.x < half_view.x or half_bounds.y < half_view.y:
-		return bounds.position + half_bounds
-
+	var center: Vector2 = bounds.position + half_bounds
 	var result: Vector2 = p
 
-	var min_x: float = bounds.position.x + half_view.x
-	var max_x: float = bounds.end.x - half_view.x
-	result.x = clampf(result.x, min_x, max_x)
+	# Jede Achse für sich: ist das Level dort schmaler als das Bild, die Mitte nehmen
+	if half_bounds.x < half_view.x:
+		result.x = center.x
+	else:
+		result.x = clampf(result.x, bounds.position.x + half_view.x, bounds.end.x - half_view.x)
 
-	var min_y: float = bounds.position.y + half_view.y
-	var max_y: float = bounds.end.y - half_view.y
-	result.y = clampf(result.y, min_y, max_y)
+	if half_bounds.y < half_view.y:
+		result.y = center.y
+	else:
+		result.y = clampf(result.y, bounds.position.y + half_view.y, bounds.end.y - half_view.y)
 
 	return result
 
@@ -97,20 +98,29 @@ func to_dict() -> Dictionary:
 			"size_y": bounds.size.y
 		}
 	return {
-		"position": position,
-		"view_size": view_size,
-		"dead_zone": dead_zone,
+		"position": [position.x, position.y],
+		"view_size": [view_size.x, view_size.y],
+		"dead_zone": [dead_zone.x, dead_zone.y],
 		"smoothing": smoothing,
 		"bounds": bounds_dict
 	}
 
 
+## Liest einen Vektor als [x, y] (JSON) oder Vector2
+static func _vec(value: Variant, fallback: Vector2) -> Vector2:
+	if value is Vector2:
+		return value
+	if value is Array and value.size() >= 2:
+		return Vector2(float(value[0]), float(value[1]))
+	return fallback
+
+
 ## Erstellt eine neue FollowCamera2D aus einem Dictionary
 static func from_dict(d: Dictionary) -> FollowCamera2D:
 	var cam: FollowCamera2D = FollowCamera2D.new()
-	cam.position = d.get("position", Vector2.ZERO)
-	cam.view_size = d.get("view_size", Vector2(20.0, 11.25))
-	cam.dead_zone = d.get("dead_zone", Vector2(2.0, 1.5))
+	cam.position = _vec(d.get("position"), Vector2.ZERO)
+	cam.view_size = _vec(d.get("view_size"), Vector2(20.0, 11.25))
+	cam.dead_zone = _vec(d.get("dead_zone"), Vector2(2.0, 1.5))
 	cam.smoothing = float(d.get("smoothing", 8.0))
 	cam.bounds = Rect2()
 
