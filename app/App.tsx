@@ -46,10 +46,14 @@ export function AppShell() {
   );
 }
 
+import { AppDataProvider } from './src/state/AppDataContext';
+
 export default function App() {
   return (
     <SafeAreaProvider>
-      <AppShell />
+      <AppDataProvider>
+        <AppShell />
+      </AppDataProvider>
     </SafeAreaProvider>
   );
 }
