@@ -23,6 +23,7 @@ export default function ConfirmDialog({
     <Modal
       transparent={true}
       animationType="fade"
+      visible={visible}
       onRequestClose={onCancel}>
       <View style={styles.overlay}>
         <View style={styles.dialog}>

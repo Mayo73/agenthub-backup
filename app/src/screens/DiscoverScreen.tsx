@@ -37,27 +37,29 @@ export default function DiscoverScreen() {
         Du bist: {meProfile?.name || 'Unbekannt'} (Demo)
       </Text>
       <ProfileCard profile={top} />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[styles.roundButton, { borderColor: colors.pass }]}
-          onPress={handlePass}
-          testID="btn-pass"
-          accessibilityLabel="Überspringen"
-        >
-          <Text style={{ color: colors.pass, fontSize: sizes.normal }}>✕</Text>
-        </TouchableOpacity>
-        <Text style={styles.buttonLabel}>Überspringen</Text>
-      </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[styles.roundButton, { borderColor: colors.like }]}
-          onPress={handleLike}
-          testID="btn-like"
-          accessibilityLabel="Interesse"
-        >
-          <Text style={{ color: colors.like, fontSize: sizes.normal }}>♥</Text>
-        </TouchableOpacity>
-        <Text style={styles.buttonLabel}>Interesse</Text>
+      <View style={styles.buttonRow}>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[styles.roundButton, { borderColor: colors.pass }]}
+            onPress={handlePass}
+            testID="btn-pass"
+            accessibilityLabel="Überspringen"
+          >
+            <Text style={{ color: colors.pass, fontSize: sizes.normal }}>✕</Text>
+          </TouchableOpacity>
+          <Text style={styles.buttonLabel}>Überspringen</Text>
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[styles.roundButton, { borderColor: colors.like }]}
+            onPress={handleLike}
+            testID="btn-like"
+            accessibilityLabel="Interesse"
+          >
+            <Text style={{ color: colors.like, fontSize: sizes.normal }}>♥</Text>
+          </TouchableOpacity>
+          <Text style={styles.buttonLabel}>Interesse</Text>
+        </View>
       </View>
     </View>
   );
@@ -82,7 +84,7 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: sizes.title,
-    fontWeight: 600,
+    fontWeight: '600',
     color: colors.text,
     marginBottom: sizes.gap,
   },
@@ -91,6 +93,12 @@ const styles = StyleSheet.create({
     color: colors.muted,
     textAlign: 'center',
   },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: sizes.gap * 3,
+    marginTop: sizes.gap,
+  },
   buttonContainer: {
     alignItems: 'center',
     marginVertical: sizes.gap / 2,
@@ -98,7 +106,7 @@ const styles = StyleSheet.create({
   roundButton: {
     width: sizes.roundButton,
     height: sizes.roundButton,
-    borderRadius: sizes.radius,
+    borderRadius: sizes.roundButton / 2,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
