@@ -2,9 +2,7 @@ extends RefCounted
 class_name TileGrid
 
 ## Größe einer Kachel in Metern
-var cell_size: float = 1.0:
-	set(value):
-		cell_size = value
+var cell_size: float = 1.0
 
 ## Zellen als Dictionary (Schlüssel Vector2i → Kachelart als String)
 var cells: Dictionary = {}

@@ -22,7 +22,7 @@ func find(id: String) -> AiJob:
 	return null
 
 
-## Brecht den Auftrag mit der angegebenen Kennung ab.
+## Bricht den Auftrag mit der angegebenen Kennung ab.
 func cancel(id: String) -> CommandResult:
 	var job := find(id)
 	if job == null:
@@ -36,7 +36,7 @@ func cancel(id: String) -> CommandResult:
 
 ## Gibt alle laufenden Aufträge (noch nicht fertig) in Listenreihenfolge zurück.
 func running() -> Array[AiJob]:
-	var result := []
+	var result: Array[AiJob] = []
 	for job in jobs:
 		if not job.is_finished():
 			result.append(job)
