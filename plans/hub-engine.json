@@ -1,163 +1,216 @@
 {
-    "project":  "hub-engine",
-    "title":  "Hub Engine",
-    "goal":  "Modulare Windows-Spielengine auf Godot für 2D und 3D mit Physik und Ballistik, deutschem Editor und vollständiger Steuerung durch ChatGPT, Claude und lokale Agenten.",
-    "target":  "Abnahme",
-    "milestones":  [
-                       {
-                           "id":  "M0",
-                           "title":  "Grundgerüst",
-                           "description":  "Godot-4.7-Projekt, Prüfsystem (verify.cmd, Testlauf), Spieltest, CommandResult mit Fehlercodes, Architektur und Abgrenzung zu Godot (docs/ARCHITEKTUR.md).",
-                           "by":  "Claude",
-                           "done":  true,
-                           "tickets":  [
-
-                                       ],
-                           "tasks":  [
-
-                                     ]
-                       },
-                       {
-                           "id":  "M1",
-                           "title":  "Kern: Befehle, Szenen, Revisionen",
-                           "description":  "Phase 1: Szenenmodell mit stabilen Kennungen, Befehlsmodell mit Fähigkeitenverzeichnis, Szenenbefehle, Schreibkoordinator mit Konflikterkennung, Rückgängig und Checkpoints, erlaubte Pfade.",
-                           "estimate":  10,
-                           "tickets":  [
-                                           "T-0373",
-                                           "T-0374",
-                                           "T-0375",
-                                           "T-0376",
-                                           "T-0377",
-                                           "T-0379",
-                                           "T-0384",
-                                           "T-0403",
-                                           "T-0404",
-                                           "T-0405"
-                                       ],
-                           "tasks":  [
-
-                                     ]
-                       },
-                       {
-                           "id":  "M2",
-                           "title":  "Module",
-                           "description":  "Phase 1: Modulvertrag, Abhängigkeiten, Aktivieren und Deaktivieren, inkompatible Module abweisen, Beispielmodul mit Anleitung.",
-                           "estimate":  4,
-                           "tickets":  [
-                                           "T-0378",
-                                           "T-0383",
-                                           "T-0396",
-                                           "T-0406"
-                                       ],
-                           "tasks":  [
-
-                                     ]
-                       },
-                       {
-                           "id":  "M3",
-                           "title":  "Ballistik und Testeingaben",
-                           "description":  "Phase 1: analytische und simulierte Flugbahn (120 Hz), Trefferprüfung ohne Durchtunneln, Rückprall, Testeingaben je Simulationsschritt.",
-                           "estimate":  7,
-                           "tickets":  [
-                                           "T-0380",
-                                           "T-0381",
-                                           "T-0382",
-                                           "T-0385",
-                                           "T-0398",
-                                           "T-0400",
-                                           "T-0414"
-                                       ],
-                           "tasks":  [
-
-                                     ]
-                       },
-                       {
-                           "id":  "M4",
-                           "title":  "Durchstich: Laufzeit, CLI, Editor, Export",
-                           "description":  "Phase 1: Szenenmodell in echte Godot-Szenen übersetzen, Zustand abfragen, CLI für alle Befehle, Aufträge mit Fortschritt und Abbruch, Projektvorlagen, erster Editor mit Szenenbaum, Auswahl und Suche, Windows-Export mit Vorabprüfung (braucht die Godot-Exportvorlagen).",
-                           "estimate":  17,
-                           "tickets":  [
-                                           "T-0386",
-                                           "T-0387",
-                                           "T-0388",
-                                           "T-0389",
-                                           "T-0390",
-                                           "T-0391",
-                                           "T-0392",
-                                           "T-0393",
-                                           "T-0394",
-                                           "T-0395",
-                                           "T-0397",
-                                           "T-0399",
-                                           "T-0407",
-                                           "T-0408",
-                                           "T-0409",
-                                           "T-0410",
-                                           "T-0411"
-                                       ],
-                           "tasks":  [
-
-                                     ]
-                       },
-                       {
-                           "id":  "M5",
-                           "title":  "2D-Arbeitsablauf",
-                           "description":  "Phase 2: Assets, Spielverhalten, 2D-Physik (Körper, Kollision, Trigger, Gruppen), Projektile, 2D-Referenzspiel.",
-                           "estimate":  15,
-                           "tickets":  [
-                                           "T-0401",
-                                           "T-0402",
-                                           "T-0412",
-                                           "T-0413",
-                                           "T-0415",
-                                           "T-0416",
-                                           "T-0417",
-                                           "T-0418"
-                                       ],
-                           "tasks":  [
-
-                                     ]
-                       },
-                       {
-                           "id":  "M6",
-                           "title":  "3D-Arbeitsablauf",
-                           "description":  "Phase 3: Kamera, Licht, Materialien, 3D-Physik und Ballistik, 3D-Referenzspiel.",
-                           "estimate":  15,
-                           "tickets":  [
-                                           "T-0419",
-                                           "T-0420",
-                                           "T-0421",
-                                           "T-0422",
-                                           "T-0425"
-                                       ],
-                           "tasks":  [
-
-                                     ]
-                       },
-                       {
-                           "id":  "M7",
-                           "title":  "KI, Agenten und Hub",
-                           "description":  "Phase 4: Provideradapter, KI-Arbeitsabläufe, MCP-Adapter für ChatGPT und Claude, lokaler Agent, Hub-Adapter mit Aufträgen und Abbruch.",
-                           "estimate":  15,
-                           "tickets":  [
-                                           "T-0423",
-                                           "T-0424"
-                                       ],
-                           "tasks":  [
-
-                                     ]
-                       },
-                       {
-                           "id":  "M8",
-                           "title":  "Abnahme",
-                           "description":  "Phase 5: Abnahmekriterien 1–17 als Tests und Spieltests, eigenständige Windows-Exporte, Agentenverbindungen, Anleitung, Prüfung durch dich.",
-                           "estimate":  10,
-                           "tickets":  [
-
-                                       ],
-                           "tasks":  [
-
-                                     ]
-                       }
-                   ]
+   "project" : "hub-engine",
+   "goal" : "Modulare Windows-Spielengine auf Godot für 2D und 3D mit Physik und Ballistik, deutschem Editor und vollständiger Steuerung durch ChatGPT, Claude und lokale Agenten.",
+   "milestones" : [
+      {
+         "tickets" : [],
+         "done" : true,
+         "title" : "Grundgerüst",
+         "by" : "Claude",
+         "id" : "M0",
+         "tasks" : [],
+         "description" : "Godot-4.7-Projekt, Prüfsystem (verify.cmd, Testlauf), Spieltest, CommandResult mit Fehlercodes, Architektur und Abgrenzung zu Godot (docs/ARCHITEKTUR.md)."
+      },
+      {
+         "tasks" : [],
+         "id" : "M1",
+         "description" : "Phase 1: Szenenmodell mit stabilen Kennungen, Befehlsmodell mit Fähigkeitenverzeichnis, Szenenbefehle, Schreibkoordinator mit Konflikterkennung, Rückgängig und Checkpoints, erlaubte Pfade.",
+         "tickets" : [
+            "T-0373",
+            "T-0374",
+            "T-0375",
+            "T-0376",
+            "T-0377",
+            "T-0379",
+            "T-0384",
+            "T-0403",
+            "T-0404",
+            "T-0405"
+         ],
+         "estimate" : 10,
+         "title" : "Kern: Befehle, Szenen, Revisionen"
+      },
+      {
+         "id" : "M2",
+         "tasks" : [],
+         "description" : "Phase 1: Modulvertrag, Abhängigkeiten, Aktivieren und Deaktivieren, inkompatible Module abweisen, Beispielmodul mit Anleitung.",
+         "estimate" : 4,
+         "tickets" : [
+            "T-0378",
+            "T-0383",
+            "T-0396",
+            "T-0406"
+         ],
+         "title" : "Module"
+      },
+      {
+         "description" : "Phase 1: analytische und simulierte Flugbahn (120 Hz), Trefferprüfung ohne Durchtunneln, Rückprall, Testeingaben je Simulationsschritt.",
+         "tasks" : [],
+         "id" : "M3",
+         "title" : "Ballistik und Testeingaben",
+         "tickets" : [
+            "T-0380",
+            "T-0381",
+            "T-0382",
+            "T-0385",
+            "T-0398",
+            "T-0400",
+            "T-0414",
+            "T-0498"
+         ],
+         "estimate" : 8
+      },
+      {
+         "tickets" : [
+            "T-0386",
+            "T-0387",
+            "T-0388",
+            "T-0389",
+            "T-0390",
+            "T-0391",
+            "T-0392",
+            "T-0393",
+            "T-0394",
+            "T-0395",
+            "T-0397",
+            "T-0399",
+            "T-0407",
+            "T-0408",
+            "T-0409",
+            "T-0410",
+            "T-0411",
+            "T-0541",
+            "T-0542",
+            "T-0543",
+            "T-0544",
+            "T-0545",
+            "T-0546",
+            "T-0550",
+            "T-0551",
+            "T-0552",
+            "T-0555",
+            "T-0563",
+            "T-0564",
+            "T-0565",
+            "T-0566",
+            "T-0572",
+            "T-0573",
+            "T-0574",
+            "T-0575",
+            "T-0576"
+         ],
+         "estimate" : 36,
+         "title" : "Durchstich: Laufzeit, CLI, Editor, Export",
+         "tasks" : [],
+         "id" : "M4",
+         "description" : "Phase 1: Szenenmodell in echte Godot-Szenen übersetzen, Zustand abfragen, CLI für alle Befehle, Aufträge mit Fortschritt und Abbruch, Projektvorlagen, erster Editor mit Szenenbaum, Auswahl und Suche, Windows-Export mit Vorabprüfung (braucht die Godot-Exportvorlagen)."
+      },
+      {
+         "tickets" : [
+            "T-0401",
+            "T-0402",
+            "T-0412",
+            "T-0413",
+            "T-0415",
+            "T-0416",
+            "T-0417",
+            "T-0418",
+            "T-0494",
+            "T-0495",
+            "T-0499",
+            "T-0533",
+            "T-0534",
+            "T-0540",
+            "T-0547",
+            "T-0548",
+            "T-0549",
+            "T-0553",
+            "T-0554",
+            "T-0559",
+            "T-0560",
+            "T-0571",
+            "T-0577",
+            "T-0578",
+            "T-0579",
+            "T-0580"
+         ],
+         "estimate" : 26,
+         "title" : "2D-Arbeitsablauf",
+         "tasks" : [],
+         "id" : "M5",
+         "description" : "Phase 2: Assets, Spielverhalten, 2D-Physik (Körper, Kollision, Trigger, Gruppen), Projektile, 2D-Referenzspiel."
+      },
+      {
+         "description" : "Phase 3: Kamera, Licht, Materialien, 3D-Physik und Ballistik, 3D-Referenzspiel.",
+         "tasks" : [],
+         "id" : "M6",
+         "title" : "3D-Arbeitsablauf",
+         "tickets" : [
+            "T-0419",
+            "T-0420",
+            "T-0421",
+            "T-0422",
+            "T-0425",
+            "T-0492",
+            "T-0493",
+            "T-0531",
+            "T-0532",
+            "T-0535",
+            "T-0536",
+            "T-0537",
+            "T-0538",
+            "T-0539",
+            "T-0556",
+            "T-0557",
+            "T-0558",
+            "T-0561",
+            "T-0562",
+            "T-0581",
+            "T-0582",
+            "T-0583",
+            "T-0584"
+         ],
+         "estimate" : 23
+      },
+      {
+         "tasks" : [],
+         "id" : "M7",
+         "description" : "Phase 4: Provideradapter, KI-Arbeitsabläufe, MCP-Adapter für ChatGPT und Claude, lokaler Agent, Hub-Adapter mit Aufträgen und Abbruch.",
+         "tickets" : [
+            "T-0423",
+            "T-0424",
+            "T-0485",
+            "T-0486",
+            "T-0487",
+            "T-0488",
+            "T-0489",
+            "T-0490",
+            "T-0491",
+            "T-0496",
+            "T-0497",
+            "T-0529",
+            "T-0530",
+            "T-0585",
+            "T-0586",
+            "T-0587"
+         ],
+         "estimate" : 16,
+         "title" : "KI, Agenten und Hub"
+      },
+      {
+         "tasks" : [],
+         "id" : "M8",
+         "description" : "Phase 5: Abnahmekriterien 1–17 als Tests und Spieltests, eigenständige Windows-Exporte, Agentenverbindungen, Anleitung, Prüfung durch dich.",
+         "tickets" : [
+            "T-0567",
+            "T-0568",
+            "T-0569",
+            "T-0570"
+         ],
+         "estimate" : 10,
+         "title" : "Abnahme"
+      }
+   ],
+   "target" : "Abnahme",
+   "title" : "Hub Engine"
 }

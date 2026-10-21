@@ -1,0 +1,8 @@
+Tonbericht Spieltest sparring/matchbild (Zeit ab Programmstart)
+Ton: 48000 Hz, 2 Kanäle, 32 Bit, Aufnahme 13,6 s
+Gesamt: Pegel -120 dBFS (RMS), Spitze -120 dBFS, übersteuert 0,0 %, still 100 %
+Hinweis: Fast nur Stille: Kommt überhaupt Ton?
+
+Zeit     Pegel   Spitze  Tonhöhe
+    12 s  -120 dB  -120 dB      –
+    13 s  -120 dB  -120 dB      –

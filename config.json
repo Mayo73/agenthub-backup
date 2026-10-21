@@ -40,7 +40,7 @@
       "path": "C:\\Users\\wiens\\AgentHub\\projects\\sparring",
       "baseBranch": "main",
       "verify": "verify.cmd",
-      "protected": ["verify.cmd", "tests/run_tests.gd", "tests/base_test.gd", "playtests/playtest.gd"],
+      "protected": ["verify.cmd", "verify-ergebnis.js", "app/package.json", "app/package-lock.json", "app/jest.config.js", "app/jest.setup.js", "app/tsconfig.json", "app/babel.config.js"],
       "testCount": "^ERGEBNIS: (\\d+) ok"
     },
     "hub-engine": {

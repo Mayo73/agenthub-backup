@@ -1,16 +1,16 @@
 # Stand des Agent Hub
 
-Automatisch erzeugt am 20.10.2026, 19:16 Uhr. Nicht bearbeiten, wird laufend neu geschrieben.
+Automatisch erzeugt am 21.10.2026, 18:36 Uhr. Nicht bearbeiten, wird laufend neu geschrieben.
 
 ## In Arbeit
 
-- **Sparring – Android-Prototyp für Kampfsport-Matches** (`sparring.md`, Status `aktiv`): 53 von 73 Tickets erledigt, 9 von 10 Meilensteinen fertig
+- **Sparring – Android-Prototyp für Kampfsport-Matches** (`sparring.md`, Status `aktiv`): 18 von 24 Tickets erledigt, 2 von 8 Meilensteinen fertig
 
 ## Warteschlange (in dieser Reihenfolge)
 
 1. **Drift – isometrisches Driftspiel** (`drift.md`, Status `warteschlange`): 82 von 82 Tickets erledigt, 14 von 18 Meilensteinen fertig
-2. **Zellenphase – Evolutionsspiel nach dem Vorbild von Spore** (`zellenphase.md`, Status `warteschlange`): 250 von 271 Tickets erledigt, 17 von 30 Meilensteinen fertig. Gerade in Arbeit: T-0457 EvolutionTimeline.summary_lines – Rückblick aus dem Zeitstrahl
-3. **Hub Engine – modulare Windows-Spielengine für Mensch und KI-Agenten** (`hub-engine.md`, Status `warteschlange`): 53 von 53 Tickets erledigt, 8 von 9 Meilensteinen fertig
+2. **Zellenphase – Evolutionsspiel nach dem Vorbild von Spore** (`zellenphase.md`, Status `warteschlange`): 271 von 271 Tickets erledigt, 17 von 30 Meilensteinen fertig
+3. **Hub Engine – modulare Windows-Spielengine für Mensch und KI-Agenten** (`hub-engine.md`, Status `warteschlange`): 93 von 127 Tickets erledigt, 4 von 9 Meilensteinen fertig
 
 ## Entwürfe (noch nicht freigegeben)
 

@@ -42,6 +42,7 @@ Ist die Warteschlange bald leer, bereitest du 2–3 Projektideen als `entwurf` v
 - Frage bei jedem neuen Projekt: **„Soll ein grafischer Ablaufplan erstellt werden?“** und trage die Antwort als `ablaufplan: ja` oder `ablaufplan: nein` ein.
 - **Abnahmekriterien müssen prüfbar sein:** testbar oder beim Ausprobieren eindeutig beobachtbar. Statt „schnell“: „Startet in unter 2 Sekunden“.
 - **Rahmenbedingungen** klären: Plattform, Technik (oder „Claude entscheidet“), Datenschutz und Online-Dienste, Medien (mit Higgsfield erzeugen oder nicht), Grenzen wie Kosten oder Lizenzen.
+- **Technik für Handy-Apps:** Für mobile Apps vorzugsweise **React Native** verwenden und diese Präferenz im Lastenheft unter „Rahmenbedingungen“ → „Technik“ festhalten. Ist eine andere Technik für die konkreten Projektanforderungen besser geeignet, die Abweichung im Lastenheft kurz begründen.
 - Keine Geheimnisse (Passwörter, API-Schlüssel, persönliche Daten) in Lastenhefte schreiben.
 
 ## Status im Kopf des Lastenhefts
