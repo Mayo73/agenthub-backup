@@ -10,8 +10,9 @@ import {
   Pressable,
 } from 'react-native';
 import Avatar from '../components/Avatar';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { messagesOf, sendMessage, canWrite, MAX_MESSAGE_LENGTH } from '../logic/chat';
-import { otherId, isActive } from '../logic/matching';
+import { otherId, isActive, endMatch, block } from '../logic/matching';
 import { useAppData } from '../state/AppDataContext';
 import { colors, sizes } from '../theme';
 
@@ -24,6 +25,8 @@ type Props = {
 export default function ChatScreen({ matchId, onBack, onOpenMeeting }: Props) {
   const appData = useAppData();
   const [inputText, setInputText] = useState('');
+  const [showEndDialog, setShowEndDialog] = useState(false);
+  const [showBlockDialog, setShowBlockDialog] = useState(false);
 
   const me = appData.data.activeId;
   const matchById = appData.data.matches.find(m => m.id === matchId);
@@ -46,12 +49,27 @@ export default function ChatScreen({ matchId, onBack, onOpenMeeting }: Props) {
   const isEnded = !isActive(matchById);
   const canWriteResult = canWrite(appData.data, matchId, me);
 
+  const otherName = otherProfile?.name ?? '';
+  const endedBy = matchById.endedBy;
+  const endedByName = endedBy && endedBy !== me ? appData.data.profiles.find(p => p.id === endedBy)?.name ?? endedBy : undefined;
+  const endedText = endedBy === me ? 'Von dir beendet.' : endedByName ? `Von ${endedByName} beendet.` : '';
+
   const handleSend = () => {
     const trimmed = inputText.trim();
     if (trimmed !== '' && canWriteResult) {
       appData.update(d => sendMessage(d, matchId, me, trimmed));
       setInputText('');
     }
+  };
+
+  const handleEndMatch = () => {
+    appData.update(d => endMatch(d, matchId, me));
+    setShowEndDialog(false);
+  };
+
+  const handleBlock = () => {
+    appData.update(d => block(d, me, otherProfile.id));
+    setShowBlockDialog(false);
   };
 
   return (
@@ -69,6 +87,36 @@ export default function ChatScreen({ matchId, onBack, onOpenMeeting }: Props) {
           </Pressable>
         )}
       </View>
+
+      {/* Aktionsknöpfe bei aktivem Match */}
+      {isActive(matchById) && (
+        <View style={styles.actionButtons}>
+          <Pressable testID="chat-end" style={[styles.smallButton, { backgroundColor: colors.pass }]} onPress={() => setShowEndDialog(true)}>
+            <Text style={styles.smallButtonText}>Match beenden</Text>
+          </Pressable>
+          <Pressable testID="chat-block" style={[styles.smallButton, { backgroundColor: colors.pass }]} onPress={() => setShowBlockDialog(true)}>
+            <Text style={styles.smallButtonText}>Blockieren</Text>
+          </Pressable>
+        </View>
+      )}
+
+      {/* ConfirmDialogs */}
+      <ConfirmDialog
+        visible={showEndDialog}
+        title="Match beenden?"
+        message="Ihr könnt euch danach nicht mehr schreiben und keine Treffen mehr vereinbaren."
+        confirmLabel="Beenden"
+        onConfirm={handleEndMatch}
+        onCancel={() => setShowEndDialog(false)}
+      />
+      <ConfirmDialog
+        visible={showBlockDialog}
+        title={`${otherName} blockieren?`}
+        message="Das Match wird beendet und ihr seht euch nicht mehr unter Entdecken."
+        confirmLabel="Blockieren"
+        onConfirm={handleBlock}
+        onCancel={() => setShowBlockDialog(false)}
+      />
 
       {/* Nachrichtenliste */}
       {messages.length === 0 ? (
@@ -94,6 +142,7 @@ export default function ChatScreen({ matchId, onBack, onOpenMeeting }: Props) {
       {isEnded ? (
         <View testID="chat-ended" style={styles.endedContainer}>
           <Text style={styles.endedText}>Dieses Match wurde beendet. Neue Nachrichten und Treffen sind nicht möglich.</Text>
+          {endedText && <Text testID="chat-ended-by" style={styles.endedBy}>{endedText}</Text>}
         </View>
       ) : canWriteResult ? (
         <View style={styles.inputContainer}>
@@ -185,6 +234,30 @@ const styles = StyleSheet.create({
     fontSize: sizes.normal,
     textAlign: 'center',
     marginTop: sizes.gap * 3,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    paddingHorizontal: sizes.gap,
+    paddingBottom: sizes.gap,
+    gap: sizes.gap,
+  },
+  smallButton: {
+    flex: 1,
+    paddingVertical: sizes.small,
+    paddingHorizontal: sizes.gap,
+    borderRadius: sizes.radius,
+    alignItems: 'center',
+  },
+  smallButtonText: {
+    color: colors.pass,
+    fontSize: sizes.normal,
+    fontWeight: '600',
+  },
+  endedBy: {
+    color: colors.accent2,
+    fontSize: sizes.normal,
+    textAlign: 'center',
+    marginTop: sizes.gap,
   },
   inputContainer: {
     flexDirection: 'row',
