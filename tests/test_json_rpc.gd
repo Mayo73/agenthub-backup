@@ -12,6 +12,13 @@ func test_anfrage() -> void:
 	check_eq(result.id, 1, "id 1")
 
 
+func test_params_als_liste() -> void:
+	var result := JsonRpc.parse('{"jsonrpc": "2.0", "id": 2, "method": "x", "params": [1, 2]}')
+
+	check(result.ok, "ok ist wahr")
+	check(result.params is Dictionary and result.params.size() == 0, "params als Liste wird zu {}")
+
+
 func test_benachrichtigung() -> void:
 	var text := '{"jsonrpc": "2.0", "method": "tools/list"}'
 	var result := JsonRpc.parse(text)

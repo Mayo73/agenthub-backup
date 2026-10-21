@@ -53,10 +53,10 @@ static func tools(registry: CommandRegistry) -> Array[Dictionary]:
 		sorted_names.sort_custom(func(a: String, b: String): return a < b)
 
 		for param_name in sorted_names:
-			var type_str: String = params[param_name]
+			var schema_type: String = json_type(params[param_name])
 			var prop: Dictionary = {}
-			if not type_str.is_empty():
-				prop["type"] = json_type(type_str)
+			if not schema_type.is_empty():
+				prop["type"] = schema_type
 			properties[param_name] = prop
 			required.append(param_name)
 

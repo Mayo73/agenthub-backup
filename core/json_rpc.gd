@@ -48,11 +48,9 @@ static func parse(text: String) -> Dictionary:
 		return result
 
 	var method: String = jsonrpc_dict.get("method") as String
-	var params: Dictionary = jsonrpc_dict.get("params", {}) as Dictionary
+	var raw_params: Variant = jsonrpc_dict.get("params", {})
+	var params: Dictionary = raw_params if typeof(raw_params) == TYPE_DICTIONARY else {}
 	var has_id: bool = jsonrpc_dict.has("id")
-
-	if not typeof(params) == TYPE_DICTIONARY:
-		params = {}
 
 	result["ok"] = true
 	result["id"] = id
