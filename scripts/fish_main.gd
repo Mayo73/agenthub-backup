@@ -138,6 +138,7 @@ func _ready() -> void:
 	intro.name = "Intro"
 	add_child(intro)
 	intro.open(player.build)
+	intro.show_timeline(timeline)
 	setup_timeline_view()
 
 	camera.position = ChaseCamera.target_position(player.motion.position, player.motion.yaw, player.size)
