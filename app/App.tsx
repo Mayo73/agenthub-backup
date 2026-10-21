@@ -6,8 +6,9 @@ import TabBar from './src/components/TabBar';
 import { back, current, initialNav, push, selectTab, type NavState } from './src/navigation';
 import Placeholder from './src/screens/Placeholder';
 import DiscoverScreen from './src/screens/DiscoverScreen';
+import MatchesScreen from './src/screens/MatchesScreen';
 import { AppDataProvider } from './src/state/AppDataContext';
-import { colors } from './src/theme';
+import { colors, sizes } from './src/theme';
 
 export function AppShell() {
   const insets = useSafeAreaInsets();
@@ -33,7 +34,7 @@ export function AppShell() {
   } else if (nav.tab === 'entdecken') {
     screen = <DiscoverScreen onOpenChat={id => setNav(push(nav, { screen: 'chat', matchId: id }))} />;
   } else if (nav.tab === 'matches') {
-    screen = <Placeholder title="Matches" />;
+    screen = <MatchesScreen onOpenChat={id => setNav(push(nav, { screen: 'chat', matchId: id }))} />;
   } else {
     screen = <Placeholder title="Profil" />;
   }
