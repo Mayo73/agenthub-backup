@@ -9,6 +9,7 @@ const DURATION := 8.0
 
 var title_label: Label
 var lines_box: VBoxContainer
+var timeline_view: TimelineView
 var go_button: Button
 var time_left := 0.0
 
@@ -24,6 +25,7 @@ func _init() -> void:
 	box.name = "Box"
 	box.position = Vector2(560, 220)
 	box.add_theme_constant_override("separation", 14)
+	box.custom_minimum_size = Vector2(1300, 144)
 	add_child(box)
 	title_label = Label.new()
 	title_label.name = "Title"
@@ -33,6 +35,11 @@ func _init() -> void:
 	lines_box = VBoxContainer.new()
 	lines_box.name = "Lines"
 	box.add_child(lines_box)
+	timeline_view = TimelineView.new()
+	timeline_view.name = "Timeline"
+	timeline_view.use_compact(Vector2(1300, 144))
+	timeline_view.custom_minimum_size = Vector2(1300, 144)
+	box.add_child(timeline_view)
 	go_button = Button.new()
 	go_button.name = "Go"
 	go_button.text = "Losschwimmen"
@@ -54,6 +61,20 @@ func open(fish: FishBuild) -> void:
 		lines_box.add_child(l)
 	time_left = DURATION
 	visible = true
+
+
+## Zeigt den Zeitstrahl mit Leiste und Zeilen; bei leerem Zeitstrahl bleibt die Leiste unsichtbar.
+func show_timeline(t: EvolutionTimeline) -> void:
+	if t.size() == 0:
+		timeline_view.visible = false
+		return
+	timeline_view.show_timeline(t)
+	timeline_view.visible = true
+	for line in t.summary_lines():
+		var l := Label.new()
+		l.text = line
+		l.add_theme_font_size_override("font_size", 24)
+		lines_box.add_child(l)
 
 
 func close() -> void:

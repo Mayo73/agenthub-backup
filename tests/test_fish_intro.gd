@@ -5,6 +5,7 @@ var intro: FishIntro
 
 func setup() -> void:
 	intro = FishIntro.new()
+	(Engine.get_main_loop() as SceneTree).root.add_child(intro)
 
 
 func teardown() -> void:
@@ -48,3 +49,24 @@ func test_knopf() -> void:
 	intro.open(FishBuild.new())
 	intro.go_button.pressed.emit()
 	check(not intro.visible, "intro.visible soll falsch sein nach Knopfdruck")
+
+
+func test_zeitstrahl() -> void:
+	var timeline := EvolutionTimeline.new()
+	timeline.add("build", "Schwanzflosse", Diet.PFLANZENFRESSER, 0.0, Color.GREEN, "fisch")
+	timeline.add("upgrade", "Sichtweite", Diet.PFLANZENFRESSER, 1.0, Color.BLUE, "fisch")
+	check_eq(timeline.size(), 2, "Timeline hat 2 Einträge")
+	intro.show_timeline(timeline)
+	check_eq(intro.timeline_view.item_count(), 2, "timeline_view.item_count() ist 2")
+	check(intro.timeline_view.visible, "timeline_view.visible soll wahr sein")
+	var lines := intro.lines_box.get_children()
+	check(lines.size() > 0, "mindestens ein Label in lines_box")
+	if lines.size() > 0:
+		var first_line := lines[0] as Label
+		check("Entwicklungsschritte: 2" in first_line.text, "Label hat Text 'Entwicklungsschritte: 2'")
+
+
+func test_leer() -> void:
+	var timeline := EvolutionTimeline.new()
+	intro.show_timeline(timeline)
+	check(not intro.timeline_view.visible, "timeline_view.visible soll falsch sein bei leerem Zeitstrahl")
