@@ -16,21 +16,28 @@ const AppDataContext = createContext<AppDataValue | null>(null);
 export function AppDataProvider({
   children,
   store,
+  initialData,
 }: {
   children: React.ReactNode;
   store?: KeyValueStore;
+  initialData?: AppData;
 }) {
-  const [data, setData] = useState<AppData>(demoData());
-  const [loaded, setLoaded] = useState<boolean>(false);
-  const currentDataRef = useRef<AppData>(demoData());
+  const initial = initialData ?? demoData();
+  const [data, setData] = useState<AppData>(initial);
+  const [loaded, setLoaded] = useState<boolean>(!!initialData || false);
+  const currentDataRef = useRef<AppData>(initial);
 
   useEffect(() => {
+    if (initialData) {
+      // initialData bereits im State, nichts mehr tun
+      return;
+    }
     loadData(store).then((d) => {
       setData(d);
       currentDataRef.current = d;
       setLoaded(true);
     });
-  }, [store]);
+  }, [store, initialData]);
 
   const update = useCallback(
     (fn: (d: AppData) => AppData) => {
@@ -66,3 +73,4 @@ export function useAppData(): AppDataValue {
   }
   return ctx;
 }
+
