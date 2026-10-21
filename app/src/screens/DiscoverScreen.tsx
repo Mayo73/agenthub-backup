@@ -1,13 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAppData } from '../state/AppDataContext';
-import { candidates, like, pass } from '../logic/matching';
+import { candidates, like, matchBetween, pass } from '../logic/matching';
+import type { Profile } from '../logic/types';
+import MatchOverlay from '../components/MatchOverlay';
 import ProfileCard from '../components/ProfileCard';
 import SwipeCard from '../components/SwipeCard';
 import { colors, sizes } from '../theme';
 
-export default function DiscoverScreen() {
+type Props = {
+  onOpenChat?: (matchId: string) => void;
+};
+
+export default function DiscoverScreen({ onOpenChat }: Props) {
   const { data, update } = useAppData();
+  const [matchInfo, setMatchInfo] = useState<{ id: string; other: Profile } | null>(null);
   const me = data.activeId;
   const meProfile = data.profiles.find(p => p.id === me);
   const list = candidates(data, me);
@@ -18,8 +25,27 @@ export default function DiscoverScreen() {
   };
 
   const handleLike = () => {
-    update(d => like(d, me, top.id));
+    const next = like(data, me, top.id);
+    update(() => next);
+    const match = matchBetween(next, me, top.id);
+    if (match && !matchBetween(data, me, top.id)) {
+      setMatchInfo({ id: match.id, other: top });
+    }
   };
+
+  const overlay =
+    matchInfo && meProfile ? (
+      <MatchOverlay
+        visible={true}
+        me={meProfile}
+        other={matchInfo.other}
+        onChat={() => {
+          setMatchInfo(null);
+          onOpenChat?.(matchInfo.id);
+        }}
+        onClose={() => setMatchInfo(null)}
+      />
+    ) : null;
 
   if (!top) {
     return (
@@ -28,6 +54,7 @@ export default function DiscoverScreen() {
         <Text style={styles.emptySubtitle}>
           Wechsle im Profil die Demo-Perspektive, um die andere Seite eines Matches zu sehen.
         </Text>
+        {overlay}
       </View>
     );
   }
@@ -64,6 +91,7 @@ export default function DiscoverScreen() {
           <Text style={styles.buttonLabel}>Interesse</Text>
         </View>
       </View>
+      {overlay}
     </View>
   );
 }

@@ -3,7 +3,7 @@ import { BackHandler, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import DemoBanner from './src/components/DemoBanner';
 import TabBar from './src/components/TabBar';
-import { back, current, initialNav, selectTab, type NavState } from './src/navigation';
+import { back, current, initialNav, push, selectTab, type NavState } from './src/navigation';
 import Placeholder from './src/screens/Placeholder';
 import DiscoverScreen from './src/screens/DiscoverScreen';
 import { AppDataProvider } from './src/state/AppDataContext';
@@ -31,7 +31,7 @@ export function AppShell() {
   if (route) {
     screen = <Placeholder title={route.screen} />;
   } else if (nav.tab === 'entdecken') {
-    screen = <DiscoverScreen />;
+    screen = <DiscoverScreen onOpenChat={id => setNav(push(nav, { screen: 'chat', matchId: id }))} />;
   } else if (nav.tab === 'matches') {
     screen = <Placeholder title="Matches" />;
   } else {
