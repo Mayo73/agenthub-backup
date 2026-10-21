@@ -5,6 +5,8 @@ import DemoBanner from './src/components/DemoBanner';
 import TabBar from './src/components/TabBar';
 import { back, current, initialNav, selectTab, type NavState } from './src/navigation';
 import Placeholder from './src/screens/Placeholder';
+import DiscoverScreen from './src/screens/DiscoverScreen';
+import { AppDataProvider } from './src/state/AppDataContext';
 import { colors } from './src/theme';
 
 export function AppShell() {
@@ -29,7 +31,7 @@ export function AppShell() {
   if (route) {
     screen = <Placeholder title={route.screen} />;
   } else if (nav.tab === 'entdecken') {
-    screen = <Placeholder title="Entdecken" />;
+    screen = <DiscoverScreen />;
   } else if (nav.tab === 'matches') {
     screen = <Placeholder title="Matches" />;
   } else {
@@ -45,8 +47,6 @@ export function AppShell() {
     </View>
   );
 }
-
-import { AppDataProvider } from './src/state/AppDataContext';
 
 export default function App() {
   return (
