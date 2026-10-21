@@ -96,19 +96,19 @@ describe('Chat-Logik', () => {
     expect(messagesOf(same, 'm1')).toHaveLength(0);
   });
 
-  test('blockiert: p02>p01 => p01 kann nicht schreiben', () => {
+  test('blockiert: p02>p01 => keiner kann schreiben', () => {
     const d = withMatch(['p02>p01']);
     expect(canWrite(d, 'm1', 'p01')).toBe(false);
-    expect(canWrite(d, 'm1', 'p02')).toBe(true);
+    expect(canWrite(d, 'm1', 'p02')).toBe(false);
 
     const same = sendMessage(d, 'm1', 'p01', 'Test');
     expect(same).toBe(d);
   });
 
-  test('blockiert: p01>p02 => p02 kann nicht schreiben', () => {
+  test('blockiert: p01>p02 => keiner kann schreiben', () => {
     const d = withMatch(['p01>p02']);
     expect(canWrite(d, 'm1', 'p02')).toBe(false);
-    expect(canWrite(d, 'm1', 'p01')).toBe(true);
+    expect(canWrite(d, 'm1', 'p01')).toBe(false);
 
     const same = sendMessage(d, 'm1', 'p02', 'Test');
     expect(same).toBe(d);

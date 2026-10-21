@@ -1,6 +1,8 @@
 import type { AppData, MeetingDetails, Meeting, Profile } from './types';
 import { FORMS, INTENSITIES } from './demoData';
 
+export type { MeetingDetails };
+
 /**
  * Gibt leere Meeting-Details zurück.
  * place, date, time, rules sind leer, form und intensity haben die Erstwerte.

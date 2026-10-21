@@ -15,7 +15,7 @@ export default function Avatar({ profile, size }: Props) {
 
   return (
     <View
-      style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: profile.color }}
+      style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: profile.color, alignItems: 'center', justifyContent: 'center' }}
       testID={`avatar-${profile.id}`}>
       <Text style={{ color: colors.text, fontWeight: 700, fontSize }}>{firstChar}</Text>
     </View>

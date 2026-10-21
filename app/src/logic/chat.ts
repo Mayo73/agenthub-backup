@@ -11,20 +11,8 @@ export function canWrite(data: AppData, matchId: string, userId: string): boolea
   if (match.a !== userId && match.b !== userId) {
     return false;
   }
-  const a = match.a;
-  const b = match.b;
-  // Prüfen, ob der Benutzer den anderen blockiert hat oder vom anderen geblockt wurde
-  if (data.blocks.includes(`${a}>${b}`) || data.blocks.includes(`${b}>${a}`)) {
-    if (userId === a && data.blocks.includes(`${b}>${a}`)) {
-      // p01 ist von p02 geblockt, kann nicht schreiben
-      return false;
-    }
-    if (userId === b && data.blocks.includes(`${a}>${b}`)) {
-      // p02 ist von p01 geblockt, kann nicht schreiben
-      return false;
-    }
-  }
-  return true;
+  // Blockiert einer den anderen, darf keiner mehr schreiben
+  return !data.blocks.includes(`${match.a}>${match.b}`) && !data.blocks.includes(`${match.b}>${match.a}`);
 }
 
 /** Sendet eine Nachricht in einem Match. */
