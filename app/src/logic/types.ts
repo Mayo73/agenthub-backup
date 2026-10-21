@@ -56,6 +56,8 @@ export type MeetingDetails = {
   rules: string; // gemeinsam vereinbarte Regeln, darf leer sein
 };
 
+export type Filter = { arts: string[]; levels: Level[] };
+
 export type AppData = {
   version: 1;
   activeId: string; // aktive Testperson (Demo-Perspektivwechsel)
