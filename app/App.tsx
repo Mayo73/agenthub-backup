@@ -5,6 +5,7 @@ import DemoBanner from './src/components/DemoBanner';
 import TabBar from './src/components/TabBar';
 import ChatScreen from './src/screens/ChatScreen';
 import MeetingScreen from './src/screens/MeetingScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
 import { back, current, initialNav, push, selectTab, type NavState } from './src/navigation';
 import Placeholder from './src/screens/Placeholder';
 import DiscoverScreen from './src/screens/DiscoverScreen';
@@ -43,6 +44,8 @@ export function AppShell() {
     screen = <DiscoverScreen onOpenChat={id => setNav(push(nav, { screen: 'chat', matchId: id }))} />;
   } else if (nav.tab === 'matches') {
     screen = <MatchesScreen onOpenChat={id => setNav(push(nav, { screen: 'chat', matchId: id }))} />;
+  } else if (nav.tab === 'profil') {
+    screen = <ProfileScreen />;
   } else {
     screen = <Placeholder title="Profil" />;
   }
