@@ -8,7 +8,7 @@ import Placeholder from './src/screens/Placeholder';
 import DiscoverScreen from './src/screens/DiscoverScreen';
 import MatchesScreen from './src/screens/MatchesScreen';
 import { AppDataProvider } from './src/state/AppDataContext';
-import { colors, sizes } from './src/theme';
+import { colors } from './src/theme';
 
 export function AppShell() {
   const insets = useSafeAreaInsets();

@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
 import Avatar from '../components/Avatar';
-import type { Profile } from '../logic/types';
-import { matchesOf } from '../logic/matching';
+import type { AppData, Match, Profile } from '../logic/types';
+import { isActive, matchesOf } from '../logic/matching';
 import { lastMessage } from '../logic/chat';
 import { useAppData } from '../state/AppDataContext';
 import { colors, sizes } from '../theme';
@@ -11,7 +11,7 @@ type Props = {
   onOpenChat: (matchId: string) => void;
 };
 
-function renderMatchRow(m: { id: string; a: string; b: string; endedBy: string }, data: any, activeId: string, onOpenChat: (matchId: string) => void): React.ReactNode {
+function renderMatchRow(m: Match, data: AppData, activeId: string, onOpenChat: (matchId: string) => void): React.ReactNode {
   const otherId = m.a === activeId ? m.b : m.a;
   const profile = data.profiles.find((p: Profile) => p.id === otherId);
   if (!profile) {
@@ -36,11 +36,11 @@ function renderMatchRow(m: { id: string; a: string; b: string; endedBy: string }
         </Text>
         <Text
           numberOfLines={1}
-          style={[styles.lastMessage, m.endedBy !== '' && styles.ended]}>
+          style={[styles.lastMessage, !isActive(m) && styles.ended]}>
           {lastMsgText || 'Noch keine Nachrichten'}
         </Text>
       </View>
-      {m.endedBy !== '' && (
+      {!isActive(m) && (
         <View style={[styles.badge, { backgroundColor: colors.pass }]}>
           <Text style={styles.badgeText}>Beendet</Text>
         </View>
@@ -60,8 +60,8 @@ export default function MatchesScreen({ onOpenChat }: Props) {
       <Text style={[styles.title, { fontSize: sizes.title }]}>Deine Matches</Text>
       {!hasMatches ? (
         <View testID="matches-empty">
-          <Text>Noch keine Matches</Text>
-          <Text>Bekunde unter Entdecken Interesse. Ein Match entsteht erst, wenn beide Interesse haben.</Text>
+          <Text style={styles.emptyTitle}>Noch keine Matches</Text>
+          <Text style={styles.emptyText}>Bekunde unter Entdecken Interesse. Ein Match entsteht erst, wenn beide Interesse haben.</Text>
         </View>
       ) : (
         <FlatList
@@ -92,4 +92,6 @@ const styles = StyleSheet.create({
   ended: { fontWeight: '700', color: colors.pass },
   badge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: sizes.radius, marginLeft: 'auto' },
   badgeText: { color: colors.text, fontSize: sizes.small, fontWeight: '600' },
+  emptyTitle: { color: colors.text, fontWeight: '600', marginBottom: 4 },
+  emptyText: { color: colors.muted },
 });
