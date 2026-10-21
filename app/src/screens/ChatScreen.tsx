@@ -91,10 +91,10 @@ export default function ChatScreen({ matchId, onBack, onOpenMeeting }: Props) {
       {/* Aktionsknöpfe bei aktivem Match */}
       {isActive(matchById) && (
         <View style={styles.actionButtons}>
-          <Pressable testID="chat-end" style={[styles.smallButton, { backgroundColor: colors.pass }]} onPress={() => setShowEndDialog(true)}>
+          <Pressable testID="chat-end" style={styles.smallButton} onPress={() => setShowEndDialog(true)}>
             <Text style={styles.smallButtonText}>Match beenden</Text>
           </Pressable>
-          <Pressable testID="chat-block" style={[styles.smallButton, { backgroundColor: colors.pass }]} onPress={() => setShowBlockDialog(true)}>
+          <Pressable testID="chat-block" style={styles.smallButton} onPress={() => setShowBlockDialog(true)}>
             <Text style={styles.smallButtonText}>Blockieren</Text>
           </Pressable>
         </View>
@@ -142,7 +142,7 @@ export default function ChatScreen({ matchId, onBack, onOpenMeeting }: Props) {
       {isEnded ? (
         <View testID="chat-ended" style={styles.endedContainer}>
           <Text style={styles.endedText}>Dieses Match wurde beendet. Neue Nachrichten und Treffen sind nicht möglich.</Text>
-          {endedText && <Text testID="chat-ended-by" style={styles.endedBy}>{endedText}</Text>}
+          {endedText ? <Text testID="chat-ended-by" style={styles.endedBy}>{endedText}</Text> : null}
         </View>
       ) : canWriteResult ? (
         <View style={styles.inputContainer}>
@@ -247,10 +247,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: sizes.gap,
     borderRadius: sizes.radius,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.pass,
   },
   smallButtonText: {
     color: colors.pass,
-    fontSize: sizes.normal,
+    fontSize: sizes.small,
     fontWeight: '600',
   },
   endedBy: {
