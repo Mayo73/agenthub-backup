@@ -13,6 +13,7 @@ import Avatar from '../components/Avatar';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { messagesOf, sendMessage, canWrite, MAX_MESSAGE_LENGTH } from '../logic/chat';
 import { otherId, isActive, endMatch, block } from '../logic/matching';
+import { meetingOf, meetingStatus } from '../logic/meetings';
 import { useAppData } from '../state/AppDataContext';
 import { colors, sizes } from '../theme';
 
@@ -80,7 +81,14 @@ export default function ChatScreen({ matchId, onBack, onOpenMeeting }: Props) {
           <Text style={styles.backText}>‹ Zurück</Text>
         </Pressable>
         <Avatar profile={otherProfile} size={40} />
-        <Text style={styles.otherName}>{otherProfile.name}</Text>
+        <View style={styles.nameBox}>
+          <Text style={styles.otherName}>{otherProfile.name}</Text>
+          {meetingOf(appData.data, matchId) ? (
+            <Text testID="chat-meeting-status" style={styles.meetingStatus}>
+              {meetingStatus(appData.data, matchId, me)}
+            </Text>
+          ) : null}
+        </View>
         {isActive(matchById) && (
           <Pressable testID="chat-meeting" style={styles.meetingButton} onPress={() => onOpenMeeting(matchId)}>
             <Text style={styles.meetingText}>Treffen</Text>
@@ -192,11 +200,17 @@ const styles = StyleSheet.create({
     color: colors.accent2,
     fontSize: sizes.normal,
   },
-  otherName: {
+  nameBox: {
     marginLeft: sizes.gap,
+  },
+  otherName: {
     color: colors.text,
     fontSize: sizes.title,
     fontWeight: '600',
+  },
+  meetingStatus: {
+    color: colors.muted,
+    fontSize: sizes.small,
   },
   meetingButton: {
     marginLeft: 'auto',

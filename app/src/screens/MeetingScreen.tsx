@@ -9,8 +9,19 @@ import {
   Pressable,
   Platform,
 } from 'react-native';
-import { emptyDetails, missingFields, propose, meetingOf, type MeetingDetails } from '../logic/meetings';
+import {
+  emptyDetails,
+  missingFields,
+  propose,
+  meetingOf,
+  approve,
+  cancel,
+  isConfirmed,
+  meetingStatus,
+  type MeetingDetails,
+} from '../logic/meetings';
 import { otherId } from '../logic/matching';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { FORMS, INTENSITIES } from '../logic/demoData';
 import { useAppData } from '../state/AppDataContext';
 import { colors, sizes } from '../theme';
@@ -36,10 +47,24 @@ export default function MeetingScreen({ matchId, onBack }: Props) {
       : emptyDetails(),
   );
   const [missingError, setMissingError] = useState('');
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const me = appData.data.activeId;
   const matchById = appData.data.matches.find(m => m.id === matchId);
   const otherProfileName = matchById ? appData.data.profiles.find(p => p.id === otherId(matchById, me))?.name : undefined;
+  const isEnded = !matchById || matchById.endedBy !== '';
+  const openMeeting = existingMeeting && existingMeeting.cancelledBy === '' ? existingMeeting : undefined;
+  const confirmed = isConfirmed(appData.data, matchId);
+  const canApprove = !!openMeeting && !openMeeting.approved.includes(me);
+
+  const handleApprove = () => {
+    appData.update(d => approve(d, matchId, me));
+  };
+
+  const handleCancel = () => {
+    appData.update(d => cancel(d, matchId, me));
+    setShowCancelDialog(false);
+  };
 
   const handlePropose = () => {
     const missing = missingFields(values);
@@ -85,6 +110,30 @@ export default function MeetingScreen({ matchId, onBack }: Props) {
           </Pressable>
           <Text style={styles.title}>{`Treffen mit ${otherProfileName ?? 'Unbekannt'}`}</Text>
         </View>
+
+        {/* Stand des Vorschlags (kommt aus den Daten, nicht aus dem Formular) */}
+        <View style={styles.statusBox}>
+          <Text testID="meet-status" style={[styles.statusText, confirmed && { color: colors.like }]}>
+            {meetingStatus(appData.data, matchId, me)}
+          </Text>
+          {confirmed ? <Text style={styles.voluntaryText}>Die Teilnahme bleibt freiwillig.</Text> : null}
+        </View>
+
+        {isEnded ? (
+          <Text testID="meet-ended" style={styles.infoText}>Dieses Match wurde beendet.</Text>
+        ) : (
+          <>
+        {/* Zustimmen und Absagen */}
+        {canApprove ? (
+          <Pressable testID="meet-approve" style={styles.approveButton} onPress={handleApprove}>
+            <Text style={styles.proposeButtonText}>Zustimmen</Text>
+          </Pressable>
+        ) : null}
+        {openMeeting ? (
+          <Pressable testID="meet-cancel" style={styles.cancelButton} onPress={() => setShowCancelDialog(true)}>
+            <Text style={styles.cancelButtonText}>Treffen absagen</Text>
+          </Pressable>
+        ) : null}
 
         {/* Ort */}
         <Text style={styles.label}>Ort draußen</Text>
@@ -193,7 +242,17 @@ export default function MeetingScreen({ matchId, onBack }: Props) {
         <Text style={styles.infoText}>
           Treffen finden draußen statt und sind freiwillig. Absagen ist jederzeit möglich.
         </Text>
+          </>
+        )}
       </ScrollView>
+      <ConfirmDialog
+        visible={showCancelDialog}
+        title="Treffen absagen?"
+        message="Die andere Person sieht die Absage."
+        confirmLabel="Absagen"
+        onConfirm={handleCancel}
+        onCancel={() => setShowCancelDialog(false)}
+      />
     </KeyboardAvoidingView>
   );
 }
@@ -222,6 +281,42 @@ const styles = StyleSheet.create({
     fontSize: sizes.title,
     fontWeight: '600',
     marginLeft: sizes.gap,
+  },
+  statusBox: {
+    paddingHorizontal: sizes.gap,
+    paddingVertical: sizes.small,
+    backgroundColor: colors.raised,
+    borderRadius: sizes.radius,
+  },
+  statusText: {
+    color: colors.text,
+    fontSize: sizes.normal,
+    fontWeight: '600',
+  },
+  voluntaryText: {
+    color: colors.muted,
+    fontSize: sizes.normal,
+    marginTop: sizes.small,
+  },
+  approveButton: {
+    marginTop: sizes.gap,
+    backgroundColor: colors.like,
+    borderRadius: sizes.radius,
+    paddingVertical: sizes.small,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    marginTop: sizes.gap,
+    borderWidth: 1,
+    borderColor: colors.pass,
+    borderRadius: sizes.radius,
+    paddingVertical: sizes.small,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    color: colors.pass,
+    fontSize: sizes.normal,
+    fontWeight: '600',
   },
   label: {
     color: colors.text,
