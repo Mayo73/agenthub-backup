@@ -2,8 +2,6 @@ class_name Spread
 extends RefCounted
 ## Klasse für Streukegel bei Schüssen. Statisch, seed-basiert wiederholbar.
 
-const TAU: float = 2.0 * PI
-
 
 ## Berechnet eine gestreute Richtung um die Vorwärtsrichtung im Kegel.
 static func direction(forward: Vector3, angle_deg: float, seed_value: int) -> Vector3:

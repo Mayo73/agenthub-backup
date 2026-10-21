@@ -22,9 +22,11 @@ func link(from_id: String, prop: String, to_id: String) -> void:
 ## Gibt `true` zurück, wenn mindestens ein Eintrag entfernt wurde, sonst `false`.
 func unlink(from_id: String, prop: String) -> bool:
 	var before_size := refs.size()
-	refs.erase(func(r: Dictionary) -> bool:
-		return r["from"] == from_id and r["prop"] == prop
-	)
+	for i in range(refs.size()):
+		var r: Dictionary = refs[i]
+		if r["from"] == from_id and r["prop"] == prop:
+			refs.remove_at(i)
+			break
 	return refs.size() < before_size
 
 

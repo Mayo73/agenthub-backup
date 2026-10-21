@@ -32,4 +32,4 @@ static func wrap(x: float, width: float) -> float:
 static func tiles_needed(view_width: float, tile_width: float) -> int:
 	if tile_width <= 0.0:
 		return 0
-	return ceilf(view_width / tile_width) + 1
+	return ceili(view_width / tile_width) + 1

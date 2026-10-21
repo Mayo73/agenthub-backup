@@ -84,7 +84,11 @@ func to_dict() -> Dictionary:
 ## Aus Dictionary laden (statisch)
 static func from_dict(d: Dictionary) -> Inventory:
 	var inv := Inventory.new()
-	inv.slots = d.get("slots", {})
-	inv.limits = d.get("limits", {})
+	var raw_slots: Dictionary = d.get("slots", {})
+	for key in raw_slots:
+		inv.slots[str(key)] = int(raw_slots[key])
+	var raw_limits: Dictionary = d.get("limits", {})
+	for key in raw_limits:
+		inv.limits[str(key)] = int(raw_limits[key])
 	inv.capacity = int(d.get("capacity", 0))
 	return inv

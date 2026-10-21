@@ -5,7 +5,7 @@ var seq: InputSequence
 func setup() -> void:
 	seq = InputSequence.new()
 	seq.hold("rechts", 0, 120)
-	seq.hold("springen", 30, 70)
+	seq.hold("springen", 30, 60)
 
 
 func test_gehalten() -> void:

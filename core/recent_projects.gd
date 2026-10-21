@@ -39,7 +39,7 @@ func to_dict() -> Dictionary:
 static func from_dict(d: Dictionary) -> RecentProjects:
 	var result: RecentProjects = RecentProjects.new()
 	result.limit = int(d.get("limit", 5))
-	var path_array: Array[String] = d.get("paths", [])
+	var path_array: Array = d.get("paths", [])
 	for i in range(path_array.size() - 1, -1, -1):
 		var item = path_array[i]
 		if item is String:
