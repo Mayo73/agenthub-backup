@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAppData } from '../state/AppDataContext';
 import { candidates, like, pass } from '../logic/matching';
 import ProfileCard from '../components/ProfileCard';
+import SwipeCard from '../components/SwipeCard';
 import { colors, sizes } from '../theme';
 
 export default function DiscoverScreen() {
@@ -36,7 +37,9 @@ export default function DiscoverScreen() {
       <Text testID="discover-me" style={[styles.meLabel, { color: colors.demo }]}>
         Du bist: {meProfile?.name || 'Unbekannt'} (Demo)
       </Text>
-      <ProfileCard profile={top} />
+      <SwipeCard key={top.id} onLike={handleLike} onPass={handlePass}>
+        <ProfileCard profile={top} />
+      </SwipeCard>
       <View style={styles.buttonRow}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
