@@ -4,6 +4,7 @@ import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-cont
 import DemoBanner from './src/components/DemoBanner';
 import TabBar from './src/components/TabBar';
 import ChatScreen from './src/screens/ChatScreen';
+import MeetingScreen from './src/screens/MeetingScreen';
 import { back, current, initialNav, push, selectTab, type NavState } from './src/navigation';
 import Placeholder from './src/screens/Placeholder';
 import DiscoverScreen from './src/screens/DiscoverScreen';
@@ -33,6 +34,8 @@ export function AppShell() {
   if (route) {
     if (route.screen === 'chat') {
       screen = <ChatScreen matchId={route.matchId ?? ''} onBack={() => setNav(back(nav).nav)} onOpenMeeting={id => setNav(push(nav, { screen: 'treffen', matchId: id }))} />;
+    } else if (route.screen === 'treffen') {
+      screen = <MeetingScreen matchId={route.matchId ?? ''} onBack={() => setNav(back(nav).nav)} />;
     } else {
       screen = <Placeholder title={route.screen} />;
     }
