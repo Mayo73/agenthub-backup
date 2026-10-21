@@ -36,6 +36,8 @@ func test_beschleunigen() -> void:
 
 
 func test_bremsen() -> void:
+	for i in range(120):
+		motor.step(Vector2(0, 1), 0.0, false, 1.0 / 120.0, true)
 	## Danach 60 Schritte ohne Eingabe
 	for i in range(60):
 		motor.step(Vector2.ZERO, 0.0, false, 1.0 / 120.0, true)
@@ -64,3 +66,10 @@ func test_sprung() -> void:
 	var erwartete_wert: float = 5.0 / 9.81
 	check(abs(schritte_pro_sekunde - erwartete_wert) < 0.02,
 		"Anzahl Schritte/120 ≈ %.2f (Toleranz 0.02)" % [erwartete_wert])
+
+
+func test_am_boden_ruhig() -> void:
+	## Am Boden ohne Sprung bleibt velocity.y bei 0
+	for i in range(60):
+		motor.step(Vector2.ZERO, 0.0, false, 1.0 / 120.0, true)
+	check_eq(motor.velocity.y, 0.0, "am Boden wirkt keine Schwerkraft")

@@ -61,8 +61,9 @@ func step(input: Vector2, yaw: float, jump: bool, dt: float, floor_now: bool) ->
 	## 3. Vertikale Bewegung (Schwerkraft und Springen)
 	if on_floor and jump:
 		velocity.y = jump_speed
-	elif on_floor and velocity.y < 0.0:
-		velocity.y = 0.0
+	elif on_floor:
+		if velocity.y < 0.0:
+			velocity.y = 0.0
 	else:
 		velocity.y -= gravity * dt
 
