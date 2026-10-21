@@ -2,24 +2,16 @@ class_name HubReport
 extends RefCounted
 ## Berichtsfunktionen für JobQueue-Aufträge.
 
+const STATE_NAMES := {JobQueue.QUEUED: "wartet", JobQueue.RUNNING: "läuft", JobQueue.DONE: "fertig", JobQueue.FAILED: "fehlgeschlagen", JobQueue.CANCELLED: "abgebrochen"}
+
+
 static func status_line(job: Dictionary) -> String:
 	var id: String = job.get("id", "")
 	var kind: String = job.get("kind", "")
 	var progress: float = job.get("progress", 0.0)
 	var message: String = job.get("message", "")
 
-	var state: String = job.get("state", "")
-	var zustandsname: String = "unbekannt"
-	if state == JobQueue.QUEUED:
-		zustandsname = "wartet"
-	elif state == JobQueue.RUNNING:
-		zustandsname = "läuft"
-	elif state == JobQueue.DONE:
-		zustandsname = "fertig"
-	elif state == JobQueue.FAILED:
-		zustandsname = "fehlgeschlagen"
-	elif state == JobQueue.CANCELLED:
-		zustandsname = "abgebrochen"
+	var zustandsname: String = STATE_NAMES.get(job.get("state", ""), "unbekannt")
 
 	var proz := int(progress * 100)
 	var zeile: String = "%s %s: %s, %d %%" % [id, kind, zustandsname, proz]
@@ -33,18 +25,7 @@ static func markdown(job: Dictionary) -> String:
 	var kind: String = job.get("kind", "")
 	var progress: float = job.get("progress", 0.0)
 
-	var state: String = job.get("state", "")
-	var zustandsname: String = "unbekannt"
-	if state == JobQueue.QUEUED:
-		zustandsname = "wartet"
-	elif state == JobQueue.RUNNING:
-		zustandsname = "läuft"
-	elif state == JobQueue.DONE:
-		zustandsname = "fertig"
-	elif state == JobQueue.FAILED:
-		zustandsname = "fehlgeschlagen"
-	elif state == JobQueue.CANCELLED:
-		zustandsname = "abgebrochen"
+	var zustandsname: String = STATE_NAMES.get(job.get("state", ""), "unbekannt")
 
 	var zeilen: Array[String] = []
 	zeilen.append("# Auftrag " + id)

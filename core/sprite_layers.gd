@@ -23,7 +23,7 @@ func add_layer(name: String, index: int = -1) -> CommandResult:
 	else:
 		return CommandResult.error(CommandResult.CONFLICT, "Ebene %s gibt es schon" % name)
 
-	var insert_index: int = index if index >= 0 else layers.size()
+	var insert_index: int = clampi(index, 0, layers.size()) if index >= 0 else layers.size()
 	layers.insert(insert_index, name)
 	return CommandResult.success({"layers": layers})
 
@@ -82,14 +82,18 @@ func z_index_of(object_id: String) -> int:
 
 func to_dict() -> Dictionary:
 	return {
-		"layers": layers,
-		"assignment": assignment
+		"layers": layers.duplicate(),
+		"assignment": assignment.duplicate()
 	}
+
 
 static func from_dict(d: Dictionary) -> SpriteLayers:
 	var instance := SpriteLayers.new()
-	if d.has("layers"):
-		instance.layers = d["layers"] as Array[String]
-	if d.has("assignment"):
-		instance.assignment = d["assignment"] as Dictionary
+	var saved_layers: Array = d.get("layers", [])
+	if not saved_layers.is_empty():
+		instance.layers.clear()
+		for layer in saved_layers:
+			instance.layers.append(str(layer))
+	var saved_assignment: Dictionary = d.get("assignment", {})
+	instance.assignment = saved_assignment.duplicate()
 	return instance

@@ -79,3 +79,15 @@ func test_speichern() -> void:
 	check_eq(restored.assignment.size(), layers.assignment.size(), "Zuordnungen-Stimmenach Wiederherstellung")
 	check_eq(restored.assignment["obj_a"], layers.assignment["obj_a"], "obj_a-Zuordnung stimmt")
 	check_eq(restored.assignment["obj_b"], layers.assignment["obj_b"], "obj_b-Zuordnung stimmt")
+
+
+func test_speichern_json() -> void:
+	layers.add_layer("himmel", 99)
+	layers.assign("obj_a", "himmel")
+	var text := JSON.stringify(layers.to_dict())
+	var restored: SpriteLayers = SpriteLayers.from_dict(JSON.parse_string(text))
+	check_eq(restored.layers.size(), 5, "Ebenen aus JSON gelesen")
+	check_eq(restored.layers[4], "himmel", "himmel ist ganz vorne")
+	check_eq(restored.z_index_of("obj_a"), 400, "Zuordnung aus JSON gelesen")
+	restored.assign("obj_a", "welt")
+	check_eq(layers.layer_of("obj_a"), "himmel", "Kopie ist unabhängig vom Original")
