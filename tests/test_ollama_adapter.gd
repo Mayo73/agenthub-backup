@@ -41,6 +41,15 @@ func test_fehler() -> void:
 	check(result.message.contains("model not found"), "Meldung enthält Fehler")
 
 
+func test_zeilenumbruch_und_ohne_text() -> void:
+	var result := OllamaAdapter.parse_response('{"message": {"content": "Hi"}}\n')
+	check(result.is_ok(), "Zeilenumbruch am Ende stört nicht")
+	result = OllamaAdapter.parse_response('{"message": {"content": 5}}')
+	check(not result.is_ok(), "Inhalt ohne Text ist ein Fehler")
+	result = OllamaAdapter.parse_response('{kaputt}')
+	check(not result.is_ok(), "kaputtes JSON in Klammern ist ein Fehler")
+
+
 func test_kaputt() -> void:
 	var text := "<html>"
 	var result := OllamaAdapter.parse_response(text)

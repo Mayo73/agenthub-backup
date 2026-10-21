@@ -27,23 +27,19 @@ static func build_request(model: String, system: String, prompt: String) -> Dict
 
 
 static func parse_response(text: String) -> CommandResult:
-	if not text.begins_with("{") or not text.ends_with("}"):
+	# JSON.new().parse meldet Fehler still, JSON.parse_string würde sie ins Protokoll schreiben.
+	var json := JSON.new()
+	if json.parse(text.strip_edges()) != OK or typeof(json.data) != TYPE_DICTIONARY:
 		return CommandResult.error(CommandResult.EXEC_FAILED, "Antwort des Modells ist kein JSON")
-
-	var dict: Dictionary = JSON.parse_string(text)
-	if typeof(dict) != TYPE_DICTIONARY:
-		return CommandResult.error(CommandResult.EXEC_FAILED, "Antwort des Modells ist kein JSON")
+	var dict: Dictionary = json.data
 
 	if dict.has("error"):
 		return CommandResult.error(CommandResult.EXEC_FAILED, "Ollama: " + str(dict["error"]))
 
-	var message: Dictionary = dict.get("message", {})
-	if typeof(message) != TYPE_DICTIONARY:
+	var message: Variant = dict.get("message")
+	if typeof(message) != TYPE_DICTIONARY or typeof(message.get("content")) != TYPE_STRING:
 		return CommandResult.error(CommandResult.EXEC_FAILED, "Antwort ohne Text")
-
-	var content: String = message.get("content", "")
-	if typeof(content) != TYPE_STRING:
-		return CommandResult.error(CommandResult.EXEC_FAILED, "Antwort ohne Text")
+	var content: String = message["content"]
 
 	return CommandResult.success(
 		{"text": content, "model": str(dict.get("model", ""))},
