@@ -1,16 +1,6 @@
 extends RefCounted
 class_name PrefabLibrary
 
-## Kollisionsergebnisse und Statuscodes aus CommandResult importieren
-const CODE_OK := "ok"
-const UNKNOWN_COMMAND := "unknown_command"
-const INVALID_ARGUMENT := "invalid_argument"
-const NOT_FOUND := "not_found"
-const CONFLICT := "conflict"
-const FORBIDDEN_PATH := "forbidden_path"
-const DEPENDENCY := "dependency"
-const INCOMPATIBLE := "incompatible"
-const EXEC_FAILED := "failed"
 
 ## Vorlagen-Speicher: Kennung → Prefab
 var prefabs: Dictionary = {}
@@ -23,11 +13,11 @@ func add(prefab: Prefab) -> CommandResult:
 	## Neue Vorlage hinzufügen
 	# Leere ID prüfen
 	if prefab.id == "":
-		return CommandResult.error(INVALID_ARGUMENT, "Vorlage braucht eine Kennung")
+		return CommandResult.error(CommandResult.INVALID_ARGUMENT, "Vorlage braucht eine Kennung")
 
 	# Bereits vorhandene ID prüfen
 	if prefabs.has(prefab.id):
-		return CommandResult.error(CONFLICT, "Vorlage %s gibt es schon" % prefab.id)
+		return CommandResult.error(CommandResult.CONFLICT, "Vorlage %s gibt es schon" % prefab.id)
 
 	# Vorlage speichern
 	prefabs[prefab.id] = prefab
@@ -47,7 +37,7 @@ func spawn(prefab_id: String, overrides: Dictionary = {}) -> CommandResult:
 
 	# Vorlage existiert?
 	if not prefabs.has(prefab_id):
-		return CommandResult.error(NOT_FOUND, "Vorlage %s gibt es nicht" % prefab_id)
+		return CommandResult.error(CommandResult.NOT_FOUND, "Vorlage %s gibt es nicht" % prefab_id)
 
 	# Zähler erhöhen und neue ID erstellen
 	var zaehler := int(counters.get(prefab_id, 0)) + 1

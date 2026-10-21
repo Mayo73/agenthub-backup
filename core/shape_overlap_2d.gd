@@ -19,7 +19,7 @@ static func rects(a: Rect2, b: Rect2) -> Vector2:
 		return Vector2.ZERO
 	var center_a: Vector2 = a.get_center()
 	var center_b: Vector2 = b.get_center()
-	if ox < oy or (ox == oy and center_a.x < center_b.x):
+	if ox <= oy:
 		if center_a.x < center_b.x:
 			return Vector2(-ox, 0.0)
 		else:
