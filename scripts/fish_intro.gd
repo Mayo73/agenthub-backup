@@ -25,7 +25,6 @@ func _init() -> void:
 	box.name = "Box"
 	box.position = Vector2(560, 220)
 	box.add_theme_constant_override("separation", 14)
-	box.custom_minimum_size = Vector2(1300, 144)
 	add_child(box)
 	title_label = Label.new()
 	title_label.name = "Title"
