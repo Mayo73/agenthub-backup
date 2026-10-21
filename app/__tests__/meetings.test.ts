@@ -1,7 +1,7 @@
 import { describe, test, expect } from '@jest/globals';
 import { demoData } from '../src/logic/demoData';
 import type { AppData, MeetingDetails } from '../src/logic/types';
-import { emptyDetails, missingFields, propose, meetingOf } from '../src/logic/meetings';
+import { emptyDetails, missingFields, propose, meetingOf, approve, isConfirmed, cancel, meetingStatus } from '../src/logic/meetings';
 
 /** Hilfsfunktion: Demo-Daten mit einem Match hinzufügen */
 function withMatch(): AppData {
@@ -178,6 +178,120 @@ describe('meetings', () => {
       expect(meeting.time).toBe('12:00');
       expect(meeting.proposedBy).toBe('p02');
       expect(meeting.approved).toEqual(['p02']);
+    });
+  });
+
+  describe('approve – Zustimmungslogik', () => {
+    test('erst nach beiden Zustimmungen bestätigt', () => {
+      const step1 = propose(withMatch(), 'm1', 'p01', details());
+      expect(isConfirmed(step1, 'm1')).toBe(false);
+
+      const step2 = approve(step1, 'm1', 'p02');
+      expect(isConfirmed(step2, 'm1')).toBe(true);
+    });
+
+    test('Unbeteiligte: approve von p03 gibt dasselbe Objekt zurück', () => {
+      const before = withMatch();
+      const result = approve(before, 'm1', 'p03');
+      expect(result).toBe(before);
+    });
+
+    test('nach Absage: approve gibt dasselbe Objekt zurück (unverändert)', () => {
+      const step1 = propose(withMatch(), 'm1', 'p01', details());
+      const cancelled = cancel(step1, 'm1', 'p02');
+      const result = approve(cancelled, 'm1', 'p01');
+      expect(result).toBe(cancelled);
+    });
+  });
+
+  describe('meetingStatus – Status aus verschiedenen Perspektiven', () => {
+    test('Status nach Vorschlag von p01: für p01 und p02 unterschiedlich', () => {
+      const afterProposal = propose(withMatch(), 'm1', 'p01', details());
+
+      const statusP01 = meetingStatus(afterProposal, 'm1', 'p01');
+      expect(statusP01).toBe('Wartet auf Zustimmung von Sam');
+
+      const statusP02 = meetingStatus(afterProposal, 'm1', 'p02');
+      expect(statusP02).toBe('Wartet auf deine Zustimmung');
+    });
+
+    test('Status nach beiden Zustimmungen: beide sehen Bestätigt', () => {
+      const step1 = propose(withMatch(), 'm1', 'p01', details());
+      const step2 = approve(step1, 'm1', 'p02');
+
+      const statusP01 = meetingStatus(step2, 'm1', 'p01');
+      expect(statusP01).toBe('Bestätigt von beiden');
+
+      const statusP02 = meetingStatus(step2, 'm1', 'p02');
+      expect(statusP02).toBe('Bestätigt von beiden');
+    });
+
+    test('Status ohne Vorschlag: "Noch kein Vorschlag"', () => {
+      const result = meetingStatus(withMatch(), 'm1', 'p01');
+      expect(result).toBe('Noch kein Vorschlag');
+    });
+  });
+
+  describe('Änderung nach Bestätigung', () => {
+    test('bestätigt, dann neuer Vorschlag von p02 → nicht mehr bestätigt', () => {
+      const step1 = propose(withMatch(), 'm1', 'p01', details());
+      const confirmed = approve(step1, 'm1', 'p02');
+
+      expect(isConfirmed(confirmed, 'm1')).toBe(true);
+
+      // p02 schlägt neuen Ort vor
+      const newDetails = { ...details(), place: 'Stadtpark, kleine Wiese' };
+      const changed = propose(confirmed, 'm1', 'p02', newDetails);
+
+      expect(isConfirmed(changed, 'm1')).toBe(false);
+
+      // p01 wartet auf neue Zustimmung von p02
+      const statusP01 = meetingStatus(changed, 'm1', 'p01');
+      expect(statusP01).toBe('Wartet auf deine Zustimmung');
+    });
+  });
+
+  describe('cancel – Absagelogik', () => {
+    test('Absage nach Bestätigung: isConfirmed falsch, Status korrekt', () => {
+      const step1 = propose(withMatch(), 'm1', 'p01', details());
+      const confirmed = approve(step1, 'm1', 'p02');
+
+      expect(isConfirmed(confirmed, 'm1')).toBe(true);
+
+      // p02 sagt ab
+      const cancelled = cancel(confirmed, 'm1', 'p02');
+
+      expect(isConfirmed(cancelled, 'm1')).toBe(false);
+
+      const statusP01 = meetingStatus(cancelled, 'm1', 'p01');
+      expect(statusP01).toBe('Abgesagt von Sam');
+
+      const statusP02 = meetingStatus(cancelled, 'm1', 'p02');
+      expect(statusP02).toBe('Von dir abgesagt');
+    });
+
+    test('Unbeteiligte: cancel von p03 gibt dasselbe Objekt zurück', () => {
+      const before = withMatch();
+      const result = cancel(before, 'm1', 'p03');
+      expect(result).toBe(before);
+    });
+  });
+
+  describe('neuer Vorschlag nach Absage', () => {
+    test('cancel gefolgt von propose: cancelledBy wird leer, approved nur Vorschlagende', () => {
+      const step1 = propose(withMatch(), 'm1', 'p01', details());
+      const confirmed = approve(step1, 'm1', 'p02');
+
+      // p02 sagt ab
+      const cancelled = cancel(confirmed, 'm1', 'p02');
+
+      // p01 schlägt neuen Vorschlag vor
+      const newDetails = { ...details(), place: 'Neuer Ort' };
+      const afterProposal = propose(cancelled, 'm1', 'p01', newDetails);
+
+      const meeting = meetingOf(afterProposal, 'm1')!;
+      expect(meeting.cancelledBy).toBe('');
+      expect(meeting.approved).toEqual(['p01']);
     });
   });
 });

@@ -1,4 +1,4 @@
-import type { AppData, MeetingDetails, Meeting } from './types';
+import type { AppData, MeetingDetails, Meeting, Profile } from './types';
 import { FORMS, INTENSITIES } from './demoData';
 
 /**
@@ -14,6 +14,33 @@ export function emptyDetails(): MeetingDetails {
     intensity: INTENSITIES[0],
     rules: '',
   };
+}
+
+/**
+ * Gibt ein Profil nach ID zurück oder undefined, falls nicht existiert.
+ */
+function getProfile(data: AppData, id: string): Profile | undefined {
+  return data.profiles.find(p => p.id === id);
+}
+
+/**
+ * Prüft ob userId in der approved-Liste eines Meetings steht.
+ */
+function isAlreadyApproved(meeting: Meeting, userId: string): boolean {
+  return meeting.approved.includes(userId);
+}
+
+/**
+ * Gibt den Namen des anderen Participants zurück (nicht viewerId).
+ */
+function getOtherParticipantName(data: AppData, matchId: string, viewerId: string): string | undefined {
+  const match = data.matches.find(m => m.id === matchId);
+  if (!match) {
+    return undefined;
+  }
+  const otherId = match.a === viewerId ? match.b : match.a;
+  const profile = getProfile(data, otherId);
+  return profile?.name;
 }
 
 /**
@@ -169,4 +196,150 @@ export function propose(
     ...data,
     meetings: data.meetings.map(m => (m.matchId === matchId ? updatedMeeting : m)),
   };
+}
+
+/**
+ * Lässt einen User einem Meeting-Vorschlag zustimmen.
+ * Nur erlaubt wenn: Vorschlag existiert, nicht abgesagt ist, das Match aktiv ist,
+ * userId im Match vorkommt und noch nicht in approved steht.
+ */
+export function approve(
+  data: AppData,
+  matchId: string,
+  userId: string
+): AppData {
+  const meeting = meetingOf(data, matchId);
+  if (!meeting) {
+    return data;
+  }
+
+  // Bereits abgesagt?
+  if (meeting.cancelledBy !== '') {
+    return data;
+  }
+
+  // Match existiert und aktiv?
+  const match = data.matches.find(m => m.id === matchId);
+  if (!match || match.endedBy !== '') {
+    return data;
+  }
+
+  // userId ist im Match?
+  if (match.a !== userId && match.b !== userId) {
+    return data;
+  }
+
+  // Bereits zugestimmt?
+  if (isAlreadyApproved(meeting, userId)) {
+    return data;
+  }
+
+  // Zustimmung hinzufügen
+  return {
+    ...data,
+    meetings: data.meetings.map(m =>
+      m.matchId === matchId ? { ...m, approved: [...m.approved, userId] } : m
+    ),
+  };
+}
+
+/**
+ * Prüft ob ein Meeting bestätigt ist.
+ * Vorschlag muss existieren, nicht abgesagt sein und beide (a und b) müssen zugestimmt haben.
+ */
+export function isConfirmed(data: AppData, matchId: string): boolean {
+  const meeting = meetingOf(data, matchId);
+  if (!meeting) {
+    return false;
+  }
+
+  // Abgesagt?
+  if (meeting.cancelledBy !== '') {
+    return false;
+  }
+
+  const match = data.matches.find(m => m.id === matchId);
+  if (!match) {
+    return false;
+  }
+
+  // Beide haben zugestimmt?
+  return meeting.approved.includes(match.a) && meeting.approved.includes(match.b);
+}
+
+/**
+ * Lässt einen User ein Meeting absagen.
+ * Nur erlaubt wenn: Vorschlag existiert, by im Match vorkommt und noch nicht abgesagt ist.
+ */
+export function cancel(
+  data: AppData,
+  matchId: string,
+  by: string
+): AppData {
+  const meeting = meetingOf(data, matchId);
+  if (!meeting) {
+    return data;
+  }
+
+  // Bereits abgesagt?
+  if (meeting.cancelledBy !== '') {
+    return data;
+  }
+
+  // by ist im Match?
+  const match = data.matches.find(m => m.id === matchId);
+  if (!match || match.a !== by && match.b !== by) {
+    return data;
+  }
+
+  // Absage setzen
+  return {
+    ...data,
+    meetings: data.meetings.map(m =>
+      m.matchId === matchId ? { ...m, cancelledBy: by } : m
+    ),
+  };
+}
+
+/**
+ * Liefert den Status eines Meetings aus der Perspektive von viewerId.
+ * Namen werden aus data.profiles geholt.
+ */
+export function meetingStatus(
+  data: AppData,
+  matchId: string,
+  viewerId: string
+): string {
+  const meeting = meetingOf(data, matchId);
+
+  // Kein Vorschlag?
+  if (!meeting) {
+    return 'Noch kein Vorschlag';
+  }
+
+  // Abgesagt?
+  if (meeting.cancelledBy !== '') {
+    if (meeting.cancelledBy === viewerId) {
+      return 'Von dir abgesagt';
+    }
+    const otherProfile = getProfile(data, meeting.cancelledBy);
+    return `Abgesagt von ${otherProfile?.name ?? 'Unbekannt'}`;
+  }
+
+  // Bestätigt?
+  if (isConfirmed(data, matchId)) {
+    return 'Bestätigt von beiden';
+  }
+
+  // Viewer hat zugestimmt?
+  if (meeting.approved.includes(viewerId)) {
+    const otherName = getOtherParticipantName(data, matchId, viewerId);
+    if (otherName) {
+      return `Wartet auf Zustimmung von ${otherName}`;
+    }
+    return 'Wartet auf Zustimmung';
+  }
+
+  // Sonst: wartet noch auf deine Zustimmung
+  return 'Wartet auf deine Zustimmung';
 }
