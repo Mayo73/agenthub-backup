@@ -1,78 +1,138 @@
 {
-  "project": "sparring",
-  "title": "Sparring",
-  "goal": "Funktionierender Android-App-Prototyp in React Native mit fiktiven Testprofilen: Kampfsportpartner finden sich über gegenseitige Swipe-Matches, schreiben im Demochat und vereinbaren ein freiwilliges Training draußen.",
-  "target": "Abnahme der React-Native-App",
-  "milestones": [
-    {
-      "id": "M0",
-      "title": "React-Native-Grundgerüst",
-      "description": "Neustart vom 20.10.2026: React Native 0.88 mit TypeScript in app/, Datenmodell, acht Testprofile, Navigation mit Android-Zurück, Kopfzeile mit Prototyp-Hinweis, Reiterleiste, Jest-Tests und verify.cmd. Die Godot-Fassung bleibt als Referenz (Tag godot-referenz).",
-      "by": "Claude",
-      "done": true,
-      "tickets": [],
-      "tasks": []
-    },
-    {
-      "id": "M1",
-      "title": "Profile",
-      "description": "Profilkarte mit Testprofil-Kennzeichnung, eigenes Demoprofil ansehen und mit geprüften Angaben bearbeiten.",
-      "estimate": 3,
-      "tickets": ["T-0510", "T-0514", "T-0524"],
-      "tasks": []
-    },
-    {
-      "id": "M2",
-      "title": "Swipe und Match",
-      "description": "Profile einzeln ansehen, wischen oder per Knopf Interesse bekunden bzw. überspringen, gegenseitiges Matching, Match-Hinweis, Filter nach Kampfsportart und Erfahrung, Blockieren.",
-      "estimate": 7,
-      "tickets": ["T-0505", "T-0506", "T-0511", "T-0516", "T-0517", "T-0518", "T-0526"],
-      "tasks": []
-    },
-    {
-      "id": "M3",
-      "title": "Chat",
-      "description": "Matchliste, Nachrichten zwischen den beiden Testpersonen, Tastatur verdeckt die Eingabe nicht, Match beenden und Blockieren mit Bestätigung.",
-      "estimate": 4,
-      "tickets": ["T-0507", "T-0519", "T-0520", "T-0521"],
-      "tasks": []
-    },
-    {
-      "id": "M4",
-      "title": "Treffen",
-      "description": "Outdoor-Ort, Datum, Uhrzeit, Trainingsform, Intensität und Regeln vorschlagen; bestätigt erst nach beiderseitiger Zustimmung; jede Änderung verlangt neue Zustimmung; Absage aus beiden Perspektiven sichtbar.",
-      "estimate": 4,
-      "tickets": ["T-0508", "T-0509", "T-0522", "T-0523"],
-      "tasks": []
-    },
-    {
-      "id": "M5",
-      "title": "Speicherung und Demo-Perspektive",
-      "description": "Zustand mit AsyncStorage speichern und beim Start laden, Perspektivwechsel als Demofunktion, Testdaten nach Bestätigung zurücksetzen.",
-      "estimate": 4,
-      "tickets": ["T-0512", "T-0513", "T-0515", "T-0525"],
-      "tasks": []
-    },
-    {
-      "id": "M6",
-      "title": "APK und Anleitung",
-      "description": "Release-APK (JavaScript eingebettet, läuft ohne Entwicklungsserver und offline), im Emulator Sparring_Pixel installieren und starten, kurze Installations- und Testanleitung. Porträts aus der Godot-Fassung als Avatarbilder übernehmen.",
-      "by": "Claude",
-      "estimate": 2,
-      "tickets": [],
-      "tasks": []
-    },
-    {
-      "id": "M7",
-      "title": "Abnahme",
-      "description": "Abnahmekriterien als Tests über die ganze App, dann der vollständige Ablauf im Emulator mit Bildschirmaufnahme gefüllter Zustände, Ansehen und Ausprobieren.",
-      "estimate": 4,
-      "tickets": ["T-0527", "T-0528"],
-      "tasks": [
-        { "text": "Claude: Ablauf Profil → Match → Chat → Treffvorschlag → Bestätigung → Änderung/Absage und Neustart im Emulator ausführen und aufnehmen; Android-Version und Gerät dokumentieren", "done": false },
-        { "text": "Bildschirmaufnahmen der gefüllten Zustände ansehen (Gestaltung, Lesbarkeit, Tastatur, Systemleisten)", "done": false },
-        { "text": "APK ausprobieren: Zurück-Taste, Wischen, Formulare mit Bildschirmtastatur", "done": false }
-      ]
-    }
-  ]
+    "project":  "sparring",
+    "title":  "Sparring",
+    "goal":  "Funktionierender Android-App-Prototyp in React Native mit fiktiven Testprofilen: Kampfsportpartner finden sich über gegenseitige Swipe-Matches, schreiben im Demochat und vereinbaren ein freiwilliges Training draußen.",
+    "target":  "Abnahme der React-Native-App",
+    "milestones":  [
+                       {
+                           "id":  "M0",
+                           "title":  "React-Native-Grundgerüst",
+                           "description":  "Neustart vom 20.10.2026: React Native 0.88 mit TypeScript in app/, Datenmodell, acht Testprofile, Navigation mit Android-Zurück, Kopfzeile mit Prototyp-Hinweis, Reiterleiste, Jest-Tests und verify.cmd. Die Godot-Fassung bleibt als Referenz (Tag godot-referenz).",
+                           "by":  "Claude",
+                           "done":  true,
+                           "tickets":  [
+
+                                       ],
+                           "tasks":  [
+
+                                     ]
+                       },
+                       {
+                           "id":  "M1",
+                           "title":  "Profile",
+                           "description":  "Profilkarte mit Testprofil-Kennzeichnung, eigenes Demoprofil ansehen und mit geprüften Angaben bearbeiten.",
+                           "estimate":  3,
+                           "tickets":  [
+                                           "T-0510",
+                                           "T-0514",
+                                           "T-0524"
+                                       ],
+                           "tasks":  [
+
+                                     ],
+                           "done":  true
+                       },
+                       {
+                           "id":  "M2",
+                           "title":  "Swipe und Match",
+                           "description":  "Profile einzeln ansehen, wischen oder per Knopf Interesse bekunden bzw. überspringen, gegenseitiges Matching, Match-Hinweis, Filter nach Kampfsportart und Erfahrung, Blockieren.",
+                           "estimate":  7,
+                           "tickets":  [
+                                           "T-0505",
+                                           "T-0506",
+                                           "T-0511",
+                                           "T-0516",
+                                           "T-0517",
+                                           "T-0518",
+                                           "T-0526"
+                                       ],
+                           "tasks":  [
+
+                                     ]
+                       },
+                       {
+                           "id":  "M3",
+                           "title":  "Chat",
+                           "description":  "Matchliste, Nachrichten zwischen den beiden Testpersonen, Tastatur verdeckt die Eingabe nicht, Match beenden und Blockieren mit Bestätigung.",
+                           "estimate":  4,
+                           "tickets":  [
+                                           "T-0507",
+                                           "T-0519",
+                                           "T-0520",
+                                           "T-0521"
+                                       ],
+                           "tasks":  [
+
+                                     ],
+                           "done":  true
+                       },
+                       {
+                           "id":  "M4",
+                           "title":  "Treffen",
+                           "description":  "Outdoor-Ort, Datum, Uhrzeit, Trainingsform, Intensität und Regeln vorschlagen; bestätigt erst nach beiderseitiger Zustimmung; jede Änderung verlangt neue Zustimmung; Absage aus beiden Perspektiven sichtbar.",
+                           "estimate":  4,
+                           "tickets":  [
+                                           "T-0508",
+                                           "T-0509",
+                                           "T-0522",
+                                           "T-0523"
+                                       ],
+                           "tasks":  [
+
+                                     ],
+                           "done":  true
+                       },
+                       {
+                           "id":  "M5",
+                           "title":  "Speicherung und Demo-Perspektive",
+                           "description":  "Zustand mit AsyncStorage speichern und beim Start laden, Perspektivwechsel als Demofunktion, Testdaten nach Bestätigung zurücksetzen.",
+                           "estimate":  4,
+                           "tickets":  [
+                                           "T-0512",
+                                           "T-0513",
+                                           "T-0515",
+                                           "T-0525"
+                                       ],
+                           "tasks":  [
+
+                                     ]
+                       },
+                       {
+                           "id":  "M6",
+                           "title":  "APK und Anleitung",
+                           "description":  "Release-APK (JavaScript eingebettet, läuft ohne Entwicklungsserver und offline), im Emulator Sparring_Pixel installieren und starten, kurze Installations- und Testanleitung. Porträts aus der Godot-Fassung als Avatarbilder übernehmen.",
+                           "by":  "Claude",
+                           "estimate":  2,
+                           "tickets":  [
+
+                                       ],
+                           "tasks":  [
+
+                                     ]
+                       },
+                       {
+                           "id":  "M7",
+                           "title":  "Abnahme",
+                           "description":  "Abnahmekriterien als Tests über die ganze App, dann der vollständige Ablauf im Emulator mit Bildschirmaufnahme gefüllter Zustände, Ansehen und Ausprobieren.",
+                           "estimate":  4,
+                           "tickets":  [
+                                           "T-0527",
+                                           "T-0528"
+                                       ],
+                           "tasks":  [
+                                         {
+                                             "text":  "Claude: Ablauf Profil → Match → Chat → Treffvorschlag → Bestätigung → Änderung/Absage und Neustart im Emulator ausführen und aufnehmen; Android-Version und Gerät dokumentieren",
+                                             "done":  false
+                                         },
+                                         {
+                                             "text":  "Bildschirmaufnahmen der gefüllten Zustände ansehen (Gestaltung, Lesbarkeit, Tastatur, Systemleisten)",
+                                             "done":  false
+                                         },
+                                         {
+                                             "text":  "APK ausprobieren: Zurück-Taste, Wischen, Formulare mit Bildschirmtastatur",
+                                             "done":  false
+                                         }
+                                     ]
+                       }
+                   ]
 }
